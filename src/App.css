@@ -1,0 +1,122 @@
+*{
+  overflow: hidden;
+  padding: 0px;
+  margin: 0px;
+}
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.main_Container ::-webkit-scrollbar{
+ display: none;
+}
+.main_Container, .mainPanel,#userPanel{
+    -ms-overflow-style:none;
+  scrollbar-width:none;
+}
+.msg_container {
+  display: flex;
+  flex-direction:column;
+ padding-bottom: 3rem;
+ padding-right:.5rem;
+  overflow-y:scroll;
+}
+.incoming {
+  align-self: flex-start;
+  position: relative;
+  font-size:medium;
+  border-bottom-left-radius: 15px;
+  background-color: #525252;
+  color:white;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  width:fit-content;
+  /* left: 20px; */
+  display: flex;
+  flex-direction: column;
+  -ms-flex-align: start;
+  align-self: self-end;
+  display: flex;
+  gap:1px;
+}
+.incMsgCover{
+  width: 80%;
+}
+.outgoing {
+  align-self: flex-end;
+  position:relative;
+  font-size:medium;
+  border-bottom-right-radius: 15px;
+  background-color: #48b154;
+  color:white;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  width:fit-content;
+  display: flex;
+  flex-direction: column;
+   padding-bottom: 4px;
+  padding-right:3.5rem;
+  padding-left: 4px;
+  margin-right: 10px;
+  display: flex;
+  gap:4px;
+  }
+  h5{
+font-size: small;
+display: flex;
+    justify-self: end;
+    font-size:13px;
+  }
+  h6{
+    position: absolute;
+    bottom: 0px;
+    right: 6px;    
+    font-size:x-small;
+    color:rgb(233, 221, 221);
+    display: flex;
+    align-items: end;
+    font-size:13px;
+    padding-left:4px;
+  }
+  .container{
+    width:full;
+    display: flex;
+    gap: 2px;
+  }
+  .msg_container{
+    overflow-y:scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
