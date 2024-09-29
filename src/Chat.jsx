@@ -1,11 +1,24 @@
 import { React, useState, useEffect, useRef } from "react";
-import GroupDiscus from "./GroupDiscus";
 import "./App.css";
 import avatar from "./avatar.png";
-import MessageInput from "./MessageInput";
-import axios from 'axios'
 import {useDispatch} from 'react-redux'
-export default function Chat({ user,socket,currentUser }) {
+import {IoCameraOutline} from 'react-icons/io5'
+import timer from './helper/Timer'
+import axios from "axios";
+import {ToastContainer,toast} from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import {FiSend} from 'react-icons/fi'
+import {BsSendSlashFill} from 'react-icons/bs'
+import { getAllConversation, textMessage } from "./reducers/conversationReducer";
+import {IoMdArrowRoundBack} from 'react-icons/io'
+import MediaComponent from "./components/MediaComponent";
+import { useLocation, useNavigate } from "react-router-dom";
+import socket from "./socket";
+export default function Chat() {  
+  const navigate=useNavigate()
+  const {state}=useLocation()
+  const user=state.user;
+  const currentUser=state.currentUser
   let Ref = useRef(null);
   const input = document.getElementById("input");
   const [isTyping, setIsTyping] = useState(false);
@@ -17,91 +30,118 @@ export default function Chat({ user,socket,currentUser }) {
   const [goinGroup, setGoin] = useState(false);
   const [file,setFile]=useState()
   const [image,setImage]=useState()
-  const dispatch=useDispatch()
-  let us=document.querySelector('.user')
-  // function appendmsg(data, type) {
-  //   const list = document.createElement("div");
-  //   let className = type;
-  //   list.classList.add(className);    
-  //   if(data.message){
-  //   let markup = `
-  //           <h4>${data.message}</h4>
-  //           <h6>${data.time}</h6>
-  //           `;
-  //   list.innerHTML = markup;
-  //   console.log(list);
-    
-  //   msg_container.appendChild(list);
-  //   }
-  // }
+  const [imageUrl,setImageUrl]=useState()
+  const[uploading,setUploading]=useState(false)
+  const dispatch=useDispatch() 
+  window.addEventListener("offline",()=>{
+     toast("No Interner",{
+      position:"top-center",
+      autoClose:"5000",
+      progress:undefined
+     })    
+  })
+  window.addEventListener("online",()=>{
+    console.log("calling online");
+    toast.success("internet connected")    
+  })
   function typingHandler(data) {
     setIsTyping(data);
   }
   async function sendChat(event) {
     event.preventDefault();
-    const hours = new Date(Date.now()).getHours();
-    let realHours;
-    let newFormat;
-    if (hours > 12) {
-      realHours = hours - 12;
-    } else if (hours < 12) {
-      realHours = hours;
-    } else if (hours == 12) {
-      realHours = hours;
-    }
-
-    if (hours >= 12) {
-      newFormat = "PM";
-    } else {
-      newFormat = "AM";
-    }
+    try{
+    const time=timer()
+    if(file){
+      // const form =document.querySelector("form")
+      const formData=new FormData()
+      formData.append("file",file)
+      formData.append('time',time)
+     setUploading(true)  
+      setMessageList((list) => [...list, {
+        reciever_id:currentUser?currentUser:user,
+        sender_id:user.UserName,
+        msg_type:"file",
+        time,
+        url_type:(file.type=="image/jpeg" || file.type=="image/png" || file.type=="image/jpg")?"jpg":"mp4",
+        secure_url:imageUrl,
+        type:"outgoing",
+}]);
+inputResetHandler()
+setFile("")
+setImageUrl("")
+      axios.post(`http://localhost:5002/api/conversation/chat/socialCom/${currentUser}/${user.UserName}`,formData)
+     .then((response)=>{
+      console.log(response);
+            
+      const data = {
+               reciever_id:currentUser?currentUser:user,
+               sender_id:user.UserName,
+               msg_type:"file",
+               time,
+               url_type:response.data.message.format,
+               secure_url:response.data.message.secure_url,
+               type:"outgoing",
+      }
+       socket.emit("private_msg",data);
+     setUploading(false)
+      console.log("emmited");
+     })
+     .catch(err=>{
+        if(err.response.data.success==false){
+          localStorage.setItem("reSendingFile",file)
+        }
+     })
+    }else{
     const data = {
       message: message,
-      time:
-        realHours + ":" + new Date(Date.now()).getMinutes() + " " + newFormat,
-      from: user,
-      to: currentUser?currentUser:user,
-      type:"outgoing"
+      time,
+       msg_type:"text",
+      type:"outgoing",
+      sender_id:user.UserName,
+      reciever_id: currentUser?currentUser:user
     };
     await socket.emit("private_msg",data); 
     setMessageList((list) => [...list, {
       message: message,
-      time:
-        realHours + ":" + new Date(Date.now()).getMinutes() + " " + newFormat,
-      from: user,
-      to: currentUser?currentUser:user,
-      type:"outgoing"
+      msg_type:"text",
+      type:"outgoing",
+      time,
+      sender_id:user.UserName,
+      reciever_id:currentUser?state.currentUser:user
     }]);
     setMessage("");
-  }  
-//  async function fetchMsg() {
-//     const msg=await axios.get("http://localhost:5002/api/conversation/chat/66d0a4f2c3b389b6f0425399/66cdeb55add4468ac3eaa8c2")
-//     console.log(msg);
-//   }
-// fetchMsg()
-// function changeHandler(event){
-// event.preventDefault()
-// const {name,value}=event.target
-// setMessage({
-//   ...message,
-//   [name]:value
-// })
-// }
-function fileChangeHandler(event){
-   event.preventDefault()
-   setFile( event.target.files[0]) 
-}
- function fileUploadHandler() {
-  socket.emit("uploadFile",file)
-  const data=axios.post(`http://localhost:5002/api/conversation/chat/${currentUser}`,)
+    await dispatch(textMessage(data))
+  }
+}catch(err){
+  return "message not sent"
 }
 
-  // useEffect(() => {    
-  //    Ref.current.scrollTop=Ref.current.scrollHeight
-  //    console.log(Ref.current.scrollHeight);
-  // }, [message,list]);
-  useEffect(async() => {  
-     await socket.on("private_msg",(data) => {
+  }  
+  const inputReset=useRef(null)
+function changeHandler(event){
+event.preventDefault()
+setMessage(event.target.value)
+}
+function fileChangeHandler(event){
+   event.preventDefault()
+   setFile(event.target.files[0])    
+   setImageUrl(URL.createObjectURL(event.target.files[0]))      
+}
+function inputResetHandler(){
+  if(inputReset.current){
+    inputReset.current.value="";
+    inputReset.current.type="text";
+    inputReset.current.type="file"
+  }
+}
+function backHandler(){
+
+}
+  useEffect(() => {    
+     Ref.current.scrollTop=Ref.current.scrollHeight
+  }, [message,list]);
+  useEffect(() => {  
+      socket.on("private_msg",(data) => {
       setMessageList((list) => [...list, data.data]);
     },[socket]);
     socket.on("uploadFileResponse",(data)=>{
@@ -110,13 +150,24 @@ function fileChangeHandler(event){
     socket.on("typingStatus",(data)=>{
       setIsTyping(data)
     })
-  }, [socket]);   
-  console.log(image);
-   
+  }, [socket]); 
+  async function call(){
+    const res=await dispatch(getAllConversation({reciever_id:currentUser,sender_id:user.UserName}))
+  // const res=await axios.get(`http://localhost:5002/api/conversation/chat/${currentUser}/${user.UserName}`)  
+  if(res.payload.data.message.length>0){
+  setMessageList((list) => [...list,...res.payload.data.message[0].chats]);
+  }}
+  useEffect(()=>{
+    call()
+  },[window.onload]) 
+  useEffect(()=>{
+    socket.emit("room",state.current)
+  },[])   
   return (
-    <div className="w-full pt-[3rem] text-white">
+    <div className="w-full pt-[3rem] bg-[#000000]  text-white">
        <div className="fixed w-full h-10 bg-black top-0">
-        <div className=" flex flex-row gap-2 items-center">
+        <div className=" flex flex-row gap-2 px-2 items-center">
+          <IoMdArrowRoundBack onClick={()=>navigate(-1)} className="text-xl"/>
           <div className="flex gap-3">
             <img
               src={avatar}
@@ -137,36 +188,36 @@ function fileChangeHandler(event){
           </div>
         </div>
       </div>
-       <div  ref={Ref}  className="relative msg_container w-[100%] flex flex-col gap-10 h-[90vh] overflow-scroll ">
-        {(list.length>0)? list.map((msg, index) => {
+       <div  ref={Ref}  className="msg_container space-y-2 w-[100%] h-[84vh] overflow-scroll">
+        {(list.length>0)? list.map((data, index) => {
           return (
-            <div className="w-full h-fit bg-teal-300">
-              <div className={msg.type} key={index}>
-                  <h4 className="pb-1 pt-0 pr-[3.5rem]">{msg.message}</h4>
-                  <h6 className="absolute bottom-0 right-2 top-2 text-[#e6e6e9] flex items-end text-xs">
-                    {msg.time}
-                  </h6>               
-              </div>
+            <div  className={(data.sender_id==state.user.UserName)?"outgoing":"incoming"} key={index}>                
+            <div className={(data.sender_id==state.user.UserName)?"outgoingInner":"incomingInner"}>
+                {(data.msg_type=="text")?
+                <div className="pr-12 pb-3 pl-3">{data.message}</div>:
+                <MediaComponent key={data.secure_url} url_type={data.url_type} uploading={uploading} url={data.secure_url}/>
+             }
+                <h6 className="w-14 bottom-0 right-0 top-2 text-[#cdcaca] flex items-end text-xs">
+                  {data.time}
+                </h6>               
             </div>
+          </div>
           );
         }):""}
       </div> 
-
-      {/* <MessageInput appendmsg={appendmsg} user={user} currentUser={currentUser} socket={socket} /> */}
       <form
-        className="fixed w-[81%] bottom-0 right-0"
-        onSubmit={file?fileUploadHandler:sendChat}
+      // w-[81%]
+        className="fixed w-full bottom-0 right-0"
+        onSubmit={sendChat}
         id="form"
       >
-        <div className="flex border-2 ">
+        <div className="relative flex gap-4 px-2">
+          <label htmlFor="msg" className="w-full h-full rounded-md border-2 border-black">
           <input
             id="input"
             type="text"
-            required
-            onChange={(event) => {
-              event.preventDefault();
-              setMessage(event.target.value);
-            }}
+            name="msg"
+            onChange={changeHandler}
             onKeyDown={() =>{
                socket.emit("typingStatus",{
                 status:true,
@@ -184,46 +235,25 @@ function fileChangeHandler(event){
             onm
             value={message}
             autoFocus
-            name="input"
-            className="w-full border-none p-1 text-black font-semibold"
+            className=" w-full p-1 pr-12 text-black font-semibold"
             placeholder="Messagee"
           />
-        
-          <div className="flex">
-          <input type="file" onChange={fileChangeHandler}  className="text-black"/>
-          <button
-            type="submit"
-            id="button"
-            className=" p-2 absolute w-16 right-0 bg-yellow-400 hover:bg-yellow-600 text-white font-semibold"
-          >
-            Send
-          </button>
+          </label>
+          <div>
+            <label htmlFor="file">
+            <IoCameraOutline className="absolute right-20 w-7 h-7 text-black"/>
+            </label>
+           <input id="file" type="file" ref={inputReset} name="file" onChange={fileChangeHandler}  className="file hidden text-black"/>
+          <div className="h-10 w-10 flex justify-center items-center rounded-full bg-[#2eff35] text to-black">
+          {(message.length>0 || file)?
+          <button type="submit"><FiSend className="h-6 w-6 text-black font-semibold"/></button>
+            :<BsSendSlashFill className=" h-6 w-6 text-black font-bold cursor-not-allowed"/>
+           }
+          </div>
           </div>
         </div>
-      </form>
-      {/* <div className="fixed w-full h-10 bg-black top-0">
-        <div className=" flex flex-row gap-2 items-center">
-          <div className="flex gap-3">
-            <img
-              src={avatar}
-              className="w-8 cursor-pointer h-8 rounded-full border-dotted border-1"
-            />
-            <div className="flex flex-col gap-0 p-0">
-              <h1 key={currentUser} className="user text-base font-medium text-white">{currentUser}</h1>
-              <h1 className="text-xs">{isTyping ? "typing..." : ""}</h1>
-            </div>
-            <a
-              className="text-yellow-400 cursor-pointer fixed right-4 font-serif text-sm"
-              onClick={() => {
-                setGoin(true);
-              }}
-            >
-              Goin Group
-            </a>
-          </div>
-        </div>
-      </div> */}
-    
+      </form>    
     </div>
   );
 }
+
