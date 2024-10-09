@@ -2,16 +2,29 @@ import { createSlice,createAsyncThunk } from "@reduxjs/toolkit";
 import instance, { multiPartInstance } from "../helper/axios";
 import { toast } from "react-toastify";
 const intialState={}
-export const newReel=createAsyncThunk('/reels',async(data)=>{
+export const newReel=createAsyncThunk('/createReels',async({user_id,formData})=>{
     try {
-        const response=multiPartInstance.post(`/auth/reels/${data.user_id}`)
+console.log(...formData,user_id);
+        const response=multiPartInstance.post(`/auth/reels/newReel/${user_id}`,formData)
         toast.promise(response,{
-            pending:"Loading",
+            pending:"Uploading",
             success:"successFully"
         })
         return (await response)
     } catch (error) {
         return toast.error(error.response.data.message)
+    }
+})
+export const deleteReel=createAsyncThunk('/deleteReel',async(data)=>{
+    try {
+        const response=instance.delete(`/auth/reels/deleteReel/${data.post_id}/${data.public_id}`)
+        toast.promise(response,{
+            pending:"Earasing Proccessing...",
+            success:"Deleted Successfully"
+        })
+        return (await response)
+    } catch (error) {
+        toast.error(error.response.data.message)
     }
 })
 export const allReels=createAsyncThunk('/reels',async()=>{
@@ -30,7 +43,7 @@ export const particular_User_reels=createAsyncThunk('/reels',async(data)=>{
         return toast.error(error.response.data.message)
     }
 })
-export const commentReel=createAsyncThunk('/reelComment',async(data)=>{
+export const commentReel=createAsyncThunk('/reelComments',async(data)=>{
     try {
         const response=instance.put(`/auth/reels/commentToReel/${data.post_id}`,data.inf)
         return(await response)

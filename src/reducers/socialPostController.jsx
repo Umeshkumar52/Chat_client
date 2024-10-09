@@ -24,10 +24,36 @@ export const newSocialPost=createAsyncThunk('/post',async({user_id,formData})=>{
         toast.promise(response,{
             pending:"loading",
             success:"Successfull"
+        },{
+            autoClose:1500
         })
         return(await response)
     } catch (error) {
        return toast.error(error.response.data.message)
+    }
+})
+export const deletPost=createAsyncThunk('deletePost',async(data)=>{
+    try {
+        const response=instance.delete(`/auth/post/deletePost/${data.post_id}/${data.public_id}`)
+        toast.promise(response,{
+            pending:"Earasing Proccessing...",
+            success:"Deleted Successfully"
+        })
+        return (await response)
+    } catch (error) {
+        toast.error(error.response.data.message)
+    }
+})
+export const deleteStory=createAsyncThunk('deletePost',async(data)=>{
+    try {
+        const response=instance.delete(`/auth/post/deletestory/${data.story_id}/${data.public_id}`)
+        toast.promise(response,{
+            pending:"Earasing Proccessing...",
+            success:"Deleted Successfully"
+        })
+        return (await response)
+    } catch (error) {
+        toast.error(error.response.data.message)
     }
 })
 export const newStory=createAsyncThunk('/story',async(data)=>{
@@ -65,14 +91,6 @@ try {
 } catch (error) {
     toast.error(error.response.data.message)
 }
-})
-export const deleteSocialPost=createAsyncThunk('/post',async(post_id)=>{
-    try {
-        const response=instance.delete(`/auth/post/deletePost/${post_id}`)
-        return(await response)
-    } catch (error) {
-       return toast.error(error.response.data.message)
-    }
 })
 const socialPostController=createSlice({
     name:"socialPost",

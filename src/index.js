@@ -5,11 +5,15 @@ import { Provider } from 'react-redux';
 import store from './reducers/store';
 import App from './App';
 import { ToastContainer } from 'react-toastify';
+import NoInternet from './helper/NoInternet';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
+    {/* <NoInternet> */}
    <App/>
    <ToastContainer/>
+   {/* </NoInternet> */}
+   {/* <ToastContainer/> */}
   </Provider>
 );
 

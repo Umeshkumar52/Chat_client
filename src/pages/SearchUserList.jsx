@@ -16,13 +16,11 @@ export default function SearchUserList({data}) {
   useEffect(()=>{
     user()
   },[]) 
-  console.log(userData);
-  
   return (
     <div  className='userList h-screen flex-nowrap space-y-2  w-full overflow-scroll '>
       {
         userData.map((user)=>{
-          return <div key={user._id} onClick={()=>navigate('/profile',{state:user._id})} className='w-full h-fit flex gap-2 hover:bg-[#dedcdc] text-white px-2 cursor-pointer'>
+          return <div key={user._id} onClick={()=>navigate('/chat/inbox',{state:userData})} className='w-full h-fit flex gap-2 hover:bg-[#dedcdc] text-white px-2 cursor-pointer'>
               <img src={user.avatar} className='w-10 h-10 rounded-full'/>
               <div>
               <h1 className='text-lg font-semibold text-[#8808ff]'> {user.UserName}</h1>

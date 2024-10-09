@@ -2,17 +2,15 @@ import React, { useEffect, useRef, useState } from 'react'
 import {IoIosArrowBack} from 'react-icons/io'
 import {useNavigate} from 'react-router-dom'
 import {useDispatch, useSelector} from 'react-redux'
-import { newSocialPost } from '../reducers/socialPostController';
 import 'react-toastify/dist/ReactToastify.css';
 import {ToastContainer } from 'react-toastify';
+import { newReel } from '../reducers/reelsReducer';
 export default function NewReel() {
   const user=useSelector((state)=>{return state.auth.user})
   const videoRef=useRef(null)
   const dispatch=useDispatch()
     const navigate=useNavigate()
-    const[file,setFile]=useState()
-    const[isPlaying,setIsPlaying]=useState(false)
-   
+    const[file,setFile]=useState(null)
     const[blobUrl,setBlobUrl]=useState({
       type:"",
       url:""
@@ -36,11 +34,13 @@ export default function NewReel() {
     async function createPostHandler(event){
         event.preventDefault()
         const formData=new FormData()
-        formData.append("file",file)
-        const response= await dispatch(newSocialPost({user_id:user._id,formData}))
+        formData.append("reel",file)
         inputResetHandler()
-        setFile("")
-        navigate('/')      
+        const response= await dispatch(newReel({user_id:user._id,formData}))
+        if(response.payload.data){
+          setFile(null)
+          navigate('/')
+        }      
      }
    const inputFile=useRef(null) 
    function fileTabHandler(){
@@ -66,12 +66,12 @@ export default function NewReel() {
       {/* {(blobUrl)? */}
      <div id='videoDiv' className='relative w-[0px] h-[90vh] '>
         <input ref={inputFile} onChange={fileChangeHandler} type='file' className='hidden' id='file' name='file' />
-       <video autoPlay src={blobUrl.url}/>
+       <video autoPlay loop src={blobUrl.url}/>
        <div className='absolute right-4 top-6 h-[20rem] w-[5rem]'>
 
       </div>
       <div className='absolute w-full flex justify-end bottom-4 px-3 '>
-       <button className='bg-indigo-600  px-4 py-2 text-white text-lg font-semibold rounded-lg'>Next</button>
+       <button onClick={createPostHandler} className='bg-indigo-600  px-4 py-2 text-white text-lg font-semibold rounded-lg'>Next</button>
     </div>
      </div>
      {/* :""

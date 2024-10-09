@@ -19,28 +19,23 @@ export default function Register() {
     Phone:"",
     Name:"",
     UserName:"",
-    Password:"",
-    avatar:""
+    Password:""
   })
   const[Profile,setProfile]=useState()
   const[ProfileBlobUrl,setProfileBlobUrl]=useState()
   async function registerUserHandler(event) {
     event.preventDefault()
     const formData=new FormData()
-    formData.append("avatar",userData.avatar)
+    formData.append("avatar",Profile)
     formData.append("Email",userData.Email)
     formData.append("Phone",userData.Phone)
     formData.append("UserName",userData.UserName)
     formData.append("Name",userData.Name)
     formData.append("Password",userData.Password)
     const response=await dispatch(signUp(formData))
-    console.log(response);
-     
-    if(!response.payload.data){
-    //  window.location.reload()
-    navigate('/login')
-    }else{
-      navigate('/home')
+    console.log(response.payload.data);
+    if(response.payload.data){
+      navigate('/')
     }
   }  
   function userDataHandler(event){
@@ -49,6 +44,15 @@ export default function Register() {
     setUserData({...userData,
       [name]:value
     })
+  }
+  function profileChangeHandler(event){
+       event.preventDefault()
+       if(event.target.files[0].type=="image/jpeg" || event.target.files[0].type=="image/png"){
+       setProfile(event.target.files[0])
+       setProfileBlobUrl(URL.createObjectURL(event.target.files[0]))
+       }else{
+        alert("Please Select only Image file ")
+       }
   }
   function form1Handler(event){
     event.preventDefault()
@@ -78,13 +82,13 @@ export default function Register() {
   return (
     <div className='w-full h-screen px-2 flex justify-center items-center'>
         <div className='relative w-[20rem] h-[20rem] flex justify-center items-center'>
-         <form name="form1" id='form1' className='w-full absolute flex flex-col gap-9'> 
+         <form name="form1" id='form1' className='w-[20rem] absolute flex flex-col gap-9'> 
          <div className='flex justify-center'>
            <h1 className='text-2xl font-semibold'>Register</h1>
            </div>
              <div className='flex flex-col'>
              <label className='font-semibold text-xl' htmlFor='Email'>Email: </label>
-             <input onChange={userDataHandler} type='Email' required name='Email' className='border-2 border-black w-full p-2 font-medium ' placeholder='Enter Email'/>
+             <input onChange={userDataHandler} autoFocus type='Email' aria-required name='Email' className='border-2 border-black w-full p-2 font-medium ' placeholder='Enter Email'/>
              </div>
              <div className='flex justify-end'>
              <button onClick={form1Handler} className='w-28 rounded-lg  p-1.5 text-lg font-semibold text-white bg-[#1304df]'>Next</button>
@@ -94,44 +98,26 @@ export default function Register() {
               </p>
             
          </form>
-         <form name="form2" id='form2' className='w-full absolute -right-[20rem] flex flex-col gap-9'> 
+         <form name="form2" id='form2' className='w-full absolute right-[20rem] flex flex-col gap-9'> 
              <div className='flex flex-col'>
              <label className='font-semibold text-xl' htmlFor='Phone'>Phone: </label>
-             <input onChange={userDataHandler} type='Phone' required name='Phone' className='border-2 border-black w-full p-2 font-medium ' placeholder='Enter Phone Number'/>
+             <input onChange={userDataHandler} autoFocus type='Phone' required name='Phone' className='border-2 border-black w-full p-2 font-medium ' placeholder='Enter Phone Number'/>
              </div>
              <div className='flex justify-end'>
              <button onClick={form2Handler} className='w-28 rounded-lg  p-1.5 text-lg font-semibold text-white bg-[#1304df]'>Next</button>
              </div>
          </form>
-         <form name="form3" id='form3' className='w-full absolute -right-[20rem] flex flex-col gap-9'> 
+         <form name="form3" id='form3' className='w-full absolute right-[20rem] flex flex-col gap-9'> 
              <div className='flex flex-col'>
              <label className='font-semibold text-xl' htmlFor='Name'>Name: </label>
-             <input onChange={userDataHandler} type='text' required name='Name' className='border-2 border-black w-full p-2 font-medium ' placeholder='Enter Your Name...'/>
+             <input onChange={userDataHandler} autoFocus type='text' required name='Name' className='border-2 border-black w-full p-2 font-medium ' placeholder='Enter Your Name...'/>
              </div>
              <div className='flex justify-end'>
              <button onClick={form3Handler} className='w-28 rounded-lg  p-1.5 text-lg font-semibold text-white bg-[#1304df]'>Next</button>
              </div>
             
          </form>
-         <form name="form4" id='form4' className='w-full absolute -right-[20rem] flex flex-col gap-9'> 
-             <div className='flex flex-col'>
-             <label className='font-semibold text-xl' htmlFor='UserName'>UserName: </label>
-             <input onChange={userDataHandler} type='text' required name='UserName' className='border-2 border-black w-full p-2 font-medium ' placeholder='Enter your UserName'/>
-             </div>
-             <div className='flex justify-end'>
-             <button onClick={form4Handler} className='w-28 rounded-lg  p-1.5 text-lg font-semibold text-white bg-[#1304df]'>Next</button>
-             </div>
-         </form>
-         <form name="form5" id='form5' className='w-full absolute -right-[20rem] flex flex-col gap-9'> 
-             <div className='flex flex-col'>
-             <label className='font-semibold text-xl' htmlFor='Password'>Password: </label>
-             <input onChange={userDataHandler} type='password' required name='Password' className='border-2 border-black w-full p-2 font-medium ' placeholder='Enter Strong Password...'/>
-             </div>
-             <div className='flex justify-end'>
-             <button onClick={form5Handler} className='w-28 rounded-lg  p-1.5 text-lg font-semibold text-white bg-[#1304df]'>Next</button>
-             </div>
-         </form>
-         <form name="form6" id='form6' className='w-full absolute -right-[20rem] flex flex-col gap-9'> 
+         <form name="form4" id='form4' className='w-full absolute right-[20rem] flex flex-col gap-9'> 
              <div className='flex flex-col items-center gap-4'>
               <label htmlFor='Profile'>
               {ProfileBlobUrl?
@@ -139,21 +125,32 @@ export default function Register() {
               <CgProfile className='w-20 h-20 cursor-pointer text-8xl'/>
               }
               </label>
-             <input onChange={(event)=>{
-              event.preventDefault()
-              setProfileBlobUrl(URL.createObjectURL(event.target.files[0]))
-              // setProfile(event.target.files[0])
-              let img=event.target.files[0]
-              setUserData({...userData,
-                avatar:img
-              })
-             }} type='file' id='Profile' required name='Profile' className='Profile hidden border-2 border-black w-full p-2 font-medium ' placeholder='Enter your UserName'/>
+             <input onChange={profileChangeHandler} type='file' id='Profile' required name='Profile' className='Profile hidden border-2 border-black w-full p-2 font-medium ' placeholder='Enter your UserName'/>
              <h1 className='text-2xl font-semibold'>Profile</h1>
              </div>
              <div className='flex justify-end'>
-             <button onClick={registerUserHandler} className='w-28 rounded-lg  p-1.5 text-lg font-semibold text-white bg-[#1304df]'>submit</button>
+             <button onClick={form4Handler} className='w-28 rounded-lg  p-1.5 text-lg font-semibold text-white bg-[#1304df]'>Next</button>
              </div>
          </form>
+         <form name="form5" id='form5' className='w-full absolute right-[20rem] flex flex-col gap-9'> 
+             <div className='flex flex-col'>
+             <label className='font-semibold text-xl' htmlFor='UserName'>UserName: </label>
+             <input onChange={userDataHandler} autoFocus type='text' required name='UserName' className='border-2 border-black w-full p-2 font-medium ' placeholder='Enter your UserName'/>
+             </div>
+             <div className='flex justify-end'>
+             <button onClick={form5Handler} className='w-28 rounded-lg  p-1.5 text-lg font-semibold text-white bg-[#1304df]'>Next</button>
+             </div>
+         </form>
+         <form name="form6" id='form6' className='w-full absolute right-[20rem] flex flex-col gap-9'> 
+             <div className='flex flex-col'>
+             <label className='font-semibold text-xl' htmlFor='Password'>Password: </label>
+             <input onChange={userDataHandler} type='password' required name='Password' className='border-2 border-black w-full p-2 font-medium ' placeholder='Enter Strong Password...'/>
+             </div>
+             <div className='flex justify-end'>
+             <button onClick={registerUserHandler} className='w-28 rounded-lg  p-1.5 text-lg font-semibold text-white bg-[#1304df]'>Submit</button>
+             </div>
+         </form>
+        
          </div>
          <ToastContainer/>
     </div>

@@ -6,35 +6,47 @@ import {MdVolumeUp,MdVolumeOff} from 'react-icons/md'
 import { following } from "../reducers/authReducer";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import socket from "../socket";
 import WebShare from "../helper/WebShare";
-import { likeReel } from "../reducers/reelsReducer";
-export default function ReelsCard({data}) {  
+import { deleteReel, likeReel } from "../reducers/reelsReducer";
+import socket from "../socket";
+import videoPlayerHandler from '../helper/videoPlayerHandler'
+import { BsThreeDotsVertical } from "react-icons/bs";
+export default function ReelsCard({data,index,self}) {  
   const user=useSelector((state)=>{return state.auth.user})
   const navigate=useNavigate()
   const[isFollowing,setIsFollowing]=useState(false)
   const[isLiked,setIsLiked]=useState(false)
-  const[comments,setComments]=useState([])
   const[isPlaying,setIsPlaying]=useState(false)
-  const[post_id,setPost_id]=useState()
   const dispatch=useDispatch()
   const videoRef=useRef(null)
-  // const commentDetail={post_id:data._id,user_id:user_id}
-  function videoPlayingHandler(){
+  function videoplay(event){
+    event.preventDefault()
     if(isPlaying){
-      videoRef.current.pause()
-      setIsPlaying(false)
-    }else{
-      videoRef.current.play()
-      setIsPlaying(true)
-    }
-   }   
+     videoRef.current.play()
+    setIsPlaying(false)
+  }else{
+    videoRef.current.pause()
+    setIsPlaying(true)
+  }
+}
+  videoPlayerHandler("video")
    async function followingHandler() {
      await dispatch(following({requester:user._id,reciever:data.author._id}))     
    }   
    async function reelLikeHandler() {
-   const response= await dispatch(likeReel({post_id:data._id,author:user._id}))    
-  }      
+   await dispatch(likeReel({post_id:data._id,author:user._id}))    
+  }   
+  function postDeleteOpenHandler(){
+    console.log("call");
+    
+    document.getElementById("reelDelete"+index).style.width='46px'
+  }
+  function postDeletecloseHandler(){
+    document.getElementById("reelDelete"+index).style.width='0px'
+  }   
+  async function ReelDeleteHandler(){
+      const delet=await dispatch(deleteReel({reel_id:data._id,public_id:data.public_id}))
+  }
    useEffect(()=>{
     if(data.author.Followers){
    data.author.Followers.map((Element)=>{
@@ -58,18 +70,16 @@ export default function ReelsCard({data}) {
      })
      socket.on("reelLike",(data)=>{
       console.log(data);
-      if(data.liked==user._id){
+      if(data==user._id){
         setIsLiked(true)
       }
      })
-   },[socket])
-   console.log(data);
-   
+   },[socket])     
   return (
-    <div className="flex shadow-sm flex-col gap-3">
-      <div className="flex justify-center flex-col gap-1 px-2">
+    <div className=" vid w-full flex shadow-sm flex-col gap-3">
+      <div className="w-full px-2 flex justify-between">
         <div className="flex gap-3">
-          <div onClick={()=>navigate('/profile',{state:data.author._id})} className="flex">
+          <div onClick={()=>navigate(`/${data.author.UserName}`,{state:data.author._id})} className="flex">
             {data.author.avatar?
             <img src={data.author.avatar} className="w-10 h-10 rounded-full border-2" />: <CgProfile className="text-4xl" />      
             }
@@ -77,18 +87,30 @@ export default function ReelsCard({data}) {
           <div className="flex flex-col">
             <div className=" flex gap-2">
               <h2 className="font-semibold text-sm text-black">{data.author.UserName}</h2>
+            {!self? <div>
               {!isFollowing?
               <button onClick={followingHandler} className="font-semibold text-[#0846fe]">Follow</button>:
               <button disabled className="font-semibold text-[#0846fe]">Following</button>
               }
+             </div>:""}
             </div>
            <h1 className="text-xs font-medium text-slate-600 italic">Original music</h1>
           </div>
         </div>
+        {self?
+      <div className='relative w-14 flex justify-end'>
+      <BsThreeDotsVertical onClick={postDeleteOpenHandler}/>
+      <div id={"reelDelete"+index} className='w-0 absolute top-4'>
+        <ul>
+          <li><button onClick={ReelDeleteHandler} >Delete</button></li>
+        </ul>
+      </div>
+      </div>:""
+      }
       </div>
       {/* video show here */}
-      <div className="relative w-full">
-        <video src={data.secure_url} ref={videoRef} loop onClick={videoPlayingHandler} className="w-full"></video>
+      <div onClick={postDeletecloseHandler} className="relative w-full">
+        <video ref={videoRef} onClick={videoplay} id="video" src={data.secure_url} className="video w-full"></video>
         <div className='absolute p-2 bg-slate-700 rounded-full text-white right-4 bottom-6'>
           {true?<MdVolumeUp/>:<MdVolumeOff/>}
         </div>
@@ -105,10 +127,10 @@ export default function ReelsCard({data}) {
       </div>
           <FaRegComment onClick={(event)=>{
         event.preventDefault()
-        navigate('/reelComments',{state:{post_id:data._id,user:{UserName:user.UserName,avatar:user.avatar,_id:user._id},type:"Reel"}})
+        navigate(`/comment/${data._id}`,{state:{post_id:data._id,user:{UserName:user.UserName,avatar:user.avatar,_id:user._id},type:"Reel"}})
        }
         }/>
-          <WebShare/>
+          <WebShare data={data.secure_url}/>
         </div>
       <h1>{`${data.Comments.length} Comments`}</h1>
       </div>

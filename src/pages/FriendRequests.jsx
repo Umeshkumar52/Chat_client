@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import {userfollower, userfollowing} from '../reducers/authReducer'
 import UserFollowerCard from '../components/UserFollowerCard'
 import UserFollowingCard from '../components/UserFollowingCard'
+import socket from '../socket'
 export default function FriendRequests() {
   const user_id=useSelector((state)=>{
     return state.auth.user._id
@@ -14,18 +15,21 @@ export default function FriendRequests() {
   async function user_following(){
     const response=await dispatch(userfollowing(user_id))
     if(response.payload.data){
+      setFollower((friends)=>[...friends,...response.payload.data.message.Followers])
       setFollowing((friends)=>[...friends,...response.payload.data.message.Following])
     }
   }
-  async function user_follower(){
-    const response=await dispatch(userfollower(user_id))
-    if(response.payload.data){
-      setFollower((friends)=>[...friends,...response.payload.data.message.Followers])
-    }
-  }
   useEffect(()=>{
-   user_following()
-   user_follower()
+    user_following()
+    // socket.on("following",(following)=>{
+    //   console.log(following);
+    // })
+    // socket.on("unfollowing",(data)=>{
+    //  console.log(data);
+    //  if(data.author._id==followerData.reciever){
+    //    setFollower(true)
+    //  }
+    // })
   },[])
   return (
     <div className='hiddenScrollBar w-full h-screen px-2 space-y-2 overflow-y-scroll'>

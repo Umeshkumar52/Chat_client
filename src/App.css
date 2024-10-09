@@ -51,9 +51,8 @@
   display: flex;
   color:white;
   justify-content:start;
-  padding-left: 8px;
-  padding-right:10rem;
- 
+  padding-left:8px;
+  padding-right:30px;
 }
 .incMsgCover{
   width: 80%;
@@ -65,7 +64,7 @@
   width: 100%;
   height: auto;
   display: flex;
-  padding-left:10rem;
+  padding-left:30px;
  justify-content: end;
   }
   .outgoingInner{

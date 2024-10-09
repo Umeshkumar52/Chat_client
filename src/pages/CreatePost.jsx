@@ -16,7 +16,7 @@ export default function CreatePost() {
   const videoRef=useRef(null)
   const dispatch=useDispatch()
     const navigate=useNavigate()
-    const[file,setFile]=useState()
+    const[file,setFile]=useState(null)
     const[isPlaying,setIsPlaying]=useState(false)
     const[multiFiles,setMultiFiles]=useState([])
     const[blobUrl,setBlobUrl]=useState({
@@ -58,11 +58,13 @@ export default function CreatePost() {
         const formData=new FormData()
         formData.append("file",file)
         formData.append("description",description)
-        const response= await dispatch(newSocialPost({user_id,formData}))
         inputResetHandler()
-        setFile("")
-        setDescription("") 
-        navigate('/')      
+        setFile(null)
+        const response= await dispatch(newSocialPost({user_id,formData}))
+        if(response.payload.data){
+          setDescription("") 
+          navigate('/')  
+        } 
      }
       function textArea(event){
         // textAre.style.height ='25px'

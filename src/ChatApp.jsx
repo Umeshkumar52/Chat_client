@@ -13,12 +13,13 @@ export default function ChatApp() {
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [currentUser, setCurrentUser] = useState("");
   const [searchUser,setSearchUser]=useState("")
+   const[messagerUser,setMessagerUser]=useState([])
  let searchUserHandler=async(data)=>{
     setSearchUser(data)
 }
  function SelectedUser(data){
     setCurrentUser(data);
-    navigate('/chat/inbox',{state:{currentUser:data,user:state}})
+    navigate(`/direct/${state.UserName}/inbox/${data.UserName}`,{state:data})
     if(data){
    socket.emit("rooms",data)
     }
@@ -32,29 +33,23 @@ export default function ChatApp() {
       setOnlineUsers({ ...onlineUsers,users});
     });
   }, [socket]);  
-  useEffect(()=>{
+  useEffect(()=>{       
+      setMessagerUser(JSON.parse(localStorage.getItem("messager_user")))
     if(state.Contact.length>0){
       setOnlineUsers((users)=>[...users,...state.Contact])
     }
     socket.emit("rooms",state.UserName);
-  },[])     
+    // socket.emit("online",state.UserName)
+  },[])  
   return (
         <div className="w-full mainPanel flex flex-col lg:flex-row overflow-y-scroll">
-        <div className="w-full lg:w-[20%] flex pt-2 border-2 border-cyan-800 h-screen  bg-black text-black">
-          {/* <div className="w-10 text-white flex justify-center">
-           <ul>
-            <li>1</li>
-            <li>2</li>
-            <li>3</li>
-            <li>4</li>
-           </ul>
-          </div> */}
+        <div className="w-full lg:w-[20%] flex pt-2 px-2 border-2 border-cyan-800 h-screen  bg-black text-black">
           <div className="w-full">
           <div className="flex flex-col gap-4">
            <SearchBar updateSearchTerm={searchUserHandler} />
            <div className="flex text-white flex-col">
             <h1 className="text-lg font-bold">{state.UserName}</h1>
-            <img src="#"/>
+            <img className="w-10 h-10 rounded-full" src={state.avatar}/>
             <h2 className="text-white text-sm font-bold">Messages</h2>
            </div>
           </div>
@@ -63,11 +58,10 @@ export default function ChatApp() {
          <SearchUserList key={searchUser} data={searchUser}/>:
          <div
             id="userPanel"
-            className="overflow-y-scroll h-screen space-y-4 text-black"
+            className="overflow-y-scroll h-screen text-black"
           >
             {onlineUsers?
-            //  onlineUsers.users.map((Element,index) => {
-              onlineUsers.map((Element,index) => {
+              messagerUser.map((Element,index) => {
                   return (
                     <MessagerUSerList key={index} SelectedUser={SelectedUser} Element={Element}/>
                   );

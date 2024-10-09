@@ -6,26 +6,29 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { following } from '../reducers/authReducer'
 import socket from '../socket'
-import { likePost, updatePostInf } from '../reducers/socialPostController'
+import { deletPost, likePost} from '../reducers/socialPostController'
 import {BiSolidLike} from 'react-icons/bi'
 import WebShare from '../helper/WebShare'
-export default function MediaCard({data}) {
+import videoPlayerHandler from '../helper/videoPlayerHandler'
+import {BsThreeDotsVertical} from 'react-icons/bs'
+export default function MediaCard({data,self,index}) {
   const user=useSelector((state)=>{return state.auth.user})
   const navigate=useNavigate()
   const[isLiked,setIsLiked]=useState(false)
   const[isFollowing,setIsFollowing]=useState(false)
-  const[comments,setComments]=useState([])
   const[isPlaying,setIsPlaying]=useState(false)
-  const[post_id,setPost_id]=useState()
   const dispatch=useDispatch()
   const videoRef=useRef(null)
-  function videoPlayingHandler(){
+  videoPlayerHandler("video")
+  function videoHandler(event){
+    event.preventDefault()
     if(isPlaying){
-    
-      videoRef.current.pause()
+      videoRef.current.play().catch((Error)=>{
+        return
+      })
       setIsPlaying(false)
     }else{
-      videoRef.current.play()
+      videoRef.current.pause()
       setIsPlaying(true)
     }
    }   
@@ -36,6 +39,15 @@ export default function MediaCard({data}) {
     event.preventDefault()
      const response=await dispatch(likePost({post_id:data._id,author:user._id}))      
   }  
+  function postDeleteOpenHandler(){
+    document.getElementById("postDelete"+index).style.width='46px'
+  }
+  function postDeletecloseHandler(){
+    document.getElementById("postDelete"+index).style.width='0px'
+  }
+  async function postDeleteHandler() {
+    const delet=await dispatch(deletPost({post_id:data._id,public_id:data.public_id}))
+  }
    useEffect(()=>{
     if(data.author.Followers){
    data.author.Followers.map((Element)=>{
@@ -63,25 +75,41 @@ export default function MediaCard({data}) {
         setIsLiked(true)
       }
      })
-   },[socket])
+   },[socket])     
   return (
  <div className='relative flex flex-col gap-4'>
   <div className='flex flex-col gap-1 px-2'>
-  <div className='flex gap-3'>
-   <div onClick={()=>navigate('/profile',{state:data.author._id})} className='w-10 h-10 cursor-pointer border-2 border-[#d809ce] rounded-full flex'>
+  <div className='relative items-center flex gap-3'>
+   <div onClick={()=>navigate(`${data.author.UserName}`,{state:data.author._id})} className='w-10 h-10 cursor-pointer border-2 border-[#d809ce] rounded-full flex'>
   {data.author.avatar?
   <img className='w-full h-full' src={data.author.avatar}/>:
    <CgProfile className='w-full h-full text-4xl'/>
    }
    </div>
-    <div className='flex gap-2'>
+    <div className='w-full flex justify-between'>
+     <div className='flex gap-2'>
      <div className=''>
-       <h2 className='font-semibold text-sm text-black'>{data.author.UserName}</h2>
+       <h2 className='font-semibold text-sm text-black'>{`${data.author.UserName.slice(0,10)}`}</h2>
        <h1 className='text-sm'>{data.updatedAt.split('T')[0]}</h1>
      </div>
-      {isFollowing?
+     {!self?
+     <div>
+      {(isFollowing)?
      <h1  className='font-semibold  cursor-pointer text-[#0846fe]'>Following</h1>:
      <h1  onClick={followingHandler} className='font-semibold cursor-pointer text-[#0846fe]'>Follow</h1>
+      }
+      </div>:
+      ""}
+      </div>
+       {self?
+      <div className='relative w-14 flex justify-end'>
+      <BsThreeDotsVertical onClick={postDeleteOpenHandler}/>
+      <div id={"postDelete"+index} className='w-0 absolute top-4'>
+        <ul>
+          <li><button onClick={postDeleteHandler}>Delete</button></li>
+        </ul>
+      </div>
+      </div>:""
       }
     </div>
   </div>
@@ -91,13 +119,13 @@ export default function MediaCard({data}) {
   </div>
   {/* video show here */}
   {data.url_type=="mp4"?
-   <div className='relative h-[400px] flex flex-col'>
-    <video src={data.url} ref={videoRef} loop controls preload='true' onClick={videoPlayingHandler} className='h-full w-full'></video>
+   <div onClick={postDeletecloseHandler} className='relative max-h-[400px] flex flex-col'>
+    <video id='video' src={data.url} ref={videoRef} play={isPlaying} onClick={videoHandler} className='h-full w-full'/>
     <div className='absolute cursor-pointer p-2 bg-slate-700 rounded-full text-white right-4 bottom-6'>
       {true?<MdVolumeUp/>:<MdVolumeOff/>}
     </div>
    </div>:
-   <div className='relative h-[400px] flex flex-col'>
+   <div onClick={postDeletecloseHandler} className='relative max-h-[400px] flex flex-col'>
     <img src={data.url}  className='h-full'/>
    </div>
    }

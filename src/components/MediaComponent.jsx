@@ -1,17 +1,17 @@
 import React from 'react'
 import Spinner from './Spinner';
 import {ReactPlayer} from 'react-player/lazy'
-export default function MediaComponent({uploading,url,url_type}) {
+export default function MediaComponent({url,url_type}) {  
   return (
-    <div className='relative'>
-       <div>
+    <div className='relative size-[230px]'>
+       {/* <div> */}
         {(url_type=="jpg" ||url_type=="png")?
-        <img src={url} className="h-[240px] w-[200px] rounded-md"/>:
+        <img src={url} className="w-full h-full rounded-md"/>:
        
-         <video src={url} className="h-[628px] w-[1200px] rounded-md"  controls autoSave="true"/>
+         <video src={url} className="w-full h-full rounded-md"  controls autoSave="true"/>
         }
-    </div>
-     {(uploading)?<Spinner/>:""}
+    {/* </div> */}
+     {/* {(uploading)?<Spinner/>:""} */}
         </div>
   )
 }

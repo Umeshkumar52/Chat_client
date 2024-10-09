@@ -30,15 +30,7 @@ export
 const conversationReducer=createSlice({
     name:"conversation",
     initialState,
-    reducers:{
-
-    },
-    extraReducers:(builder)=>{
-       builder
-       .addCase(textMessage.fulfilled,(state,action)=>{
-                 console.log(action.payload);
-       })
-    }
+    reducers:{}
 })
 export const {}=conversationReducer.actions
 export default conversationReducer.reducer

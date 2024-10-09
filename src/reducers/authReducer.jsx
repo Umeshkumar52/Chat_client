@@ -7,11 +7,11 @@ const initialState={
     user:JSON.parse(localStorage.getItem('user')) || {},
     isLogedIn:localStorage.getItem('isLogedIn') || false
 }
-export const signUp =createAsyncThunk('/signup',async(data)=>{
+export const signUp =createAsyncThunk('/register',async(data)=>{
     try {
-        const response= instance.post('/auth/createUser',data)
+        const response= multiPartInstance.post('/auth/createUser',data)
         toast.promise(response,{
-            pending:"Wait Account Proccesing",
+            pending:"Wait Account Proccesing...",
             success:'Account Created Successfully'
         })
         return (await response)
@@ -23,11 +23,9 @@ export const login=createAsyncThunk('/login',async(data)=>{
     try {
         const response=instance.post(`/auth/login`,data)
         toast.promise(response,{
-            pending:"Loging...",
+            pending:"Account Loging...",
             success:"Login Successfully"
         })
-        console.log(await response);
-        
         return (await response)
     } catch (error) {
       return toast.error(error.response.data.message)
@@ -35,7 +33,6 @@ export const login=createAsyncThunk('/login',async(data)=>{
 })
 export const logout=createAsyncThunk('/logout',async()=>{
     try {
-        console.log("logout Calling");
        const response= instance.get('/auth/logout')
        toast.promise(response,{
         pending:"Logouting",
@@ -52,9 +49,10 @@ export const updateUser=createAsyncThunk('/profile',async(data)=>{
  try {
     const response=multiPartInstance.put('/auth/update',data)
     toast.promise(response,{
-     pending:"Loading",
+     pending:"Update Proccessing...",
      success:"SuccesFully"
     })
+    return (await response)
  } catch (error) {
     toast.error(error.response.data.message)
  }
@@ -119,7 +117,6 @@ const auth=createSlice({
     extraReducers:builder=>{
         builder
         .addCase(login.fulfilled,(state,action)=>{
-            console.log(action.payload.data);
             if(action.payload.data){                
             localStorage.setItem("user",JSON.stringify(action.payload.data.message))
             localStorage.setItem("isLogedIn",true)
@@ -132,13 +129,13 @@ const auth=createSlice({
             localStorage.setItem("user",JSON.stringify(action.payload.data.message))
             localStorage.setItem("isLogedIn",true)
             state.user=action.payload.data.message
-            state.isLogedIn=true}
+            state.isLogedIn=true
+        }
         })
         .addCase(logout.fulfilled,(state,action)=>{
-            console.log(action.payload.data);
-            
             if(action.payload.data){
-            localStorage.clear()
+            localStorage.removeItem("user")
+            localStorage.removeItem("isLogedIn")
             state.user={}
             state.isLogedIn=false
             }else{
@@ -146,10 +143,12 @@ const auth=createSlice({
             }
         })
         .addCase(updateUser.fulfilled,(state,action)=>{
-            if(action.payload.data){
+            if(action.payload){
+                // localStorage.removeItem("user")
+                // state.user={}
                 localStorage.setItem("user",JSON.stringify(action.payload.data.message))
                 state.user=action.payload.data.message
-                
+                state.isLogedIn=true
             }
         })
     }

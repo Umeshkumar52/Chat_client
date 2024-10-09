@@ -1,11 +1,10 @@
 import { React, useState, useEffect, useRef } from "react";
 import "./App.css";
-import avatar from "./avatar.png";
-import {useDispatch} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import {IoCameraOutline} from 'react-icons/io5'
 import timer from './helper/Timer'
 import axios from "axios";
-import {ToastContainer,toast} from 'react-toastify'
+import {toast} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import {FiSend} from 'react-icons/fi'
 import {BsSendSlashFill} from 'react-icons/bs'
@@ -15,19 +14,18 @@ import MediaComponent from "./components/MediaComponent";
 import { useLocation, useNavigate } from "react-router-dom";
 import socket from "./socket";
 export default function Chat() {  
+  const user=useSelector((state)=>{return state.auth.user})
   const navigate=useNavigate()
   const {state}=useLocation()
-  const user=state.user;
-  const currentUser=state.currentUser
+  const currentUser=state  
   let Ref = useRef(null);
   const input = document.getElementById("input");
   const [isTyping, setIsTyping] = useState(false);
-  const [joinGroup, setJoinGroup] = useState(false);
+  const[isOnline,setIsOnline]=useState(false)
   const msg_container = document.querySelector(".msg_container");
   const form = document.getElementById("form");
   const [list, setMessageList] = useState([]);
   const [message, setMessage] = useState("");
-  const [goinGroup, setGoin] = useState(false);
   const [file,setFile]=useState()
   const [image,setImage]=useState()
   const [imageUrl,setImageUrl]=useState()
@@ -58,7 +56,7 @@ export default function Chat() {
       formData.append('time',time)
      setUploading(true)  
       setMessageList((list) => [...list, {
-        reciever_id:currentUser?currentUser:user,
+        reciever_id:currentUser?currentUser.UserName:socket.id,
         sender_id:user.UserName,
         msg_type:"file",
         time,
@@ -69,12 +67,12 @@ export default function Chat() {
 inputResetHandler()
 setFile("")
 setImageUrl("")
-      axios.post(`http://localhost:5002/api/conversation/chat/socialCom/${currentUser}/${user.UserName}`,formData)
+      axios.post(`http://localhost:5002/api/conversation/chat/socialCom/${currentUser.UserName}/${user.UserName}`,formData)
      .then((response)=>{
       console.log(response);
             
       const data = {
-               reciever_id:currentUser?currentUser:user,
+               reciever_id:currentUser?currentUser.UserName:socket.id,
                sender_id:user.UserName,
                msg_type:"file",
                time,
@@ -84,7 +82,6 @@ setImageUrl("")
       }
        socket.emit("private_msg",data);
      setUploading(false)
-      console.log("emmited");
      })
      .catch(err=>{
         if(err.response.data.success==false){
@@ -98,7 +95,7 @@ setImageUrl("")
        msg_type:"text",
       type:"outgoing",
       sender_id:user.UserName,
-      reciever_id: currentUser?currentUser:user
+      reciever_id: currentUser?currentUser.UserName:socket.id
     };
     await socket.emit("private_msg",data); 
     setMessageList((list) => [...list, {
@@ -107,7 +104,7 @@ setImageUrl("")
       type:"outgoing",
       time,
       sender_id:user.UserName,
-      reciever_id:currentUser?state.currentUser:user
+      reciever_id:currentUser?currentUser.UserName:socket.id
     }]);
     setMessage("");
     await dispatch(textMessage(data))
@@ -134,9 +131,6 @@ function inputResetHandler(){
     inputReset.current.type="file"
   }
 }
-function backHandler(){
-
-}
   useEffect(() => {    
      Ref.current.scrollTop=Ref.current.scrollHeight
   }, [message,list]);
@@ -150,54 +144,50 @@ function backHandler(){
     socket.on("typingStatus",(data)=>{
       setIsTyping(data)
     })
+    socket.on("online",(data)=>{
+      console.log(data);
+      
+    })
   }, [socket]); 
   async function call(){
-    const res=await dispatch(getAllConversation({reciever_id:currentUser,sender_id:user.UserName}))
-  // const res=await axios.get(`http://localhost:5002/api/conversation/chat/${currentUser}/${user.UserName}`)  
+    const res=await dispatch(getAllConversation({reciever_id:currentUser.UserName,sender_id:user.UserName})) 
+    console.log(res.payload.data);
   if(res.payload.data.message.length>0){
   setMessageList((list) => [...list,...res.payload.data.message[0].chats]);
   }}
   useEffect(()=>{
     call()
-  },[window.onload]) 
+  },[]) 
   useEffect(()=>{
-    socket.emit("room",state.current)
-  },[])   
+    socket.emit("room",currentUser.UserName)
+  },[]) 
   return (
     <div className="w-full pt-[3rem] bg-[#000000]  text-white">
-       <div className="fixed w-full h-10 bg-black top-0">
-        <div className=" flex flex-row gap-2 px-2 items-center">
+       <div className="fixed w-full h-12 py-2 bg-slate-600 top-0">
+        <div className="flex flex-row gap-2 px-2">
           <IoMdArrowRoundBack onClick={()=>navigate(-1)} className="text-xl"/>
           <div className="flex gap-3">
-            <img
-              src={avatar}
-              className="w-8 cursor-pointer h-8 rounded-full border-dotted border-1"
-            />
+            <img src={currentUser.avatar} className="w-8 cursor-pointer h-8 rounded-full border-dotted border-1" />
             <div className="flex flex-col gap-0 p-0">
-              <h1 key={currentUser} className="user text-base font-medium text-white">{currentUser}</h1>
-              <h1 className="text-xs">{isTyping ? "typing..." : ""}</h1>
+              <h1 key={currentUser.UserName} className="user text-base font-medium text-white">{currentUser.UserName}</h1>
+              {isOnline?
+               <h1 className="text-xs">Online</h1>:
+              <h1 className="text-xs">{isTyping ? "typing..." : ""}</h1>            
+              }
             </div>
-            <a
-              className="text-yellow-400 cursor-pointer fixed right-4 font-serif text-sm"
-              onClick={() => {
-                setGoin(true);
-              }}
-            >
-              Goin Group
-            </a>
           </div>
         </div>
       </div>
-       <div  ref={Ref}  className="msg_container space-y-2 w-[100%] h-[84vh] overflow-scroll">
+       <div  ref={Ref}  className="msg_container space-y-3 py-2 w-[100%] h-[84vh] overflow-scroll">
         {(list.length>0)? list.map((data, index) => {
           return (
-            <div  className={(data.sender_id==state.user.UserName)?"outgoing":"incoming"} key={index}>                
-            <div className={(data.sender_id==state.user.UserName)?"outgoingInner":"incomingInner"}>
+            <div  className={(data.sender_id==user.UserName)?"outgoing":"incoming"} key={index}>                
+            <div className={(data.sender_id==user.UserName)?"outgoingInner":"incomingInner"}>
                 {(data.msg_type=="text")?
-                <div className="pr-12 pb-3 pl-3">{data.message}</div>:
+                <div className="pr-2 pb-3 min-w-24 pl-3">{data.message}</div>:
                 <MediaComponent key={data.secure_url} url_type={data.url_type} uploading={uploading} url={data.secure_url}/>
              }
-                <h6 className="w-14 bottom-0 right-0 top-2 text-[#cdcaca] flex items-end text-xs">
+                <h6 className="absolute bottom-0 right-2 text-[#cdcaca] flex items-end text-xs">
                   {data.time}
                 </h6>               
             </div>
@@ -232,7 +222,6 @@ function backHandler(){
                 })
               },500)
             }}
-            onm
             value={message}
             autoFocus
             className=" w-full p-1 pr-12 text-black font-semibold"

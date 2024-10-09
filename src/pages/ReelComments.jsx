@@ -12,10 +12,17 @@ export default function ReelComments() {
     const[comments,setComments]=useState([])
     const[addComment,setAddComment]=useState()
     const dispatch=useDispatch()
-    async function postCommentHandler(event){
+    async function reelCommentHandler(event){
       event.preventDefault()
+      setComments((data)=>[...data,{
+        commit:addComment,
+        author:{
+          avatar:state.user.avatar,
+          UserName:state.user.UserName
+        }
+      }])
       setAddComment("")
-       const response=await dispatch(commentReel({post_id:state.post_id,inf:{author:state.user_id,commit:addComment}}))      
+       const response=await dispatch(commentReel({post_id:state.post_id,inf:{author:state.user._id,commit:addComment}}))      
     }
     useEffect(()=>{
         async function commit(){
@@ -37,8 +44,8 @@ export default function ReelComments() {
      </div>
     <div className='hiddenScrollBar w-full h-[90vh] space-y-4 pb-10 overflow-y-scroll gap-3 p-4'>
      {(comments.length>0)?
-     comments.map((Element)=>{
-           return  <div className='flex gap-2'>
+     comments.map((Element,index)=>{
+           return  <div key={index} className='flex gap-2'>
            <img src={Element.author.avatar} className='w-10 h-10 rounded-full border-2 border-black'/>
            <div className='flex flex-col bg-slate-200 border-1 rounded-lg py-1 px-3'>
              <h2 className='text-black font-medium'>{Element.author.UserName}</h2>
@@ -51,8 +58,11 @@ export default function ReelComments() {
       }
       </div>
       <div className='fixed bottom-1 w-full p-1'>
-        <form onSubmit={postCommentHandler} className='flex gap-2' action="">
-        <input type='text' value={addComment} onChange={(event)=>setAddComment(event.target.value)} className='w-full rounded-lg text-black text-lg border-black p-1 border-2' placeholder='Add a comment...'/>
+        <form onSubmit={reelCommentHandler} className='flex gap-2'>
+        <input type='text' autoFocus value={addComment} onChange={(event)=>{
+          event.preventDefault()
+          setAddComment(event.target.value)
+          }} className='w-full rounded-lg text-black text-lg border-black p-1 border-2' placeholder='Add a comment...'/>
        {(addComment)?
         <div className="h-10 w-10 flex justify-center items-center rounded-full bg-[#2eff35] text to-black">
           <button type="submit"><FiSend className="h-6 w-6 text-black font-semibold"/></button>

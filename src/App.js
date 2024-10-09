@@ -15,30 +15,37 @@ import NewReel from './pages/NewReel';
 import NewStory from './pages/NewStory';
 import Chat from './Chat';
 import ReelComments from './pages/ReelComments';
-import SearchBar from './pages/SearchBar';
 import Search from './pages/Search';
+import socket from './socket';
 function App() {
- const isLogedIn=useSelector((state)=>{return state.auth.isLogedIn})
- console.log(useSelector((state)=>{return state.auth}));
- 
+ const {user,isLogedIn}=useSelector((state)=>{return state.auth}) 
+setTimeout(()=>{
+  socket.auth = {userName:user.UserName};
+  socket.connect();
+socket.on("connect_error", (err) => {
+  if (err.message) {
+    console.log("error", err.message);
+  }
+})  
+},1000)
+window.addEventListener('beforeunload',()=>{socket.emit('offline',socket.id)})
   return (
-    <div >
+    <div>
      <BrowserRouter>
      <Routes>
-     <Route path={isLogedIn?"/":"register"} element={isLogedIn?<Home/>:<Register/>}/>
-     <Route path='/createPost' element={<CreatePost/>}/>
+     <Route path="/" element={isLogedIn?<Home/>:<Login/>}/>
      <Route path='/register' element={<Register/>}/>
      <Route path='/login' element={<Login/>}/>
-     <Route path='/chat' element={<ChatApp/>}/>
+     <Route path='/createPost' element={<CreatePost/>}/>
+     <Route path='/direct' element={<ChatApp/>}/>
      <Route path='/reels' element={<Reels/>}/>
      <Route path='/stories' element={<UserStories/>}/>
      <Route path='/friendRequest' element={<FriendRequests/>}/>
      <Route path='/notification' element={<Notification/>}/>
-     <Route path='/profile' element={<Profile/>}/>
-     <Route path='/' element={<Register/>}/>
-     <Route path='chat/inbox' element={<Chat/>}/>
+     <Route path=':userName' element={<Profile/>}/>
+     <Route path='/direct/:sender/inbox/:reciever' element={<Chat/>}/>
      <Route path='/comments' element={<Comments/>}/>
-     <Route path='/reelComments' element={<ReelComments/>}/>
+     <Route path='comment/:post_id' element={<ReelComments/>}/>
      <Route path='/createReel' element={<NewReel/>}/>
      <Route path='/createStory' element={<NewStory/>}/>
      <Route path='/search' element={<Search/>}/>

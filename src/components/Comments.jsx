@@ -66,7 +66,7 @@ export default function Comments() {
       </div>
       <div className='fixed bottom-1 w-full p-1'>
         <form onSubmit={postCommentHandler} className='flex gap-2' action="">
-        <input type='text' value={addComment} onChange={(event)=>{
+        <input type='text' autoFocus value={addComment} onChange={(event)=>{
           event.preventDefault()
           setAddComment(event.target.value)}} className='w-full rounded-lg text-black text-lg border-black p-1 border-2' placeholder='Add a comment...'/>
        {(addComment)?

@@ -21,9 +21,7 @@ export default function Login() {
    async function onLogin(event){
       event.preventDefault();
      const response=await dispatch(login(loginData))
-     if(!response.payload.data){
-      navigate('/register')
-     }else{
+     if(response.payload.data){
       navigate('/')
      }
    }   

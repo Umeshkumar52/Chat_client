@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {useDispatch, useSelector} from 'react-redux'
 import NabigationBar from '../components/NavigationBar'
 import Stories from '../components/Stories'
@@ -7,19 +7,16 @@ import { allSocialPost, allStories } from '../reducers/socialPostController'
 import { useNavigate } from 'react-router-dom'
 import { IoMdAdd } from 'react-icons/io'
 import socket from '../socket'
+import { PiNotePencilFill } from 'react-icons/pi'
+import { BiMoviePlay, BiSolidBookOpen } from 'react-icons/bi'
+import LoadingSpinner from '../components/LoadingSpinner'
 export default function Home() {
   const{user}=useSelector((state)=>{
     return state.auth    
   })    
-  setTimeout(()=>{
-    socket.auth = {userName:user.UserName};
-    socket.connect();
-  socket.on("connect_error", (err) => {
-    if (err.message) {
-      console.log("error", err.message);
-    }
-  })  
-  },1000)
+  function slideCloseHandler(){
+    document.getElementById('postSlide').style.width="0rem"
+  }
   const[stories,setStories]=useState([])
   const[yourStory,setYourStory]=useState([])
   const navigate=useNavigate()  
@@ -27,18 +24,39 @@ export default function Home() {
   const dispatch=useDispatch()
   async function allPosts(){
     const response=await dispatch(allSocialPost())
+    console.log(response);
+    
     const story=await dispatch(allStories())
+    if(response.payload && story.payload){
     setStories((stories)=>[...stories,...story.payload.data.message])
-    setPost((post)=>[...post,...response.payload.data.message])}
+    setPost((post)=>[...post,...response.payload.data.message])
+  }
+    }
   useEffect(()=>{
     allPosts()
   },[]) 
+  let storyGroup={}
+  function filterUserStories(stories){
+       stories.forEach((Element,index)=>{        
+          if(!storyGroup[Element.author.UserName]){
+            storyGroup[Element.author.UserName]={
+              user:Element.author,
+              story:[]
+            }
+          }
+          storyGroup[Element.author.UserName].story.push(Element.secure_url)       
+       })       
+  }
+    filterUserStories(stories)
    return (
-    <div className='hiddenScrollBar relative w-full h-screen overflow-y-scroll space-y-6 text-black'>
+     <div>
+{post.length>0?
+    <div onScroll={slideCloseHandler} className='hiddenScrollBar relative w-full h-screen overflow-y-scroll space-y-6 text-black'>
         {/* Nabigation Bar */}
+        <div className='relative'>
      <NabigationBar user={user}/>
      {/* Stories Pannel */}
-     <div className='stories w-full space-x-4 px-3 border-b-2'>
+     <div className='stories w-full space-x-4 px-3 space-y-2 border-b-2'>
      <div onClick={()=>navigate('/createStory')} className='storyMain'>
     <div className='relative'>
      <div className='w-[65px] h-[65px] rounded-full bg-gradient-to-r from-[#4141e8] to-[#f706e7] p-0.5'>
@@ -47,22 +65,42 @@ export default function Home() {
      <div className='absolute bg-blue-500 bottom-1 right-0 w-5 h-5 rounded-full'>
      <IoMdAdd className='text-xl text-white '/>
         </div>
-</div>
+       </div>
     <h1 className='text-sm text-black font-medium'>Your story</h1>
     </div> 
-      {stories.length>0?
-      stories.map((Element)=>{
-        return  <Stories key={Element._id} data={Element}/>
-      })
-      :""}      
+      {Object.values(storyGroup).length>0?
+      Object.values(storyGroup).map((Element,index)=>{
+        return <Stories key={index} data={Element}/>
+      }):""
+      }      
    </div>
-     <div className='flex flex-col gap-10'>
-  { 
+   {/* post menu slide */}
+   <div id='postSlide' className='w-[0px] absolute flex flex-col py-3 gap-2 rounded-lg top-8 right-2 bg-slate-200'>
+         <div onClick={()=>navigate("/createPost",{state:user})} className='flex gap-2 cursor-pointer px-3 pr-6 items-center border-b-2 border-black'>
+          <PiNotePencilFill/>
+            <h2>Post</h2>
+         </div>
+         <div onClick={()=>navigate("/createStory")} className='flex gap-2 px-3 pr-6 cursor-pointer items-center border-b-2 border-black'>
+          <BiSolidBookOpen/>
+            <h2>Story</h2>
+         </div>
+         <div onClick={()=>navigate('/createReel')} className='flex px-3 pr-6 cursor-pointer items-center gap-2 '>
+          <BiMoviePlay/>
+            <h2>Reel</h2>
+         </div>
+       </div>
+   </div>
+   {/* Posts */}
+     <div onClick={slideCloseHandler} className='flex flex-col gap-10'>
+  {post.length>0?
    post.map((Element,index)=>{
-     return <MediaCard key={index} socket={socket} data={Element}/>
-  })
+     return <MediaCard key={index} index={index} data={Element}/>
+  }):""
      }
      </div>
+    </div>
+    :<LoadingSpinner/>
+    }
     </div>
   )
 }
