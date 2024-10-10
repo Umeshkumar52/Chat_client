@@ -80,9 +80,9 @@ export default function Register() {
     form6.style.right="0rem"
   }
   return (
-    <div className='w-full h-screen px-2 flex justify-center items-center'>
-        <div className='relative w-[20rem] h-[20rem] flex justify-center items-center'>
-         <form name="form1" id='form1' className='w-[20rem] absolute flex flex-col gap-9'> 
+    <div className='w-full h-screen flex justify-center items-center'>
+        <div className='relative w-[18rem] h-full flex justify-center items-center'>
+         <form name="form1" id='form1' className='w-[18rem] absolute flex flex-col gap-9'> 
          <div className='flex justify-center'>
            <h1 className='text-2xl font-semibold'>Register</h1>
            </div>
@@ -98,7 +98,7 @@ export default function Register() {
               </p>
             
          </form>
-         <form name="form2" id='form2' className='w-full absolute right-[20rem] flex flex-col gap-9'> 
+         <form name="form2" id='form2' className='w-full absolute right-[18rem] flex flex-col gap-9'> 
              <div className='flex flex-col'>
              <label className='font-semibold text-xl' htmlFor='Phone'>Phone: </label>
              <input onChange={userDataHandler} autoFocus type='Phone' required name='Phone' className='border-2 border-black w-full p-2 font-medium ' placeholder='Enter Phone Number'/>
@@ -107,7 +107,7 @@ export default function Register() {
              <button onClick={form2Handler} className='w-28 rounded-lg  p-1.5 text-lg font-semibold text-white bg-[#1304df]'>Next</button>
              </div>
          </form>
-         <form name="form3" id='form3' className='w-full absolute right-[20rem] flex flex-col gap-9'> 
+         <form name="form3" id='form3' className='w-full absolute right-[18rem] flex flex-col gap-9'> 
              <div className='flex flex-col'>
              <label className='font-semibold text-xl' htmlFor='Name'>Name: </label>
              <input onChange={userDataHandler} autoFocus type='text' required name='Name' className='border-2 border-black w-full p-2 font-medium ' placeholder='Enter Your Name...'/>
@@ -117,7 +117,7 @@ export default function Register() {
              </div>
             
          </form>
-         <form name="form4" id='form4' className='w-full absolute right-[20rem] flex flex-col gap-9'> 
+         <form name="form4" id='form4' className='w-full absolute right-[18rem] flex flex-col gap-9'> 
              <div className='flex flex-col items-center gap-4'>
               <label htmlFor='Profile'>
               {ProfileBlobUrl?
@@ -132,7 +132,7 @@ export default function Register() {
              <button onClick={form4Handler} className='w-28 rounded-lg  p-1.5 text-lg font-semibold text-white bg-[#1304df]'>Next</button>
              </div>
          </form>
-         <form name="form5" id='form5' className='w-full absolute right-[20rem] flex flex-col gap-9'> 
+         <form name="form5" id='form5' className='w-full absolute right-[18rem] flex flex-col gap-9'> 
              <div className='flex flex-col'>
              <label className='font-semibold text-xl' htmlFor='UserName'>UserName: </label>
              <input onChange={userDataHandler} autoFocus type='text' required name='UserName' className='border-2 border-black w-full p-2 font-medium ' placeholder='Enter your UserName'/>
@@ -141,7 +141,7 @@ export default function Register() {
              <button onClick={form5Handler} className='w-28 rounded-lg  p-1.5 text-lg font-semibold text-white bg-[#1304df]'>Next</button>
              </div>
          </form>
-         <form name="form6" id='form6' className='w-full absolute right-[20rem] flex flex-col gap-9'> 
+         <form name="form6" id='form6' className='w-full absolute right-[18rem] flex flex-col gap-9'> 
              <div className='flex flex-col'>
              <label className='font-semibold text-xl' htmlFor='Password'>Password: </label>
              <input onChange={userDataHandler} type='password' required name='Password' className='border-2 border-black w-full p-2 font-medium ' placeholder='Enter Strong Password...'/>

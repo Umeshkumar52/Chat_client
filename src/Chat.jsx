@@ -26,7 +26,7 @@ export default function Chat() {
   const [imageUrl,setImageUrl]=useState()
   const[uploading,setUploading]=useState(false)
   const dispatch=useDispatch() 
-  window.addEventListener("online",setOnline(true))
+  window.addEventListener("online",()=>setOnline(true))
   async function sendChat(event) {
     event.preventDefault();
     try{
@@ -128,8 +128,8 @@ function inputResetHandler(){
     })
   },[socket]); 
   async function call(){
-    const res=await dispatch(getAllConversation({reciever_id:currentUser.UserName,sender_id:user.UserName})) 
-  if( res.payload){
+    const res=await dispatch(getAllConversation({reciever_id:currentUser.UserName,sender_id:user.UserName}))  
+    if(res.payload && res.payload.data.message[0]>0){
   setMessageList((list) => [...list,...res.payload.data.message[0].chats]);
   }}
   call()

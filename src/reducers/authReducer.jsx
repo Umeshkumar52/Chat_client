@@ -101,7 +101,7 @@ const auth=createSlice({
     extraReducers:builder=>{
         builder
         .addCase(login.fulfilled,(state,action)=>{
-            if(action.payload.data){                
+            if(action.payload){                
             localStorage.setItem("user",JSON.stringify(action.payload.data.message))
             localStorage.setItem("isLogedIn",true)
             state.user=action.payload.data.message
@@ -109,7 +109,7 @@ const auth=createSlice({
             }
         })
         .addCase(signUp.fulfilled,(state,action)=>{
-            if(action.payload.data){
+            if(action.payload){
             localStorage.setItem("user",JSON.stringify(action.payload.data.message))
             localStorage.setItem("isLogedIn",true)
             state.user=action.payload.data.message
@@ -128,8 +128,6 @@ const auth=createSlice({
         })
         .addCase(updateUser.fulfilled,(state,action)=>{
             if(action.payload){
-                // localStorage.removeItem("user")
-                // state.user={}
                 localStorage.setItem("user",JSON.stringify(action.payload.data.message))
                 state.user=action.payload.data.message
                 state.isLogedIn=true

@@ -13,7 +13,6 @@ root.render(
    <App/>
    <ToastContainer/>
    </NoInternet>
-   {/* <ToastContainer/> */}
   </Provider>
 );
 
