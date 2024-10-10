@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import socket from "./socket";
 import "./App.css";
-import Chat from "./Chat";
 import SearchUserList from "./pages/SearchUserList";
 import SearchBar from "./pages/SearchBar";
 import { useSelector } from "react-redux";
@@ -11,14 +10,12 @@ export default function ChatApp() {
   const state=useSelector((state)=>{return state.auth.user})
   const navigate=useNavigate()
   const [onlineUsers, setOnlineUsers] = useState([]);
-  const [currentUser, setCurrentUser] = useState("");
   const [searchUser,setSearchUser]=useState("")
    const[messagerUser,setMessagerUser]=useState([])
  let searchUserHandler=async(data)=>{
     setSearchUser(data)
 }
  function SelectedUser(data){
-    setCurrentUser(data);
     navigate(`/direct/${state.UserName}/inbox/${data.UserName}`,{state:data})
     if(data){
    socket.emit("rooms",data)

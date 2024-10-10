@@ -65,7 +65,7 @@ setImageUrl("")
      setUploading(false)
      })
      .catch(err=>{
-        if(err.response.data.success==false){
+        if(err.response.data.success===false){
           localStorage.setItem("reSendingFile",file)
         }
      })
@@ -115,7 +115,8 @@ function inputResetHandler(){
   useEffect(() => {    
      Ref.current.scrollTop=Ref.current.scrollHeight
   }, [message,list]);
-  useEffect(() => {  
+  useEffect(() => { 
+    socket.emit("room",currentUser.UserName) 
       socket.on("private_msg",(data) => {
       setMessageList((list) => [...list, data.data]);
     },[socket]);
@@ -131,12 +132,7 @@ function inputResetHandler(){
   if( res.payload){
   setMessageList((list) => [...list,...res.payload.data.message[0].chats]);
   }}
-  useEffect(()=>{
-    call()
-  },[]) 
-  useEffect(()=>{
-    socket.emit("room",currentUser.UserName)
-  },[]) 
+  call()
   return (
     <div className="w-full pt-[3rem] bg-[#000000]  text-white">
        <div className="fixed w-full h-12 py-2 bg-slate-600 top-0">
