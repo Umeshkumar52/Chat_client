@@ -4,7 +4,6 @@ import {useDispatch, useSelector} from 'react-redux'
 import {IoCameraOutline} from 'react-icons/io5'
 import timer from './helper/Timer'
 import axios from "axios";
-import {toast} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import {FiSend} from 'react-icons/fi'
 import {BsSendSlashFill} from 'react-icons/bs'
@@ -19,32 +18,16 @@ export default function Chat() {
   const {state}=useLocation()
   const currentUser=state  
   let Ref = useRef(null);
-  const input = document.getElementById("input");
   const [isTyping, setIsTyping] = useState(false);
-  const[isOnline,setIsOnline]=useState(false)
-  const msg_container = document.querySelector(".msg_container");
-  const form = document.getElementById("form");
   const [list, setMessageList] = useState([]);
   const [message, setMessage] = useState("");
   const [file,setFile]=useState()
-  const [image,setImage]=useState()
+  
+  const[online,setOnline]=useState(false)
   const [imageUrl,setImageUrl]=useState()
   const[uploading,setUploading]=useState(false)
   const dispatch=useDispatch() 
-  window.addEventListener("offline",()=>{
-     toast("No Interner",{
-      position:"top-center",
-      autoClose:"5000",
-      progress:undefined
-     })    
-  })
-  window.addEventListener("online",()=>{
-    console.log("calling online");
-    toast.success("internet connected")    
-  })
-  function typingHandler(data) {
-    setIsTyping(data);
-  }
+  window.addEventListener("online",setOnline(true))
   async function sendChat(event) {
     event.preventDefault();
     try{
@@ -138,15 +121,12 @@ function inputResetHandler(){
       socket.on("private_msg",(data) => {
       setMessageList((list) => [...list, data.data]);
     },[socket]);
-    socket.on("uploadFileResponse",(data)=>{
-      setImage(`base/${data}`)
-    })
     socket.on("typingStatus",(data)=>{
       setIsTyping(data)
     })
     socket.on("online",(data)=>{
-      console.log(data);
-      
+            console.log(data);
+            
     })
   }, [socket]); 
   async function call(){
@@ -169,7 +149,7 @@ function inputResetHandler(){
             <img src={currentUser.avatar} className="w-8 cursor-pointer h-8 rounded-full border-dotted border-1" />
             <div className="flex flex-col gap-0 p-0">
               <h1 key={currentUser.UserName} className="user text-base font-medium text-white">{currentUser.UserName}</h1>
-              {isOnline?
+              {online?
                <h1 className="text-xs">Online</h1>:
               <h1 className="text-xs">{isTyping ? "typing..." : ""}</h1>            
               }

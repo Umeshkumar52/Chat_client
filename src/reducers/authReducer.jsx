@@ -1,8 +1,6 @@
 import {createAsyncThunk,createSlice} from '@reduxjs/toolkit'
 import instance, { multiPartInstance } from '../helper/axios'
 import { toast } from 'react-toastify'
-import { act } from 'react'
-import { json } from 'react-router-dom'
 const initialState={
     user:JSON.parse(localStorage.getItem('user')) || {},
     isLogedIn:localStorage.getItem('isLogedIn') || false
