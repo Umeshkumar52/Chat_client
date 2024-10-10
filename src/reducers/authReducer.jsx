@@ -16,7 +16,7 @@ export const signUp =createAsyncThunk('/register',async(data)=>{
         })
         return (await response)
     } catch (error) {
-        return toast.error(error.response.data.message)
+         toast.error(error.response.data.message)
     }
 })
 export const login=createAsyncThunk('/login',async(data)=>{
@@ -28,18 +28,12 @@ export const login=createAsyncThunk('/login',async(data)=>{
         })
         return (await response)
     } catch (error) {
-      return toast.error(error.response.data.message)
+       toast.error(error.response.data.message)
     }
 })
 export const logout=createAsyncThunk('/logout',async()=>{
     try {
        const response= instance.get('/auth/logout')
-       toast.promise(response,{
-        pending:"Logouting",
-        success:"Logout"
-       },{
-         autoClose:1500
-       })
        return (await response)
     } catch (error) {
         toast.error(error.response.data.message)
@@ -48,10 +42,6 @@ export const logout=createAsyncThunk('/logout',async()=>{
 export const updateUser=createAsyncThunk('/profile',async(data)=>{
  try {
     const response=multiPartInstance.put('/auth/update',data)
-    toast.promise(response,{
-     pending:"Update Proccessing...",
-     success:"SuccesFully"
-    })
     return (await response)
  } catch (error) {
     toast.error(error.response.data.message)
@@ -60,13 +50,9 @@ export const updateUser=createAsyncThunk('/profile',async(data)=>{
 export const getUserByUserName=createAsyncThunk('/chats',async(data)=>{
     try {
         const response=instance.get(`/auth/user/${data}`)
-        // toast.promise(response,{
-        //     loading:"Loading...",
-        //     success:"successfull"
-        // })
         return (await response)
     } catch (error) {
-      return toast.error(error.response.data.message)
+       toast.error(error.response.data.message)
     }
 })
 export const userAndPosts=createAsyncThunk('/user',async(data)=>{
@@ -74,7 +60,7 @@ export const userAndPosts=createAsyncThunk('/user',async(data)=>{
         const response=instance.get(`/auth/userWithAllPost/${data}`)
         return (await response)
     } catch (error) {
-       return toast.error(error.response.data.message)
+        toast.error(error.response.data.message)
     }
 })
 export const following=createAsyncThunk('/',async(data)=>{
@@ -82,7 +68,7 @@ export const following=createAsyncThunk('/',async(data)=>{
         const response=instance.put(`/auth/following/${data.requester}/${data.reciever}`)
         return (await response)
     } catch (error) {
-       return toast.error(error.response.data.message)
+        toast.error(error.response.data.message)
     }
 })
 export const unfollowing=createAsyncThunk('/',async(data)=>{
@@ -90,7 +76,7 @@ export const unfollowing=createAsyncThunk('/',async(data)=>{
         const response=instance.put(`/auth/unfollowing/${data.requester}/${data.reciever}`)
         return (await response)
     } catch (error) {
-       return toast.error(error.response.data.message)
+        toast.error(error.response.data.message)
     }
 })
 export const userfollowing=createAsyncThunk('following',async(data)=>{
@@ -98,7 +84,7 @@ export const userfollowing=createAsyncThunk('following',async(data)=>{
         const response=instance.get(`/auth/following/${data}`)
         return (await response)
     } catch (error) {
-       return toast.error(error.response.data.message)
+        toast.error(error.response.data.message)
     }
 })
 export const userfollower=createAsyncThunk('following',async(data)=>{
@@ -106,7 +92,7 @@ export const userfollower=createAsyncThunk('following',async(data)=>{
         const response=instance.get(`/auth/follower/${data}`)
         return (await response)
     } catch (error) {
-       return toast.error(error.response.data.message)
+        toast.error(error.response.data.message)
     }
 })
 const auth=createSlice({

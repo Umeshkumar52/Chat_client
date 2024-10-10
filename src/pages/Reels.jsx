@@ -10,7 +10,9 @@ export default function Reels() {
   const[reels,setReels]=useState([])
  async function ReelsHandler(){
   const response=await dispatch(allReels())
-  if(response.payload.data){
+  console.log(response);
+  
+  if(response.payload){
    setReels((reels)=>[...reels,...response.payload.data.message])}
   }
   useEffect(()=>{

@@ -15,6 +15,7 @@ export default function ReelsCard({data,index,self}) {
   const user=useSelector((state)=>{return state.auth.user})
   const navigate=useNavigate()
   const[isFollowing,setIsFollowing]=useState(false)
+  const[postDeletCall,setPostDeletCall]=useState(false)
   const[isLiked,setIsLiked]=useState(false)
   const[isPlaying,setIsPlaying]=useState(false)
   const dispatch=useDispatch()
@@ -42,7 +43,9 @@ export default function ReelsCard({data,index,self}) {
     document.getElementById("reelDelete"+index).style.width='46px'
   }
   function postDeletecloseHandler(){
+    if(postDeletCall){
     document.getElementById("reelDelete"+index).style.width='0px'
+    }
   }   
   async function ReelDeleteHandler(){
       const delet=await dispatch(deleteReel({reel_id:data._id,public_id:data.public_id}))

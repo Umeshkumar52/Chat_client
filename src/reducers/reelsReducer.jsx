@@ -12,7 +12,7 @@ console.log(...formData,user_id);
         })
         return (await response)
     } catch (error) {
-        return toast.error(error.response.data.message)
+        toast.error(error.response.data.message)
     }
 })
 export const deleteReel=createAsyncThunk('/deleteReel',async(data)=>{
@@ -32,7 +32,7 @@ export const allReels=createAsyncThunk('/reels',async()=>{
         const response=instance.get('/auth/reels/')
         return (await response)
     } catch (error) {
-        return toast.error(error.response.data.message)
+      toast.error(error.response.data.message)
     }
 })
 export const particular_User_reels=createAsyncThunk('/reels',async(data)=>{
@@ -40,7 +40,7 @@ export const particular_User_reels=createAsyncThunk('/reels',async(data)=>{
         const response=instance.get(`/auth/reels/${data}`)
         return (await response)
     } catch (error) {
-        return toast.error(error.response.data.message)
+         toast.error(error.response.data.message)
     }
 })
 export const commentReel=createAsyncThunk('/reelComments',async(data)=>{
@@ -48,7 +48,7 @@ export const commentReel=createAsyncThunk('/reelComments',async(data)=>{
         const response=instance.put(`/auth/reels/commentToReel/${data.post_id}`,data.inf)
         return(await response)
     } catch (error) {
-       return toast.error(error.response.data.message)
+        toast.error(error.response.data.message)
     }
 })
 export const reelComments=createAsyncThunk('/reel',async(post_id)=>{

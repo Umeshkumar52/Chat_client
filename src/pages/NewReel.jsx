@@ -37,7 +37,7 @@ export default function NewReel() {
         formData.append("reel",file)
         inputResetHandler()
         const response= await dispatch(newReel({user_id:user._id,formData}))
-        if(response.payload.data){
+        if(response.payload){
           setFile(null)
           navigate('/')
         }      

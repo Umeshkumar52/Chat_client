@@ -43,13 +43,10 @@ export default function Profile() {
   }
   async function userDetail() {
     const response=await dispatch(userAndPosts(state))
-    if(response.payload.data){
+    if(response.payload){
     setFriends(eval(response.payload.data.message.Following.length+response.payload.data.message.Followers.length))
     setUser(response.payload.data.message)   
     }
-  }
-  async function followingHandler() {
-    
   }
   async function logoutHandler(event){
     event.preventDefault()

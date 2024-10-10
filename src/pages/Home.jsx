@@ -9,7 +9,6 @@ import { IoMdAdd } from 'react-icons/io'
 import socket from '../socket'
 import { PiNotePencilFill } from 'react-icons/pi'
 import { BiMoviePlay, BiSolidBookOpen } from 'react-icons/bi'
-import LoadingSpinner from '../components/LoadingSpinner'
 export default function Home() {
   const{user}=useSelector((state)=>{
     return state.auth    
@@ -24,8 +23,6 @@ export default function Home() {
   const dispatch=useDispatch()
   async function allPosts(){
     const response=await dispatch(allSocialPost())
-    console.log(response);
-    
     const story=await dispatch(allStories())
     if(response.payload && story.payload){
     setStories((stories)=>[...stories,...story.payload.data.message])
@@ -49,14 +46,12 @@ export default function Home() {
   }
     filterUserStories(stories)
    return (
-     <div>
-{post.length>0?
-    <div onScroll={slideCloseHandler} className='hiddenScrollBar relative w-full h-screen overflow-y-scroll space-y-6 text-black'>
+     <div onScroll={slideCloseHandler} className='hiddenScrollBar relative w-full h-screen overflow-y-scroll space-y-6 text-black'>
         {/* Nabigation Bar */}
         <div className='relative'>
      <NabigationBar user={user}/>
      {/* Stories Pannel */}
-     <div className='stories w-full space-x-4 px-3 space-y-2 border-b-2'>
+     <div className='stories w-full space-x-4 px-3 py-2 border-b-2'>
      <div onClick={()=>navigate('/createStory')} className='storyMain'>
     <div className='relative'>
      <div className='w-[65px] h-[65px] rounded-full bg-gradient-to-r from-[#4141e8] to-[#f706e7] p-0.5'>
@@ -98,9 +93,6 @@ export default function Home() {
   }):""
      }
      </div>
-    </div>
-    :<LoadingSpinner/>
-    }
     </div>
   )
 }

@@ -61,7 +61,7 @@ export default function CreatePost() {
         inputResetHandler()
         setFile(null)
         const response= await dispatch(newSocialPost({user_id,formData}))
-        if(response.payload.data){
+        if(response.payload){
           setDescription("") 
           navigate('/')  
         } 

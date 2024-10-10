@@ -151,8 +151,7 @@ function inputResetHandler(){
   }, [socket]); 
   async function call(){
     const res=await dispatch(getAllConversation({reciever_id:currentUser.UserName,sender_id:user.UserName})) 
-    console.log(res.payload.data);
-  if(res.payload.data.message.length>0){
+  if( res.payload){
   setMessageList((list) => [...list,...res.payload.data.message[0].chats]);
   }}
   useEffect(()=>{

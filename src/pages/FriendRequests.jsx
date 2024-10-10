@@ -14,7 +14,7 @@ export default function FriendRequests() {
   const[followerData,setFollower]=useState([]) 
   async function user_following(){
     const response=await dispatch(userfollowing(user_id))
-    if(response.payload.data){
+    if(response.payload){
       setFollower((friends)=>[...friends,...response.payload.data.message.Followers])
       setFollowing((friends)=>[...friends,...response.payload.data.message.Following])
     }

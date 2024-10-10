@@ -16,6 +16,7 @@ export default function MediaCard({data,self,index}) {
   const navigate=useNavigate()
   const[isLiked,setIsLiked]=useState(false)
   const[isFollowing,setIsFollowing]=useState(false)
+  const[postDeletCall,setPostDeletCall]=useState(false)
   const[isPlaying,setIsPlaying]=useState(false)
   const dispatch=useDispatch()
   const videoRef=useRef(null)
@@ -40,10 +41,14 @@ export default function MediaCard({data,self,index}) {
      const response=await dispatch(likePost({post_id:data._id,author:user._id}))      
   }  
   function postDeleteOpenHandler(){
+
     document.getElementById("postDelete"+index).style.width='46px'
+    setPostDeletCall(true)
   }
   function postDeletecloseHandler(){
+    if(postDeletCall){
     document.getElementById("postDelete"+index).style.width='0px'
+    }
   }
   async function postDeleteHandler() {
     const delet=await dispatch(deletPost({post_id:data._id,public_id:data.public_id}))

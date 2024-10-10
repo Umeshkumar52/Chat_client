@@ -7,7 +7,7 @@ try {
     const response=instance.get('/auth/post/AllPost')
     return(await response)
 } catch (error) {
-   return toast.error(error.response.data.message)
+    toast.error(error.response.data.message)
 }
 })
 export const post_Comments=createAsyncThunk('/post',async(post_id)=>{
@@ -29,7 +29,7 @@ export const newSocialPost=createAsyncThunk('/post',async({user_id,formData})=>{
         })
         return(await response)
     } catch (error) {
-       return toast.error(error.response.data.message)
+        toast.error(error.response.data.message)
     }
 })
 export const deletPost=createAsyncThunk('deletePost',async(data)=>{
@@ -65,7 +65,7 @@ export const newStory=createAsyncThunk('/story',async(data)=>{
         })
         return(await response)
     } catch (error) {
-       return toast.error(error.response.data.message)
+        toast.error(error.response.data.message)
     }
 })
 export const allStories=createAsyncThunk('/',async()=>{
@@ -73,7 +73,7 @@ export const allStories=createAsyncThunk('/',async()=>{
         const response=instance.get('/auth/post/stories')
         return (await response)
     } catch (error) {
-       return toast.error(error.response.data.message)
+        toast.error(error.response.data.message)
     }
 })
 export const updatePostInf=createAsyncThunk('/post',async(data)=>{
@@ -81,7 +81,7 @@ export const updatePostInf=createAsyncThunk('/post',async(data)=>{
         const response=instance.put(`/auth/post/updateToPost/${data.post_id}`,data.inf)
         return(await response)
     } catch (error) {
-       return toast.error(error.response.data.message)
+       toast.error(error.response.data.message)
     }
 })
 export const likePost=createAsyncThunk('like',async(data)=>{
