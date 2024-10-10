@@ -22,7 +22,6 @@ export default function Chat() {
   const [list, setMessageList] = useState([]);
   const [message, setMessage] = useState("");
   const [file,setFile]=useState()
-  
   const[online,setOnline]=useState(false)
   const [imageUrl,setImageUrl]=useState()
   const[uploading,setUploading]=useState(false)
@@ -33,7 +32,6 @@ export default function Chat() {
     try{
     const time=timer()
     if(file){
-      // const form =document.querySelector("form")
       const formData=new FormData()
       formData.append("file",file)
       formData.append('time',time)
@@ -43,7 +41,7 @@ export default function Chat() {
         sender_id:user.UserName,
         msg_type:"file",
         time,
-        url_type:(file.type=="image/jpeg" || file.type=="image/png" || file.type=="image/jpg")?"jpg":"mp4",
+        url_type:(file.type==="image/jpeg" || file.type==="image/png" || file.type==="image/jpg")?"jpg":"mp4",
         secure_url:imageUrl,
         type:"outgoing",
 }]);
@@ -126,7 +124,6 @@ function inputResetHandler(){
     })
     socket.on("online",(data)=>{
             console.log(data);
-            
     })
   }, [socket]); 
   async function call(){
@@ -158,14 +155,14 @@ function inputResetHandler(){
         </div>
       </div>
        <div  ref={Ref}  className="msg_container space-y-3 py-2 w-[100%] h-[84vh] overflow-scroll">
-        {(list.length>0)? list.map((data, index) => {
-          return (
-            <div  className={(data.sender_id==user.UserName)?"outgoing":"incoming"} key={index}>                
-            <div className={(data.sender_id==user.UserName)?"outgoingInner":"incomingInner"}>
-                {(data.msg_type=="text")?
+        {(list.length>0)? list.map((data, index)=>{
+          return(
+            <div className={(data.sender_id===user.UserName)?"outgoing":"incoming"} key={index}>                
+            <div className={(data.sender_id===user.UserName)?"outgoingInner":"incomingInner"}>
+                {(data.msg_type==="text")?
                 <div className="pr-2 pb-3 min-w-24 pl-3">{data.message}</div>:
                 <MediaComponent key={data.secure_url} url_type={data.url_type} uploading={uploading} url={data.secure_url}/>
-             }
+                  }
                 <h6 className="absolute bottom-0 right-2 text-[#cdcaca] flex items-end text-xs">
                   {data.time}
                 </h6>               
