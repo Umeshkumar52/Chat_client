@@ -23,7 +23,7 @@ export default function Comments() {
         }
       }])
       setAddComment("")
-      if(state.type=="Reel"){
+      if(state.type==="Reel"){
         const response=await dispatch(commentReel({post_id:state.post_id,inf:{author:state.user._id,commit:addComment}}))  
       }
        const response=await dispatch(updatePostInf({post_id:state.post_id,inf:{author:state.user._id,commit:addComment}}))      
@@ -53,7 +53,7 @@ export default function Comments() {
      {(comments.length>0)?
      comments.map((Element,index)=>{
            return  <div key={index} className='flex gap-2'>
-           <img src={Element.author.avatar} className='w-10 h-10 rounded-full border-2 border-black'/>
+           <img src={Element.author.avatar} alt='img' className='w-10 h-10 rounded-full border-2 border-black'/>
            <div className='flex flex-col bg-slate-200 border-1 rounded-lg py-1 px-3'>
              <h2 className='text-black font-medium'>{Element.author.UserName}</h2>
              <p className='font-normal whitespace-pre-wrap'>{Element.commit}</p>

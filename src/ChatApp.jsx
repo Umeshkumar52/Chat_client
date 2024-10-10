@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import socket from "./socket";
 import "./App.css";
 import SearchUserList from "./pages/SearchUserList";
 import SearchBar from "./pages/SearchBar";
 import { useSelector } from "react-redux";
 import MessagerUSerList from "./components/MessagerUSerList";
 import { useNavigate } from "react-router-dom";
+import socket from "./socket";
 export default function ChatApp() {    
   const state=useSelector((state)=>{return state.auth.user})
   const navigate=useNavigate()
@@ -30,14 +30,14 @@ export default function ChatApp() {
       setOnlineUsers({ ...onlineUsers,users});
     });
   }, [socket]);  
-  useEffect(()=>{       
+  // useEffect(()=>{       
       setMessagerUser(JSON.parse(localStorage.getItem("messager_user")))
     if(state.Contact.length>0){
       setOnlineUsers((users)=>[...users,...state.Contact])
     }
     socket.emit("rooms",state.UserName);
     // socket.emit("online",state.UserName)
-  },[])  
+  // },[])  
   return (
         <div className="w-full mainPanel flex flex-col lg:flex-row overflow-y-scroll">
         <div className="w-full lg:w-[20%] flex pt-2 px-2 border-2 border-cyan-800 h-screen  bg-black text-black">
@@ -46,7 +46,7 @@ export default function ChatApp() {
            <SearchBar updateSearchTerm={searchUserHandler} />
            <div className="flex text-white flex-col">
             <h1 className="text-lg font-bold">{state.UserName}</h1>
-            <img className="w-10 h-10 rounded-full" src={state.avatar}/>
+            <img className="w-10 h-10 rounded-full" alt="img" src={state.avatar}/>
             <h2 className="text-white text-sm font-bold">Messages</h2>
            </div>
           </div>

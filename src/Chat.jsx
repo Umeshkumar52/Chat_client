@@ -126,7 +126,7 @@ function inputResetHandler(){
     socket.on("online",(data)=>{
             console.log(data);
     })
-  }, [socket]); 
+  },[socket]); 
   async function call(){
     const res=await dispatch(getAllConversation({reciever_id:currentUser.UserName,sender_id:user.UserName})) 
   if( res.payload){
@@ -139,7 +139,7 @@ function inputResetHandler(){
         <div className="flex flex-row gap-2 px-2">
           <IoMdArrowRoundBack onClick={()=>navigate(-1)} className="text-xl"/>
           <div className="flex gap-3">
-            <img src={currentUser.avatar} className="w-8 cursor-pointer h-8 rounded-full border-dotted border-1" />
+            <img src={currentUser.avatar} alt="img" className="w-8 cursor-pointer h-8 rounded-full border-dotted border-1" />
             <div className="flex flex-col gap-0 p-0">
               <h1 key={currentUser.UserName} className="user text-base font-medium text-white">{currentUser.UserName}</h1>
               {online?
