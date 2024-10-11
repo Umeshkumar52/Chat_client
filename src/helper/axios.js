@@ -3,14 +3,16 @@ import axios from "axios";
     // baseURL:"http://localhost:5002/api",
     baseURL:"https://chat-backend-mmyl.onrender.com/api",
     headers:{
-        "Content-Type":"application/json"
+        "Content-Type":"application/json",
+        "withCredentials":"true"
     }
 })
 export const multiPartInstance= axios.create({
     // baseURL:"http://localhost:5002/api",
     baseURL:"https://chat-backend-mmyl.onrender.com/api",
     headers:{
-        "Content-Type":"multipart/form-data"
+        "Content-Type":"multipart/form-data",
+        "withCredentials":"true"
     }
 })
 export default instance
