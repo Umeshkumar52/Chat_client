@@ -8,7 +8,7 @@ import axios from "axios";
 })
 export const multiPartInstance= axios.create({
     // baseURL:"http://localhost:5002/api",
-    baseURL:"https://chat-backend-mmyl.onrender.com/api"
+    baseURL:"https://chat-backend-mmyl.onrender.com/api",
     headers:{
         "Content-Type":"multipart/form-data"
     }
