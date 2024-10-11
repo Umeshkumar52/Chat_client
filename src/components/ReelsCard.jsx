@@ -38,8 +38,6 @@ export default function ReelsCard({data,index,self}) {
    await dispatch(likeReel({post_id:data._id,author:user._id}))    
   }   
   function postDeleteOpenHandler(){
-    console.log("call");
-    
     document.getElementById("reelDelete"+index).style.width='46px'
   }
   function postDeletecloseHandler(){

@@ -129,10 +129,14 @@ function inputResetHandler(){
   },[socket]); 
   async function call(){
     const res=await dispatch(getAllConversation({reciever_id:currentUser.UserName,sender_id:user.UserName}))  
-    if(res.payload && res.payload.data.message[0]>0){
+    console.log(res);
+    
+    if(res.payload && res.payload.data.message[0]){
   setMessageList((list) => [...list,...res.payload.data.message[0].chats]);
   }}
-  call()
+  useEffect(()=>{
+   call()
+  },[])
   return (
     <div className="w-full pt-[3rem] bg-[#000000]  text-white">
        <div className="fixed w-full h-12 py-2 bg-slate-600 top-0">

@@ -17,7 +17,7 @@ console.log(...formData,user_id);
 })
 export const deleteReel=createAsyncThunk('/deleteReel',async(data)=>{
     try {
-        const response=instance.delete(`/auth/reels/deleteReel/${data.post_id}/${data.public_id}`)
+        const response=instance.delete(`/auth/reels/deleteReel/${data.reel_id}/${data.public_id}`)
         toast.promise(response,{
             pending:"Earasing Proccessing...",
             success:"Deleted Successfully"
