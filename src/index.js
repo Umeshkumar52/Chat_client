@@ -9,10 +9,10 @@ import NoInternet from './helper/NoInternet';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
-    <NoInternet>
+    {/* <NoInternet> */}
    <App/>
    <ToastContainer/>
-   </NoInternet>
+   {/* </NoInternet> */}
   </Provider>
 );
 

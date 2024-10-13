@@ -4,10 +4,9 @@ import { toast } from "react-toastify";
 const intialState={}
 export const newReel=createAsyncThunk('/createReels',async({user_id,formData})=>{
     try {
-console.log(...formData,user_id);
         const response=multiPartInstance.post(`/auth/reels/newReel/${user_id}`,formData)
         toast.promise(response,{
-            pending:"Uploading",
+            pending:"Uploading...",
             success:"successFully"
         })
         return (await response)

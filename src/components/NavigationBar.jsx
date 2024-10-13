@@ -7,7 +7,7 @@ import {CgProfile} from 'react-icons/cg'
 import { CgAddR} from 'react-icons/cg'
 import {GrSearch} from 'react-icons/gr'
 import {BiSolidMessageRoundedDots} from "react-icons/bi"
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 export default function NabigationBar({user}) {
   function slideOpenHandler(){
     if(document.getElementById('postSlide').style.width=="8rem"){
@@ -29,15 +29,15 @@ export default function NabigationBar({user}) {
      
     </div>
       <div className='flex justify-evenly text-3xl border-b-4 pb-2'>
-      <IoMdHome/>
-       <BiMoviePlay onClick={()=>navigate('/reels')}/>
-       <FaUserGroup onClick={()=>navigate('/friendRequest')}/>
-       <IoIosNotificationsOutline onClick={()=>navigate('/notification')}/>
-     <div onClick={()=>navigate(`/${user.UserName}`,{state:user._id})} className='w-8 h-8 rounded-full'>
+      <Link to='/'> <IoMdHome/></Link>
+      <Link to='/reels'><BiMoviePlay/></Link>
+       <Link to='friendRequest'><FaUserGroup/></Link>
+       <Link to='notification'> <IoIosNotificationsOutline/></Link>
+     <Link to={`/${user.UserName}`} className='w-8 h-8 rounded-full'>
      {user.avatar?<img src={user.avatar} className='w-full h-full border-black rounded-full border-2'/>:
        <CgProfile className='h-full w-full'/>
        }
-     </div>
+     </Link>
       </div>
     </div>
   )

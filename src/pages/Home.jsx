@@ -6,7 +6,6 @@ import MediaCard from '../components/MediaCard'
 import { allSocialPost, allStories } from '../reducers/socialPostController'
 import { useNavigate } from 'react-router-dom'
 import { IoMdAdd } from 'react-icons/io'
-import socket from '../socket'
 import { PiNotePencilFill } from 'react-icons/pi'
 import { BiMoviePlay, BiSolidBookOpen } from 'react-icons/bi'
 export default function Home() {
@@ -16,6 +15,18 @@ export default function Home() {
   function slideCloseHandler(){
     document.getElementById('postSlide').style.width="0rem"
   }
+  let storyGroup={}
+  function filterUserStories(stories){
+    stories.forEach((Element,index)=>{      
+       if(!storyGroup[Element.author.UserName]){
+         storyGroup[Element.author.UserName]={
+           user:Element.author,
+           story:[]
+         }
+       }
+       storyGroup[Element.author.UserName].story.push(Element.secure_url)       
+    })       
+}
   const[stories,setStories]=useState([])
   const[yourStory,setYourStory]=useState([])
   const navigate=useNavigate()  
@@ -26,25 +37,13 @@ export default function Home() {
     const story=await dispatch(allStories())
     if(response.payload && story.payload){
     setStories((stories)=>[...stories,...story.payload.data.message])
-    setPost((post)=>[...post,...response.payload.data.message])
+    setPost((post)=>[...post,...response.payload.data.message])    
   }
     }
   useEffect(()=>{
     allPosts()
-  },[]) 
-  let storyGroup={}
-  function filterUserStories(stories){
-       stories.forEach((Element,index)=>{        
-          if(!storyGroup[Element.author.UserName]){
-            storyGroup[Element.author.UserName]={
-              user:Element.author,
-              story:[]
-            }
-          }
-          storyGroup[Element.author.UserName].story.push(Element.secure_url)       
-       })       
-  }
-    filterUserStories(stories)
+  },[user]) 
+  filterUserStories(stories)
    return (
      <div onScroll={slideCloseHandler} className='hiddenScrollBar relative w-full h-screen overflow-y-scroll space-y-6 text-black'>
         {/* Nabigation Bar */}

@@ -1,25 +1,23 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { logout, updateUser, userAndPosts } from '../reducers/authReducer';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { IoIosArrowBack } from 'react-icons/io';
 import MediaCard from '../components/MediaCard';
 import ReelsCard from '../components/ReelsCard'
 import {IoCameraOutline} from 'react-icons/io5'
 import MessagerUserList from '../helper/MessagerUserList';
-import { CgProfile } from 'react-icons/cg';
 export default function Profile() {
+  const{userName}=useParams()
   const [profileBannerUrl,setProfileBannerUrl]=useState()
   const[profileUrl,setProfileUrl]=useState()
   const[userUpdated,setUserUpdated]=useState(false)
   const sender=useSelector((state)=>{
     return state.auth.user
   })    
-  const {state}=useLocation()  
   const [user,setUser]=useState()
   const dispatch=useDispatch()
   const navigate=useNavigate()
-  const[selector,setSelector]=useState()
   const[friends,setFriends]=useState()
  async function profileBannerHandler(event){
         event.preventDefault()     
@@ -42,11 +40,12 @@ export default function Profile() {
     setUserUpdated(true)
   }
   async function userDetail() {
-    const response=await dispatch(userAndPosts(state))
-    console.log(response);
+    const response=await dispatch(userAndPosts(userName))
     if(response.payload && response.payload.data.message!=null){
-    setFriends(eval(response.payload.data.message.Following.length+response.payload.data.message.Followers.length))
-    setUser(response.payload.data.message)   
+      setUser(...response.payload.data.message) 
+      if(response.payload.data.message[0].Following && response.payload.data.message[0].Followers){
+      setFriends(eval(response.payload.data.message[0].Following.length+response.payload.data.message[0].Followers.length))  
+      }
     }
   }
   async function logoutHandler(event){
@@ -58,7 +57,7 @@ export default function Profile() {
   }
   useEffect(()=>{
     userDetail()
-  },[userUpdated])           
+  },[userUpdated]) 
   return (
     <div className='hiddenScrollBar py-2 w-full h-screen overflow-y-scroll'>
     {user?
@@ -114,7 +113,7 @@ export default function Profile() {
       <hr/>
      {/* post Card */}
      <div className='hidden peer-checked/post:block space-y-10'>
-    {(user.myPosts.length>0)?
+    {(user.myPosts)?
       user.myPosts.map((Element,index)=>{
        return <MediaCard self={true} index={index} key={index} data={Element} />
       }):<div className='w-full h-full flex justify-center items-center'>No posts</div>
@@ -122,7 +121,7 @@ export default function Profile() {
      </div>
      {/* ReelsCard */}
      <div className='hidden peer-checked/reels:block space-y-10'>
-    {(user.myReels.length>0)?
+    {(user.myReels)?
       user.myReels.map((Element,index)=>{
        return <ReelsCard key={index} self={true} index={index} data={Element} />
       }):<div className='w-full h-full flex justify-center items-center'>No Reels</div>

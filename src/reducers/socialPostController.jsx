@@ -22,7 +22,7 @@ export const newSocialPost=createAsyncThunk('/post',async({user_id,formData})=>{
     try {
         const response=multiPartInstance.post(`/auth/post/newPost/${user_id}`,formData)
         toast.promise(response,{
-            pending:"loading",
+            pending:"Uploading...",
             success:"Successfull"
         },{
             autoClose:1500
@@ -60,7 +60,7 @@ export const newStory=createAsyncThunk('/story',async(data)=>{
     try {
         const response=multiPartInstance.post(`/auth/post/story`,data)
         toast.promise(response,{
-            pending:"loading",
+            pending:"Uploading...",
             success:"Successfull"
         })
         return(await response)

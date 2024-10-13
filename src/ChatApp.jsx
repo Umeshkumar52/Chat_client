@@ -12,6 +12,7 @@ export default function ChatApp() {
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [searchUser,setSearchUser]=useState("")
    const[messagerUser,setMessagerUser]=useState([])
+   let userList=JSON.parse(localStorage.getItem("messager_user"))
  let searchUserHandler=async(data)=>{
     setSearchUser(data)
 }
@@ -30,14 +31,16 @@ export default function ChatApp() {
       setOnlineUsers({ ...onlineUsers,users});
     });
   }, [socket]);  
-  useEffect(()=>{       
-      setMessagerUser(JSON.parse(localStorage.getItem("messager_user")))
+  useEffect(()=>{   
+      if(userList){   
+      setMessagerUser((existUser)=>[...existUser,...userList])
+      }
     if(state.Contact.length>0){
       setOnlineUsers((users)=>[...users,...state.Contact])
     }
     socket.emit("rooms",state.UserName);
     // socket.emit("online",state.UserName)
-  },[])  
+  },[])
   return (
         <div className="w-full mainPanel flex flex-col lg:flex-row overflow-y-scroll">
         <div className="w-full lg:w-[20%] flex pt-2 px-2 border-2 border-cyan-800 h-screen  bg-black text-black">

@@ -39,7 +39,7 @@ export default function UserFollowerCard({data}) {
     <img className='h-10 w-10 rounded-full' src={data.avatar}/>
     <div className='flex flex-col gap-0'>
      <div className='flex gap-2'>
-     <h2 className='text-lg font-semibold '>{data.UserName}</h2>
+     <h2 className='text-lg font-semibold '>{`${data.UserName.slice(0,10)}..`}</h2>
        {!isFollowing?
         <button onClick={followingHandler} className='text-[#5855ff] text-sm font-semibold' > Follow</button>:""}
      </div>

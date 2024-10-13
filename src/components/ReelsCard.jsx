@@ -5,7 +5,7 @@ import {FaRegComment, FaRegHeart} from 'react-icons/fa6'
 import {MdVolumeUp,MdVolumeOff} from 'react-icons/md'
 import { following } from "../reducers/authReducer";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import WebShare from "../helper/WebShare";
 import { deleteReel, likeReel } from "../reducers/reelsReducer";
 import socket from "../socket";
@@ -70,7 +70,6 @@ export default function ReelsCard({data,index,self}) {
         }
      })
      socket.on("reelLike",(data)=>{
-      console.log(data);
       if(data==user._id){
         setIsLiked(true)
       }
@@ -80,14 +79,16 @@ export default function ReelsCard({data,index,self}) {
     <div className=" vid w-full flex shadow-sm flex-col gap-3">
       <div className="w-full px-2 flex justify-between">
         <div className="flex gap-3">
-          <div onClick={()=>navigate(`/${data.author.UserName}`,{state:data.author._id})} className="flex">
+         <Link to={`/${data.author.UserName}`}>
+          <div className="flex">
             {data.author.avatar?
             <img src={data.author.avatar} className="w-10 h-10 rounded-full border-2" />: <CgProfile className="text-4xl" />      
             }
           </div>
+          </Link>
           <div className="flex flex-col">
             <div className=" flex gap-2">
-              <h2 className="font-semibold text-sm text-black">{data.author.UserName}</h2>
+              <h2 className="font-semibold text-sm text-black">{`${data.author.UserName.slice(0,10)}...`}</h2>
             {!self? <div>
               {!isFollowing?
               <button onClick={followingHandler} className="font-semibold text-[#0846fe]">Follow</button>:
@@ -111,7 +112,7 @@ export default function ReelsCard({data,index,self}) {
       </div>
       {/* video show here */}
       <div onClick={postDeletecloseHandler} className="relative w-full">
-        <video ref={videoRef} onClick={videoplay} id="video" src={data.secure_url} className="video w-full"></video>
+        <video ref={videoRef} onClick={videoplay} id="video" src={data.secure_url} className="video w-full h-[80vh]"></video>
         <div className='absolute p-2 bg-slate-700 rounded-full text-white right-4 bottom-6'>
           {true?<MdVolumeUp/>:<MdVolumeOff/>}
         </div>
@@ -128,7 +129,7 @@ export default function ReelsCard({data,index,self}) {
       </div>
           <FaRegComment onClick={(event)=>{
         event.preventDefault()
-        navigate(`/comment/${data._id}`,{state:{post_id:data._id,user:{UserName:user.UserName,avatar:user.avatar,_id:user._id},type:"Reel"}})
+        navigate(`/comment_/${data._id}`,{state:{post_id:data._id,user:{UserName:user.UserName,avatar:user.avatar,_id:user._id},type:"Reel"}})
        }
         }/>
           <WebShare data={data.secure_url}/>

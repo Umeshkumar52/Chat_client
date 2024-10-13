@@ -32,15 +32,15 @@ export default function UserStories() {
     videoPlayer()
   },[])
   return(
-    <div className='w-full h-screen whitespace-nowrap overflow-auto'>
+    <div className='w-full whitespace-nowrap overflow-auto'>
     {state.story.map((Element,index)=>{
       if(index==0){
       return  <div key={index} id={`story${index}`} onClick={formNum[index]} onEnded={formNum[index]} className='absolute inline-block w-full'>
-          <video id='video' ref={videoRef} src={Element} className='w-full' />
+          <video id='video' ref={videoRef} src={Element} className='w-full h-screen' />
         </div>
       }else{
         return <div key={index} id={`story${index}`} onClick={formNum[index]} onEnded={formNum[index]} className='absolute -right-[50rem] inline-block w-full'>
-        <video id='video' ref={videoRef} src={Element} className='w-full'/>
+        <video id='video' ref={videoRef} src={Element} className='w-full h-screen'/>
         </div>
       }
     })}

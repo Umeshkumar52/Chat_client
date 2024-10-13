@@ -44,8 +44,8 @@ window.addEventListener('beforeunload',()=>{socket.emit('offline',socket.id)})
      <Route path='/notification' element={<Notification/>}/>
      <Route path=':userName' element={<Profile/>}/>
      <Route path='/direct/:sender/inbox/:reciever' element={<Chat/>}/>
-     <Route path='/comments' element={<Comments/>}/>
-     <Route path='comment/:post_id' element={<ReelComments/>}/>
+     <Route path='/comment/:post_id' element={<Comments/>}/>
+     <Route path='comment_/:reel_id' element={<ReelComments/>}/>
      <Route path='/createReel' element={<NewReel/>}/>
      <Route path='/createStory' element={<NewStory/>}/>
      <Route path='/search' element={<Search/>}/>

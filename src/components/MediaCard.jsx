@@ -3,7 +3,7 @@ import { CgProfile } from 'react-icons/cg'
 import {AiFillLike, AiOutlineComment} from 'react-icons/ai'
 import {MdVolumeUp,MdVolumeOff} from 'react-icons/md'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { following } from '../reducers/authReducer'
 import socket from '../socket'
 import { deletPost, likePost} from '../reducers/socialPostController'
@@ -41,7 +41,6 @@ export default function MediaCard({data,self,index}) {
      const response=await dispatch(likePost({post_id:data._id,author:user._id}))      
   }  
   function postDeleteOpenHandler(){
-
     document.getElementById("postDelete"+index).style.width='46px'
     setPostDeletCall(true)
   }
@@ -80,18 +79,20 @@ export default function MediaCard({data,self,index}) {
         setIsLiked(true)
       }
      })
-   },[socket])     
+   },[socket])        
   return (
  <div className='relative flex flex-col gap-4'>
   <div className='flex flex-col gap-1 px-2'>
-  <div className='relative items-center flex gap-3'>
-   <div onClick={()=>navigate(`${data.author.UserName}`,{state:data.author._id})} className='w-10 h-10 cursor-pointer border-2 border-[#d809ce] rounded-full flex'>
+  <div className='w-full relative items-center flex gap-3'>
+   <Link to={`/${data.author.UserName}`}>
+   <div className='cursor-pointer flex'>
   {data.author.avatar?
-  <img className='w-full h-full' src={data.author.avatar}/>:
+  <img className='w-10 h-10 rounded-full border-2' src={data.author.avatar}/>:
    <CgProfile className='w-full h-full text-4xl'/>
    }
    </div>
-    <div className='w-full flex justify-between'>
+   </Link>
+    <div className='flex justify-between'>
      <div className='flex gap-2'>
      <div className=''>
        <h2 className='font-semibold text-sm text-black'>{`${data.author.UserName.slice(0,10)}`}</h2>
@@ -118,20 +119,21 @@ export default function MediaCard({data,self,index}) {
       }
     </div>
   </div>
+  {/* description */}
   <div>
     <h4>{data.description}</h4>
   </div>
   </div>
   {/* video show here */}
   {data.url_type=="mp4"?
-   <div onClick={postDeletecloseHandler} className='relative max-h-[400px] flex flex-col'>
-    <video id='video' src={data.url} ref={videoRef} play={isPlaying} onClick={videoHandler} className='h-full w-full'/>
+   <div onClick={postDeletecloseHandler} className='relative w-full max-h-[400px] min-h-[300px] flex flex-col'>
+    <video id='video' src={data.url} ref={videoRef} play={isPlaying} onClick={videoHandler} className='w-full h-full'/>
     <div className='absolute cursor-pointer p-2 bg-slate-700 rounded-full text-white right-4 bottom-6'>
       {true?<MdVolumeUp/>:<MdVolumeOff/>}
     </div>
    </div>:
-   <div onClick={postDeletecloseHandler} className='relative max-h-[400px] flex flex-col'>
-    <img src={data.url}  className='h-full'/>
+   <div onClick={postDeletecloseHandler} className='relative min-h-[300px] max-h-[400px] flex items-center flex-col'>
+    <img src={data.url}  className='w-full min-h-[300px]'/>
    </div>
    }
    {/* sharing thoghts section */}
@@ -159,8 +161,8 @@ export default function MediaCard({data,self,index}) {
        </div>
        <div onClick={(event)=>{
         event.preventDefault()
-        navigate('/comments',{state:{post_id:data._id,user:{UserName:user.UserName,avatar:user.avatar,_id:user._id,type:"Post"}}})
-       }
+        navigate(`/comment/${data._id}`,{state:{post_id:data._id,user:{UserName:user.UserName,avatar:user.avatar,_id:user._id,type:"Post"}}})
+         }
         } className='flex gap-2 cursor-pointer items-center'>
        <AiOutlineComment/>
        <h2>comment</h2>

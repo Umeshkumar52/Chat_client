@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { IoIosArrowBack } from 'react-icons/io';
 import {FiSend} from 'react-icons/fi'
 import {BsSendSlashFill} from'react-icons/bs'
 import socket from '../socket'
 import { commentReel, reelComments } from '../reducers/reelsReducer';
 export default function ReelComments() {
+  const{reel_id}=useParams()
   const navigate=useNavigate()
     const{state}=useLocation()    
     const[comments,setComments]=useState([])
@@ -22,7 +23,7 @@ export default function ReelComments() {
         }
       }])
       setAddComment("")
-       const response=await dispatch(commentReel({post_id:state.post_id,inf:{author:state.user._id,commit:addComment}}))      
+       const response=await dispatch(commentReel({post_id:reel_id,inf:{author:state.user._id,commit:addComment}}))      
     }
     useEffect(()=>{
         async function commit(){
@@ -31,11 +32,11 @@ export default function ReelComments() {
         }
         commit()
     },[state])  
-    useEffect(()=>{
-       socket.on("comment",(data)=>{
-        console.log("socket",data);
-       })
-    },[socket])  
+    // useEffect(()=>{
+    //    socket.on("comment",(data)=>{
+    //     console.log("socket",data);
+    //    })
+    // },[socket])  
    return (
     <div className='w-full relative'>
      <div className='flex gap-1 py-2 items-center'>

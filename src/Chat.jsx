@@ -1,6 +1,6 @@
 import { React, useState, useEffect, useRef } from "react";
 import "./App.css";
-import {useDispatch, useSelector} from 'react-redux'
+import {useDispatch} from 'react-redux'
 import {IoCameraOutline} from 'react-icons/io5'
 import timer from './helper/Timer'
 import axios from "axios";
@@ -10,10 +10,10 @@ import {BsSendSlashFill} from 'react-icons/bs'
 import { getAllConversation, textMessage } from "./reducers/conversationReducer";
 import {IoMdArrowRoundBack} from 'react-icons/io'
 import MediaComponent from "./components/MediaComponent";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import socket from "./socket";
-export default function Chat() {  
-  const user=useSelector((state)=>{return state.auth.user})
+export default function Chat(){
+  const{sender,reciever}=useParams()  
   const navigate=useNavigate()
   const {state}=useLocation()
   const currentUser=state  
@@ -23,7 +23,6 @@ export default function Chat() {
   const [message, setMessage] = useState("");
   const [file,setFile]=useState()
   const[online,setOnline]=useState(false)
-  const [imageUrl,setImageUrl]=useState()
   const[uploading,setUploading]=useState(false)
   const dispatch=useDispatch() 
   window.addEventListener("online",()=>setOnline(true))
@@ -36,25 +35,13 @@ export default function Chat() {
       formData.append("file",file)
       formData.append('time',time)
      setUploading(true)  
-      setMessageList((list) => [...list, {
-        reciever_id:currentUser?currentUser.UserName:socket.id,
-        sender_id:user.UserName,
-        msg_type:"file",
-        time,
-        url_type:(file.type==="image/jpeg" || file.type==="image/png" || file.type==="image/jpg")?"jpg":"mp4",
-        secure_url:imageUrl,
-        type:"outgoing",
-}]);
 inputResetHandler()
 setFile("")
-setImageUrl("")
-      axios.post(`http://localhost:5002/api/conversation/chat/socialCom/${currentUser.UserName}/${user.UserName}`,formData)
-     .then((response)=>{
-      console.log(response);
-            
+      axios.post(`http://localhost:5002/api/conversation/chat/socialCom/${currentUser.UserName}/${sender}`,formData)
+     .then((response)=>{   
       const data = {
                reciever_id:currentUser?currentUser.UserName:socket.id,
-               sender_id:user.UserName,
+               sender_id:sender,
                msg_type:"file",
                time,
                url_type:response.data.message.format,
@@ -75,7 +62,7 @@ setImageUrl("")
       time,
        msg_type:"text",
       type:"outgoing",
-      sender_id:user.UserName,
+      sender_id:sender,
       reciever_id: currentUser?currentUser.UserName:socket.id
     };
     await socket.emit("private_msg",data); 
@@ -84,7 +71,7 @@ setImageUrl("")
       msg_type:"text",
       type:"outgoing",
       time,
-      sender_id:user.UserName,
+      sender_id:sender,
       reciever_id:currentUser?currentUser.UserName:socket.id
     }]);
     setMessage("");
@@ -93,7 +80,6 @@ setImageUrl("")
 }catch(err){
   return "message not sent"
 }
-
   }  
   const inputReset=useRef(null)
 function changeHandler(event){
@@ -102,8 +88,18 @@ setMessage(event.target.value)
 }
 function fileChangeHandler(event){
    event.preventDefault()
-   setFile(event.target.files[0])    
-   setImageUrl(URL.createObjectURL(event.target.files[0]))      
+   const time=timer()
+   let img=event.target.files[0] 
+   setFile(img) 
+   setMessageList((list) => [...list, {
+    reciever_id:currentUser?currentUser.UserName:socket.id,
+    sender_id:sender,
+    msg_type:"file",
+    time,
+    url_type:(img.type==="image/jpeg" || img.type==="image/png" || img.type==="image/jpg")?"jpg":"mp4",
+    secure_url:URL.createObjectURL(img),
+    type:"outgoing",
+}]);       
 }
 function inputResetHandler(){
   if(inputReset.current){
@@ -123,14 +119,12 @@ function inputResetHandler(){
     socket.on("typingStatus",(data)=>{
       setIsTyping(data)
     })
-    socket.on("online",(data)=>{
-            console.log(data);
-    })
+    // socket.on("online",(data)=>{
+           
+    // })
   },[socket]); 
   async function call(){
-    const res=await dispatch(getAllConversation({reciever_id:currentUser.UserName,sender_id:user.UserName}))  
-    console.log(res);
-    
+    const res=await dispatch(getAllConversation({reciever_id:reciever,sender_id:sender}))  
     if(res.payload && res.payload.data.message[0]){
   setMessageList((list) => [...list,...res.payload.data.message[0].chats]);
   }}
@@ -157,8 +151,8 @@ function inputResetHandler(){
        <div  ref={Ref}  className="msg_container space-y-3 py-2 w-[100%] h-[84vh] overflow-scroll">
         {(list.length>0)? list.map((data, index)=>{
           return(
-            <div className={(data.sender_id===user.UserName)?"outgoing":"incoming"} key={index}>                
-            <div className={(data.sender_id===user.UserName)?"outgoingInner":"incomingInner"}>
+            <div className={(data.sender_id===sender)?"outgoing":"incoming"} key={index}>                
+            <div className={(data.sender_id===sender)?"outgoingInner":"incomingInner"}>
                 {(data.msg_type==="text")?
                 <div className="pr-2 pb-3 min-w-24 pl-3">{data.message}</div>:
                 <MediaComponent key={data.secure_url} url_type={data.url_type} uploading={uploading} url={data.secure_url}/>

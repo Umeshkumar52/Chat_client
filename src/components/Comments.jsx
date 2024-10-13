@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { post_Comments,updatePostInf } from '../reducers/socialPostController';
 import { IoIosArrowBack } from 'react-icons/io';
 import {FiSend} from 'react-icons/fi'
@@ -8,6 +8,7 @@ import {BsSendSlashFill} from'react-icons/bs'
 import socket from '../socket'
 import { commentReel } from '../reducers/reelsReducer';
 export default function Comments() {
+  const{post_id}=useParams()
   const navigate=useNavigate()
     const{state}=useLocation()    
     const[comments,setComments]=useState([])
@@ -24,9 +25,9 @@ export default function Comments() {
       }])
       setAddComment("")
       if(state.type==="Reel"){
-        const response=await dispatch(commentReel({post_id:state.post_id,inf:{author:state.user._id,commit:addComment}}))  
+        const response=await dispatch(commentReel({post_id:post_id,inf:{author:state.user._id,commit:addComment}}))  
       }
-       const response=await dispatch(updatePostInf({post_id:state.post_id,inf:{author:state.user._id,commit:addComment}}))      
+       const response=await dispatch(updatePostInf({post_id:post_id,inf:{author:state.user._id,commit:addComment}}))      
     }
     useEffect(()=>{
         async function commit(){
@@ -53,7 +54,7 @@ export default function Comments() {
      {(comments.length>0)?
      comments.map((Element,index)=>{
            return  <div key={index} className='flex gap-2'>
-           <img src={Element.author.avatar} alt='img' className='w-10 h-10 rounded-full border-2 border-black'/>
+           <img src={Element.author.avatar?Element.author.avatar:"#"} alt='img' className='w-10 h-10 rounded-full border-2 border-black'/>
            <div className='flex flex-col bg-slate-200 border-1 rounded-lg py-1 px-3'>
              <h2 className='text-black font-medium'>{Element.author.UserName}</h2>
              <p className='font-normal whitespace-pre-wrap'>{Element.commit}</p>
