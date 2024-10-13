@@ -92,7 +92,7 @@ export default function MediaCard({data,self,index}) {
    }
    </div>
    </Link>
-    <div className='flex justify-between'>
+    <div className='w-[80%] flex justify-between'>
      <div className='flex gap-2'>
      <div className=''>
        <h2 className='font-semibold text-sm text-black'>{`${data.author.UserName.slice(0,10)}`}</h2>

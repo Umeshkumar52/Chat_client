@@ -63,7 +63,9 @@ export default function Profile() {
     {user?
     <div className='w-full'>
      <div className='p-2'>
-      <IoIosArrowBack onClick={()=>navigate(-1)} className='text-3xl'/>
+      <IoIosArrowBack onClick={()=>{
+        navigate(-1)
+        }} className='text-3xl'/>
      </div>
      <div className='relative'>
       <div className='relative ring-2 ring-indigo-600 bg-slate-200/40 h-[9rem] w-full'>
