@@ -12,7 +12,8 @@ export const multiPartInstance= axios.create({
     baseURL:"https://chat-backend-mmyl.onrender.com/api",
     'withCredentials':true,
     headers:{
-        "Content-Type":"multipart/form-data"
+        "Content-Type":"multipart/form-data",
+        "withCredentials":"true"
     }
 })
 export default instance
