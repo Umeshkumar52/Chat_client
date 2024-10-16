@@ -3,7 +3,7 @@ import { CgProfile } from 'react-icons/cg'
 import {AiFillLike, AiOutlineComment} from 'react-icons/ai'
 import {MdVolumeUp,MdVolumeOff} from 'react-icons/md'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { following } from '../reducers/authReducer'
 import socket from '../socket'
 import { deletPost, likePost} from '../reducers/socialPostController'
@@ -79,7 +79,7 @@ export default function MediaCard({data,self,index}) {
         setIsLiked(true)
       }
      })
-   },[socket])        
+   },[socket])      
   return (
  <div className='relative flex flex-col gap-4'>
   <div className='flex flex-col gap-1 px-2'>

@@ -1,17 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import { CgProfile } from "react-icons/cg";
 import { FcLike } from "react-icons/fc";
-import {FaRegComment, FaRegHeart} from 'react-icons/fa6'
-import {MdVolumeUp,MdVolumeOff} from 'react-icons/md'
+import {FaRegComment, FaRegHeart} from 'react-icons/fa6';
+import {MdVolumeUp,MdVolumeOff} from 'react-icons/md';
 import { following } from "../reducers/authReducer";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import WebShare from "../helper/WebShare";
 import { deleteReel, likeReel } from "../reducers/reelsReducer";
 import socket from "../socket";
-import videoPlayerHandler from '../helper/videoPlayerHandler'
+import videoPlayerHandler from '../helper/videoPlayerHandler';
 import { BsThreeDotsVertical } from "react-icons/bs";
-export default function ReelsCard({data,index,self}) {  
+export default function ReelsCard({data,index,self}){  
   const user=useSelector((state)=>{return state.auth.user})
   const navigate=useNavigate()
   const[isFollowing,setIsFollowing]=useState(false)
@@ -19,7 +19,7 @@ export default function ReelsCard({data,index,self}) {
   const[isLiked,setIsLiked]=useState(false)
   const[isPlaying,setIsPlaying]=useState(false)
   const dispatch=useDispatch()
-  const videoRef=useRef(null)
+  const videoRef=useRef(null) 
   function videoplay(event){
     event.preventDefault()
     if(isPlaying){
@@ -29,7 +29,7 @@ export default function ReelsCard({data,index,self}) {
     videoRef.current.pause()
     setIsPlaying(true)
   }
-}
+   }
   videoPlayerHandler("video")
    async function followingHandler() {
      await dispatch(following({requester:user._id,reciever:data.author._id}))     
@@ -74,9 +74,10 @@ export default function ReelsCard({data,index,self}) {
         setIsLiked(true)
       }
      })
-   },[socket])     
+   },[socket])  
+  //  ref={(el)=>{videoreference.current[index]=el}}
   return (
-    <div className=" vid w-full flex shadow-sm flex-col gap-3">
+    <div  className="vid bg-white w-full h-[100vh] flex py-4 flex-col gap-3">
       <div className="w-full px-2 flex justify-between">
         <div className="flex gap-3">
          <Link to={`/${data.author.UserName}`}>
@@ -111,8 +112,8 @@ export default function ReelsCard({data,index,self}) {
       }
       </div>
       {/* video show here */}
-      <div onClick={postDeletecloseHandler} className="relative w-full">
-        <video ref={videoRef} onClick={videoplay} id="video" src={data.secure_url} className="video w-full h-[80vh]"></video>
+      <div onClick={postDeletecloseHandler} className="relative w-full h-[70%]">
+        <video ref={videoRef} onClick={videoplay} id="video" src={data.secure_url} className="video w-full "></video>
         <div className='absolute p-2 bg-slate-700 rounded-full text-white right-4 bottom-6'>
           {true?<MdVolumeUp/>:<MdVolumeOff/>}
         </div>

@@ -131,4 +131,10 @@ display: flex;
     border-radius:100%;    
    background:white;
   }
+  #reelWraper{
+    scroll-snap-type:none;
+  }
+  /* .vid{
+    scroll-snap-align:start;
+  } */
   

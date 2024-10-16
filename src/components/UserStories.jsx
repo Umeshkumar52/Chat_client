@@ -31,16 +31,21 @@ export default function UserStories() {
   useEffect(()=>{
     videoPlayer()
   },[])
+  async function replyHandler(event) {
+    event.preventDefault()
+    setReply("")
+    
+  }
   return(
-    <div className='w-full whitespace-nowrap overflow-auto'>
+    <div className='w-full h-[100vh] whitespace-nowrap overflow-auto'>
     {state.story.map((Element,index)=>{
       if(index==0){
-      return  <div key={index} id={`story${index}`} onClick={formNum[index]} onEnded={formNum[index]} className='absolute inline-block w-full'>
-          <video id='video' ref={videoRef} src={Element} className='w-full h-screen' />
+      return  <div key={index} id={`story${index}`} onClick={formNum[index]} onEnded={formNum[index]} className='absolute inline-block h-full w-full'>
+          <video id='video' ref={videoRef} src={Element} className='size-full' />
         </div>
       }else{
-        return <div key={index} id={`story${index}`} onClick={formNum[index]} onEnded={formNum[index]} className='absolute -right-[50rem] inline-block w-full'>
-        <video id='video' ref={videoRef} src={Element} className='w-full h-screen'/>
+        return <div key={index} id={`story${index}`} onClick={formNum[index]} onEnded={formNum[index]} className='absolute -right-[50rem] inline-block h-full w-full'>
+        <video id='video' ref={videoRef} src={Element} className='size-full'/>
         </div>
       }
     })}
@@ -49,8 +54,8 @@ export default function UserStories() {
      <h2 className='font-semibold text-xl text-[#f8f1f1]'>{state.user.UserName}</h2>
      </div>
      <div className='w-full fixed flex items-center bottom-1 justify-between'>
-     <form className=' w-full flex gap-3 items-center' action="">
-     <input onChange={(event)=>setReply(event.target.value)} placeholder='Reply...' type='text' className='p-2 border-2 border-slate-700 focus:ring-2 focus:ring-[#372cff] bg-slate-800 text-white font-medium text-lg rounded-2xl'/>
+     <form onSubmit={replyHandler} className='w-full flex gap-3 items-center' action="">
+     <input onChange={(event)=>setReply(event.target.value)} value={Reply} placeholder='Reply...' type='text' className='p-2 border-2 border-slate-700 focus:ring-2 focus:ring-[#372cff] bg-slate-800 text-white font-medium text-lg rounded-2xl'/>
      {Reply?
      <div className='bg-slate-800 text-white p-1 flex justify-center items-center w-fit h-fit rounded-full'>  
       <FiSend className='text-3xl'/>

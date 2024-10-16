@@ -132,12 +132,12 @@ function inputResetHandler(){
    call()
   },[])
   return (
-    <div className="w-full pt-[3rem] bg-[#000000]  text-white">
-       <div className="fixed w-full h-12 py-2 bg-slate-600 top-0">
+    <div className="w-full h-[100vh] pt-[3.5rem] bg-[#000000]  text-white">
+       <div className="fixed w-full max-h-16 py-2 bg-[#363333] top-0">
         <div className="flex flex-row gap-2 px-2">
           <IoMdArrowRoundBack onClick={()=>navigate(-1)} className="text-xl"/>
           <div className="flex gap-3">
-            <img src={currentUser.avatar} alt="img" className="w-8 cursor-pointer h-8 rounded-full border-dotted border-1" />
+            <img src={currentUser.avatar} alt="img" className="w-10 h-10 border-2 cursor-pointer rounded-full border-solid" />
             <div className="flex flex-col gap-0 p-0">
               <h1 key={currentUser.UserName} className="user text-base font-medium text-white">{currentUser.UserName}</h1>
               {online?
@@ -148,7 +148,7 @@ function inputResetHandler(){
           </div>
         </div>
       </div>
-       <div  ref={Ref}  className="msg_container space-y-3 py-2 w-[100%] h-[84vh] overflow-scroll">
+       <div  ref={Ref}  className="msg_container space-y-3 py-2 pb-14 w-[100%] h-[100vh] overflow-scroll">
         {(list.length>0)? list.map((data, index)=>{
           return(
             <div className={(data.sender_id===sender)?"outgoing":"incoming"} key={index}>                
@@ -167,7 +167,7 @@ function inputResetHandler(){
       </div> 
       <form
       // w-[81%]
-        className="fixed w-full bottom-0 right-0"
+        className="bg-black fixed w-full bottom-0 right-0"
         onSubmit={sendChat}
         id="form"
       >

@@ -4,11 +4,12 @@ import NabigationBar from '../components/NavigationBar'
 import Stories from '../components/Stories'
 import MediaCard from '../components/MediaCard'
 import { allSocialPost, allStories } from '../reducers/socialPostController'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { IoMdAdd } from 'react-icons/io'
 import { PiNotePencilFill } from 'react-icons/pi'
 import { BiMoviePlay, BiSolidBookOpen } from 'react-icons/bi'
 export default function Home() {
+  // const location=useLocation()
   const{user}=useSelector((state)=>{
     return state.auth    
   })    
@@ -44,6 +45,16 @@ export default function Home() {
     allPosts()
   },[user]) 
   filterUserStories(stories)
+  // useEffect(()=>{
+  //   console.log(window.scrollY);
+    
+  //     const savedScrollPosition=sessionStorage.getItem(location.key)    
+  //     if(savedScrollPosition){
+  //       window.scrollTo(0,parseInt(savedScrollPosition,10))
+  //     }return ()=>{
+  //       sessionStorage.setItem(location.key,window.scrollY)
+  //     }
+  // },[location]) 
    return (
      <div onScroll={slideCloseHandler} className='hiddenScrollBar relative w-full h-screen overflow-y-scroll space-y-6 text-black'>
         {/* Nabigation Bar */}

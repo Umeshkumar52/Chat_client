@@ -42,14 +42,14 @@ export default function ChatApp() {
     // socket.emit("online",state.UserName)
   },[])
   return (
-        <div className="w-full mainPanel flex flex-col lg:flex-row overflow-y-scroll">
-        <div className="w-full lg:w-[20%] flex pt-2 px-2 border-2 border-cyan-800 h-screen  bg-black text-black">
+        <div className="w-full mainPanel flex flex-col lg:flex-row overflow-y-scroll  bg-black text-black">
+        <div className="w-full lg:w-[20%] flex pt-2 px-2 border-2 border-cyan-800 h-screen ">
           <div className="w-full">
           <div className="flex flex-col gap-4">
            <SearchBar updateSearchTerm={searchUserHandler} />
-           <div className="flex text-white flex-col">
+           <div className="flex gap-2 text-white flex-col">
             <h1 className="text-lg font-bold">{state.UserName}</h1>
-            <img className="w-10 h-10 rounded-full" alt="img" src={state.avatar}/>
+            <img className="w-14 h-14 rounded-full" alt="img" src={state.avatar}/>
             <h2 className="text-white text-sm font-bold">Messages</h2>
            </div>
           </div>
