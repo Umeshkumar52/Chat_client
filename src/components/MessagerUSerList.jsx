@@ -7,7 +7,7 @@ export default function MessagerUSerList({Element,SelectedUser}){
         <img className='w-14 h-14 rounded-full' src={Element.avatar}/>
         </div>
       <div className='w-[75%] flex'>
-        <h1 className='text-white text-xl font-semibold'>{Element.UserName.slice(0,14)}</h1>
+        <h1 className='text-white text-xl font-semibold'>{Element.UserName?Element.UserName.slice(0,14):""}</h1>
         <input type='radio' name='ChatUser' className='hidden checked:border-indigo-600'/>
         </div>
         </label>

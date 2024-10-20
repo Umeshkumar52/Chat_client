@@ -1,16 +1,19 @@
 import { createSlice,createAsyncThunk } from "@reduxjs/toolkit";
 import instance, { multiPartInstance } from "../helper/axios";
 import { toast } from "react-toastify";
-const initialState={}
+const initialState={
+    post:[],
+    story:[]
+}
 export const allSocialPost=createAsyncThunk('/post',async(data)=>{
 try {
-    const response=instance.get('/auth/post/AllPost')
+    const response=instance.get(`/auth/post/AllPost/${data.offset}/${data.limit}`)
     return(await response)
 } catch (error) {
     toast.error(error.response.data.message)
 }
 })
-export const post_Comments=createAsyncThunk('/post',async(post_id)=>{
+export const post_Comments=createAsyncThunk('CommentPost',async(post_id)=>{
     try {
         const response=instance.get(`/auth/post/postComments/${post_id}`)
         return (await response)
@@ -18,7 +21,7 @@ export const post_Comments=createAsyncThunk('/post',async(post_id)=>{
        toast.error(error.response.data.message) 
     }
 })
-export const newSocialPost=createAsyncThunk('/post',async({user_id,formData})=>{
+export const newSocialPost=createAsyncThunk('/createPost',async({user_id,formData})=>{
     try {
         const response=multiPartInstance.post(`/auth/post/newPost/${user_id}`,formData)
         toast.promise(response,{
@@ -44,7 +47,7 @@ export const deletPost=createAsyncThunk('deletePost',async(data)=>{
         toast.error(error.response.data.message)
     }
 })
-export const deleteStory=createAsyncThunk('deletePost',async(data)=>{
+export const deleteStory=createAsyncThunk('deleteStory',async(data)=>{
     try {
         const response=instance.delete(`/auth/post/deletestory/${data.story_id}/${data.public_id}`)
         toast.promise(response,{
@@ -76,7 +79,7 @@ export const allStories=createAsyncThunk('/',async()=>{
         toast.error(error.response.data.message)
     }
 })
-export const updatePostInf=createAsyncThunk('/post',async(data)=>{
+export const updatePostInf=createAsyncThunk('/updatePost',async(data)=>{
     try {
         const response=instance.put(`/auth/post/updateToPost/${data.post_id}`,data.inf)
         return(await response)
@@ -100,7 +103,15 @@ const socialPostController=createSlice({
     },
     extraReducers:(builder)=>{
         builder
-        .addCase(allSocialPost.fulfilled,(state,action)=>{               
+        .addCase(allSocialPost.fulfilled,(state,action)=>{ 
+            if(action.payload){
+               state.post.push(...action.payload.data.message)
+            }              
+        })
+        .addCase(allStories.fulfilled,(state,action)=>{ 
+            if(action.payload){
+               state.story.push(...action.payload.data.message)
+            }              
         })
     }
 })

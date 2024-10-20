@@ -49,9 +49,9 @@ export default function UserStories() {
         </div>
       }
     })}
-     <div className='fixed top-4 flex gap-4 items-center'>
+     <div onClick={()=>navigate(`/${state.user.UserName}`)} className='fixed top-4 flex gap-4 items-center'>
      <img className=' w-12 h-12 rounded-full border-2' src={state.user.avatar}/>
-     <h2 className='font-semibold text-xl text-[#f8f1f1]'>{state.user.UserName}</h2>
+     <h2 className='font-semibold text-lg text-[#f8f1f1]'>{state.user.UserName}</h2>
      </div>
      <div className='w-full fixed flex items-center bottom-1 justify-between'>
      <form onSubmit={replyHandler} className='w-full flex gap-3 items-center' action="">

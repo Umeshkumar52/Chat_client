@@ -4,68 +4,98 @@ import NabigationBar from '../components/NavigationBar'
 import Stories from '../components/Stories'
 import MediaCard from '../components/MediaCard'
 import { allSocialPost, allStories } from '../reducers/socialPostController'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { IoMdAdd } from 'react-icons/io'
+import {Link, useLocation, useNavigate } from 'react-router-dom'
+import { IoIosNotificationsOutline, IoMdAdd, IoMdHome } from 'react-icons/io'
 import { PiNotePencilFill } from 'react-icons/pi'
 import { BiMoviePlay, BiSolidBookOpen } from 'react-icons/bi'
-export default function Home() {
-  // const location=useLocation()
-  const{user}=useSelector((state)=>{
-    return state.auth    
-  })    
+import { FaUserGroup } from 'react-icons/fa6'
+import PageLocRes from '../helper/PageLocRes'
+import { CgProfile } from 'react-icons/cg'
+export default function Home(){
+   const windowScroller=document.querySelector('.hiddenScrollBar')
+  const {auth,socialPost}=useSelector((state)=>{return state})  
+  const[offset,setOffset]=useState(0)
+  const[isLoading,setIsLoading]=useState(false)
+    const[page,setPage]=useState(1)
+    const[stories,setStories]=useState(socialPost.story || [])
+    const navigate=useNavigate()  
+    const[post,setPost]=useState(socialPost.post || [])
+    const dispatch=useDispatch() 
+    const location=useLocation()     
+  const limit=16
   function slideCloseHandler(){
     document.getElementById('postSlide').style.width="0rem"
   }
   let storyGroup={}
   function filterUserStories(stories){
-    stories.forEach((Element,index)=>{      
+    stories.forEach((Element,index)=>{
+      if(!Element.author)return      
        if(!storyGroup[Element.author.UserName]){
          storyGroup[Element.author.UserName]={
            user:Element.author,
            story:[]
          }
-       }
+        }
        storyGroup[Element.author.UserName].story.push(Element.secure_url)       
-    })       
-}
-  const[stories,setStories]=useState([])
-  const[yourStory,setYourStory]=useState([])
-  const navigate=useNavigate()  
-  const[post,setPost]=useState([])
-  const dispatch=useDispatch()
-  async function allPosts(){
-    const response=await dispatch(allSocialPost())
+    })     
+   
+} 
+  async function storyHandler(){
     const story=await dispatch(allStories())
-    if(response.payload && story.payload){
-    setStories((stories)=>[...stories,...story.payload.data.message])
-    setPost((post)=>[...post,...response.payload.data.message])    
+    if(story.payload){
+    setStories((stories)=>[...stories,...story.payload.data.message])   
   }
     }
+    async function postHandler(){
+      setIsLoading(true)
+      const response=await dispatch(allSocialPost({offset:offset,limit:limit}))
+      if(response.payload){
+        setIsLoading(false)
+        setOffset((prevOffset)=>prevOffset+limit)
+      setPost((post)=>[...post,...response.payload.data.message]) 
+      }
+    }
+    useEffect(()=>{
+      if(stories.length===0){
+        storyHandler()
+      }
+    },[auth.user])
   useEffect(()=>{
-    allPosts()
-  },[user]) 
+    if(isLoading===false && post.length===0 || isLoading===false && page>1 ){
+      postHandler() 
+    }   
+  },[page]) 
   filterUserStories(stories)
-  // useEffect(()=>{
-  //   console.log(window.scrollY);
-    
-  //     const savedScrollPosition=sessionStorage.getItem(location.key)    
-  //     if(savedScrollPosition){
-  //       window.scrollTo(0,parseInt(savedScrollPosition,10))
-  //     }return ()=>{
-  //       sessionStorage.setItem(location.key,window.scrollY)
-  //     }
-  // },[location]) 
-   return (
-     <div onScroll={slideCloseHandler} className='hiddenScrollBar relative w-full h-screen overflow-y-scroll space-y-6 text-black'>
+function handleScroll(){  
+  const scrollTop=window.pageYOffset || windowScroller.scrollTop;
+  const scrollHeight=windowScroller.scrollHeight;
+  const clientHeight=windowScroller.innerHeight || document.documentElement.clientHeight;
+  if(scrollTop+clientHeight>=scrollHeight-1){
+     setPage((prev)=>prev+1)
+  }
+}
+useEffect(()=>{
+   if(windowScroller){
+    windowScroller.addEventListener("scroll",handleScroll)
+   }
+    return ()=>{
+      if(windowScroller){
+        windowScroller.removeEventListener("scroll",handleScroll)
+      }
+    }
+},[isLoading])
+PageLocRes("hiddenScrollBar")
+  return (
+     <div onScroll={slideCloseHandler} className='hiddenScrollBar relative w-full h-screen overflow-y-scroll pt-2 space-y-6 text-black'>
         {/* Nabigation Bar */}
         <div className='relative'>
-     <NabigationBar user={user}/>
+     <NabigationBar user={auth.user}/>
      {/* Stories Pannel */}
      <div className='stories w-full space-x-4 px-3 py-2 border-b-2'>
      <div onClick={()=>navigate('/createStory')} className='storyMain'>
     <div className='relative'>
      <div className='w-[65px] h-[65px] rounded-full bg-gradient-to-r from-[#4141e8] to-[#f706e7] p-0.5'>
-      <img src={user.avatar} className='w-full h-full rounded-full bg-white'/>
+      <img src={auth.user.avatar} className='w-full h-full rounded-full bg-white'/>
      </div>
      <div className='absolute bg-blue-500 bottom-1 right-0 w-5 h-5 rounded-full'>
      <IoMdAdd className='text-xl text-white '/>
@@ -81,7 +111,7 @@ export default function Home() {
    </div>
    {/* post menu slide */}
    <div id='postSlide' className='w-[0px] absolute flex flex-col py-3 gap-2 rounded-lg top-8 right-2 bg-slate-200'>
-         <div onClick={()=>navigate("/createPost",{state:user})} className='flex gap-2 cursor-pointer px-3 pr-6 items-center border-b-2 border-black'>
+         <div onClick={()=>navigate("/createPost",{state:auth.user})} className='flex gap-2 cursor-pointer px-3 pr-6 items-center border-b-2 border-black'>
           <PiNotePencilFill/>
             <h2>Post</h2>
          </div>
@@ -96,13 +126,25 @@ export default function Home() {
        </div>
    </div>
    {/* Posts */}
-     <div onClick={slideCloseHandler} className='flex flex-col gap-10'>
+     <div className='flex flex-col pb-4 gap-10'>
   {post.length>0?
    post.map((Element,index)=>{
      return <MediaCard key={index} index={index} data={Element}/>
   }):""
      }
      </div>
+     {/* navigate */}
+       <div className='w-full fixed bottom-0 bg-[#ffffff] flex justify-evenly text-3xl border-b-4 pb-2'>
+      <Link to='/'> <IoMdHome/></Link>
+      <Link to='/reels'><BiMoviePlay/></Link>
+       <Link to='friendRequest'><FaUserGroup/></Link>
+       <Link to='notification'> <IoIosNotificationsOutline/></Link>
+     <Link to={`/${auth.user.UserName}`} className='w-8 h-8 rounded-full'>
+     {auth.user.avatar?<img src={auth.user.avatar} className='w-full h-full border-black rounded-full border-2'/>:
+       <CgProfile className='h-full w-full'/>
+       }
+     </Link>
+      </div>
     </div>
   )
 }

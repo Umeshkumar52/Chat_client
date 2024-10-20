@@ -34,7 +34,7 @@ export const allReels=createAsyncThunk('/reels',async()=>{
       toast.error(error.response.data.message)
     }
 })
-export const particular_User_reels=createAsyncThunk('/reels',async(data)=>{
+export const particular_User_reels=createAsyncThunk('/UserReels',async(data)=>{
     try {
         const response=instance.get(`/auth/reels/${data}`)
         return (await response)
@@ -50,7 +50,7 @@ export const commentReel=createAsyncThunk('/reelComments',async(data)=>{
         toast.error(error.response.data.message)
     }
 })
-export const reelComments=createAsyncThunk('/reel',async(post_id)=>{
+export const reelComments=createAsyncThunk('/reelComment',async(post_id)=>{
     try {
         const response=instance.get(`/auth/reels/reelComment/${post_id}`)
         return (await response)

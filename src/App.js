@@ -19,15 +19,17 @@ import Search from './pages/Search';
 import socket from './socket';
 function App() {
  const {user,isLogedIn}=useSelector((state)=>{return state.auth}) 
-setTimeout(()=>{
-  socket.auth = {userName:user.UserName};
-  socket.connect();
-socket.on("connect_error", (err) => {
-  if (err.message) {
-    console.log("error", err.message);
-  }
-})  
-},1000)
+ if(user){
+  setTimeout(()=>{
+    socket.auth = {userName:user.UserName};
+    socket.connect();
+  socket.on("connect_error", (err) => {
+    if (err.message) {
+      console.log("error", err.message);
+    }
+  })  
+  },1000)
+ }
 window.addEventListener('beforeunload',()=>{socket.emit('offline',socket.id)})
   return (
     <div>

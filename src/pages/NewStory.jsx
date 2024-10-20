@@ -3,6 +3,7 @@ import {IoIosArrowBack} from 'react-icons/io'
 import {useNavigate} from 'react-router-dom'
 import {useDispatch, useSelector} from 'react-redux'
 import {newStory} from '../reducers/socialPostController';
+import { ToastContainer } from 'react-toastify';
 export default function NewStory() {
   const user=useSelector((state)=>{return state.auth.user})
   const videoRef=useRef(null)
@@ -37,6 +38,7 @@ export default function NewStory() {
         formData.append("_id",user._id)
         inputResetHandler()
       const response= await dispatch(newStory(formData))
+     
         if(response.payload){
           setFile(null)
           navigate('/') 
@@ -73,6 +75,7 @@ export default function NewStory() {
        <button onClick={createPostHandler} className='bg-indigo-600  px-4 py-2 text-white text-lg font-semibold rounded-lg'>Share</button>
     </div>
      </div>
+     <ToastContainer/>
     </div>
   )
 }

@@ -58,13 +58,15 @@ export default function CreatePost() {
         const formData=new FormData()
         formData.append("file",file)
         formData.append("description",description)
+        navigate('/')  
+        const response= await dispatch(newSocialPost({user_id,formData}))
+        setDescription("") 
         inputResetHandler()
         setFile(null)
-        const response= await dispatch(newSocialPost({user_id,formData}))
-        if(response.payload){
-          setDescription("") 
-          navigate('/')  
-        } 
+        // if(response.payload){
+        //   setDescription("") 
+        //   navigate('/')  
+        // } 
      }
       function textArea(event){
         // textAre.style.height ='25px'

@@ -28,7 +28,7 @@ export default function NabigationBar({user}) {
       </div>
      
     </div>
-      <div className='flex justify-evenly text-3xl border-b-4 pb-2'>
+      {/* <div className='flex justify-evenly text-3xl border-b-4 pb-2'>
       <Link to='/'> <IoMdHome/></Link>
       <Link to='/reels'><BiMoviePlay/></Link>
        <Link to='friendRequest'><FaUserGroup/></Link>
@@ -38,7 +38,7 @@ export default function NabigationBar({user}) {
        <CgProfile className='h-full w-full'/>
        }
      </Link>
-      </div>
+      </div> */}
     </div>
   )
 }

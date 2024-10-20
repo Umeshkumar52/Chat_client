@@ -3,7 +3,8 @@ import instance, { multiPartInstance } from '../helper/axios'
 import { toast } from 'react-toastify'
 const initialState={
     user:JSON.parse(localStorage.getItem('user')) || {},
-    isLogedIn:localStorage.getItem('isLogedIn') || false
+    isLogedIn:localStorage.getItem('isLogedIn') || false,
+    NewUserProfile:{}
 }
 export const signUp =createAsyncThunk('/register',async(data)=>{
     try {
@@ -61,7 +62,7 @@ export const userAndPosts=createAsyncThunk('/user',async(data)=>{
         toast.error(error.response.data.message)
     }
 })
-export const following=createAsyncThunk('/',async(data)=>{
+export const following=createAsyncThunk('/following',async(data)=>{
     try {
         const response=instance.put(`/auth/following/${data.requester}/${data.reciever}`)
         return (await response)
@@ -69,7 +70,7 @@ export const following=createAsyncThunk('/',async(data)=>{
         toast.error(error.response.data.message)
     }
 })
-export const unfollowing=createAsyncThunk('/',async(data)=>{
+export const unfollowing=createAsyncThunk('/unfollowing',async(data)=>{
     try {
         const response=instance.put(`/auth/unfollowing/${data.requester}/${data.reciever}`)
         return (await response)
@@ -77,7 +78,7 @@ export const unfollowing=createAsyncThunk('/',async(data)=>{
         toast.error(error.response.data.message)
     }
 })
-export const userfollowing=createAsyncThunk('following',async(data)=>{
+export const userfollowing=createAsyncThunk('/userFollowing',async(data)=>{
     try {
         const response=instance.get(`/auth/following/${data}`)
         return (await response)
@@ -85,14 +86,13 @@ export const userfollowing=createAsyncThunk('following',async(data)=>{
         toast.error(error.response.data.message)
     }
 })
-export const userfollower=createAsyncThunk('following',async(data)=>{
-    try {
-        const response=instance.get(`/auth/follower/${data}`)
-        return (await response)
-    } catch (error) {
-        toast.error(error.response.data.message)
-    }
-})
+// try {
+//     const response=instance.get(`/auth/follower/${data}`)
+//     return (await response)
+// } catch (error) {
+//     toast.error(error.response.data.message)
+// }
+// })
 const auth=createSlice({
     name:'auth',
     initialState,
@@ -131,6 +131,11 @@ const auth=createSlice({
                 localStorage.setItem("user",JSON.stringify(action.payload.data.message))
                 state.user=action.payload.data.message
                 state.isLogedIn=true
+            }
+        })
+        .addCase(userAndPosts.fulfilled,(state,action)=>{
+            if(action.payload){
+                state.NewUserProfile=action.payload.data.message
             }
         })
     }
