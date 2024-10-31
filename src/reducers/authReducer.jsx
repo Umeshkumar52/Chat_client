@@ -46,7 +46,7 @@ export const updateUser=createAsyncThunk('/profile',async(data)=>{
     toast.error(error.response.data.message)
  }
 })
-export const getUserByUserName=createAsyncThunk('/chats',async(data)=>{
+export const SearchUsers=createAsyncThunk('/searchUsers',async(data)=>{
     try {
         const response=instance.get(`/auth/user/${data}`)
         return (await response)
@@ -86,13 +86,7 @@ export const userfollowing=createAsyncThunk('/userFollowing',async(data)=>{
         toast.error(error.response.data.message)
     }
 })
-// try {
-//     const response=instance.get(`/auth/follower/${data}`)
-//     return (await response)
-// } catch (error) {
-//     toast.error(error.response.data.message)
-// }
-// })
+
 const auth=createSlice({
     name:'auth',
     initialState,

@@ -11,9 +11,16 @@ import { BiMoviePlay, BiSolidBookOpen } from 'react-icons/bi'
 import { FaUserGroup } from 'react-icons/fa6'
 import PageLocRes from '../helper/PageLocRes'
 import { CgProfile } from 'react-icons/cg'
+import socket from '../socket'
+import { unReadNotificationRed} from '../reducers/notificationReducer'
+import PostedAlert from '../helper/PostedAlert'
 export default function Home(){
    const windowScroller=document.querySelector('.hiddenScrollBar')
-  const {auth,socialPost}=useSelector((state)=>{return state})  
+  // const {auth,socialPost}=useSelector((state)=>{return state})  
+  const auth=useSelector((state)=>{return state.auth}) 
+  const socialPost=useSelector((state)=>{return state.socialPost}) 
+  const notification=useSelector((state)=>{return state.notification.unReadNotification})
+ const[unReadNotification,setUnReadNotification]=useState(0)
   const[offset,setOffset]=useState(0)
   const[isLoading,setIsLoading]=useState(false)
     const[page,setPage]=useState(1)
@@ -21,7 +28,8 @@ export default function Home(){
     const navigate=useNavigate()  
     const[post,setPost]=useState(socialPost.post || [])
     const dispatch=useDispatch() 
-    const location=useLocation()     
+    const location=useLocation()   
+    const [postAlert,setPostAlert]=useState(false)  
   const limit=16
   function slideCloseHandler(){
     document.getElementById('postSlide').style.width="0rem"
@@ -40,10 +48,15 @@ export default function Home(){
     })     
    
 } 
+
   async function storyHandler(){
     const story=await dispatch(allStories())
+    const response=await dispatch(unReadNotificationRed(auth.user._id))
     if(story.payload){
     setStories((stories)=>[...stories,...story.payload.data.message])   
+  }
+  if(response.payload){
+    setUnReadNotification(response.payload.data.message.unReadNotification)
   }
     }
     async function postHandler(){
@@ -54,7 +67,7 @@ export default function Home(){
         setOffset((prevOffset)=>prevOffset+limit)
       setPost((post)=>[...post,...response.payload.data.message]) 
       }
-    }
+    } 
     useEffect(()=>{
       if(stories.length===0){
         storyHandler()
@@ -84,6 +97,17 @@ useEffect(()=>{
       }
     }
 },[isLoading])
+useEffect(()=>{
+   socket.on("newNotification",newNotification=>{
+    setUnReadNotification((prevCounter=>[...prevCounter,prevCounter+1]))
+   })
+   socket.on("post",(data)=>{
+    setPostAlert(true)
+    setTimeout(()=>{
+      setPostAlert(false)
+    },700)
+   })
+},[socket])
 PageLocRes("hiddenScrollBar")
   return (
      <div onScroll={slideCloseHandler} className='hiddenScrollBar relative w-full h-screen overflow-y-scroll pt-2 space-y-6 text-black'>
@@ -126,7 +150,7 @@ PageLocRes("hiddenScrollBar")
        </div>
    </div>
    {/* Posts */}
-     <div className='flex flex-col pb-4 gap-10'>
+     <div className='flex flex-col pb-12 gap-10'>
   {post.length>0?
    post.map((Element,index)=>{
      return <MediaCard key={index} index={index} data={Element}/>
@@ -134,17 +158,28 @@ PageLocRes("hiddenScrollBar")
      }
      </div>
      {/* navigate */}
-       <div className='w-full fixed bottom-0 bg-[#ffffff] flex justify-evenly text-3xl border-b-4 pb-2'>
+       <div className='w-full fixed bottom-0 flex bg-white justify-between py-1 px-3 items-center text-3xl'>
       <Link to='/'> <IoMdHome/></Link>
       <Link to='/reels'><BiMoviePlay/></Link>
        <Link to='friendRequest'><FaUserGroup/></Link>
-       <Link to='notification'> <IoIosNotificationsOutline/></Link>
+       {/* <div className='relative p-1'>
+       <Link to='notification' >
+       <IoIosNotificationsOutline/>
+       {unReadNotification>0?
+       <div className='absolute flex justify-center items-center size-5 bg-red-700 text-justify text-sm font-semibold text-white rounded-full top-0 right-0'>{unReadNotification}</div>:""
+      }
+       </Link>
+       </div> */}
      <Link to={`/${auth.user.UserName}`} className='w-8 h-8 rounded-full'>
      {auth.user.avatar?<img src={auth.user.avatar} className='w-full h-full border-black rounded-full border-2'/>:
        <CgProfile className='h-full w-full'/>
        }
      </Link>
       </div>
+      {/* post Alert  */}
+      {postAlert?
+          <PostedAlert/>:""
+      }
     </div>
-  )
+  ) 
 }

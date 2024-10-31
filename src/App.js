@@ -17,25 +17,36 @@ import Chat from './Chat';
 import ReelComments from './pages/ReelComments';
 import Search from './pages/Search';
 import socket from './socket';
+import { useEffect } from 'react';
+import SpecificPost from './components/SpecificPost';
+import SpecificReel from './components/SpecificReel';
 function App() {
  const {user,isLogedIn}=useSelector((state)=>{return state.auth}) 
- if(user){
-  setTimeout(()=>{
-    socket.auth = {userName:user.UserName};
-    socket.connect();
-  socket.on("connect_error", (err) => {
-    if (err.message) {
-      console.log("error", err.message);
-    }
-  })  
-  },1000)
- }
+useEffect(()=>{
+  if(user.UserName){
+    socket.emit("rooms",user.UserName);
+    setTimeout(()=>{
+      socket.auth = {userName:user.UserName};
+      socket.connect();
+    socket.on("connect_error", (err) => {
+      if (err.message) {
+        console.log("error", err.message);
+      }
+    })  
+    },1000)
+  }
+},[user.UserName])
+ useEffect(()=>{
+  socket.on("private_msg",(data) => {
+    console.log(data);
+  })
+ },[socket])
 window.addEventListener('beforeunload',()=>{socket.emit('offline',socket.id)})
   return (
     <div>
      <BrowserRouter>
      <Routes>
-     <Route path="/" element={isLogedIn?<Home/>:<Login/>}/>
+     <Route path="/" element={user.UserName?<Home/>:<Login/>}/>
      <Route path='/register' element={<Register/>}/>
      <Route path='/login' element={<Login/>}/>
      <Route path='/createPost' element={<CreatePost/>}/>
@@ -51,6 +62,8 @@ window.addEventListener('beforeunload',()=>{socket.emit('offline',socket.id)})
      <Route path='/createReel' element={<NewReel/>}/>
      <Route path='/createStory' element={<NewStory/>}/>
      <Route path='/search' element={<Search/>}/>
+     <Route path='/post/:post_id' element={<SpecificPost/>}/>
+     <Route path='/reel/:reel_id' element={<SpecificReel/>}/>
      </Routes>
      </BrowserRouter>
     </div>

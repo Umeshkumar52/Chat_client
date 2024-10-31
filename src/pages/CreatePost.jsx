@@ -37,10 +37,11 @@ export default function CreatePost() {
       function fileChangeHandler(event){
         event.preventDefault()
         setFile(event.target.files[0])        
+       if(event.target.files[0]){
         setBlobUrl({
           type:event.target.files[0].type,
           url:URL.createObjectURL(event.target.files[0])
-        })
+        })}
       }
     //    function multFilesHandler(event){
     //   event.preventDefault()
@@ -59,14 +60,10 @@ export default function CreatePost() {
         formData.append("file",file)
         formData.append("description",description)
         navigate('/')  
-        const response= await dispatch(newSocialPost({user_id,formData}))
+         await dispatch(newSocialPost({user_id,formData}))
         setDescription("") 
         inputResetHandler()
-        setFile(null)
-        // if(response.payload){
-        //   setDescription("") 
-        //   navigate('/')  
-        // } 
+        setFile(null) 
      }
       function textArea(event){
         // textAre.style.height ='25px'
@@ -119,7 +116,7 @@ export default function CreatePost() {
          <video ref={videoRef} onClick={videoPlayingHandler} id='videoPlayer' src={blobUrl.url} />:
          <img src={blobUrl.url}/> 
          }
-          <MdOutlineCancel className='absolute top-0 right-0 text-black hover:text-red-600 text-3xl'/>
+          <MdOutlineCancel onClick={()=>setBlobUrl("")} className='absolute top-0 right-0 text-black hover:text-red-600 text-3xl'/>
           </div>:""}
          
         {/* <div className='flex flex-wrap'>
@@ -145,11 +142,10 @@ export default function CreatePost() {
            <FaFileImage  className='text-2xl text-green-600'/>
          <h2>Photo/Video</h2>
         </label>
-        <input type='file' ref={inputReset} onChange={fileChangeHandler} multiple id='file' name="file" className='file hidden' />
+        <input type='file' accept='image/*,video/*' ref={inputReset} onChange={fileChangeHandler} multiple id='file' name="file" className='file hidden' />
         </div>
      </div>
      </div>
-     <ToastContainer/>
     </div>
   )
 }

@@ -3,13 +3,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import {userfollowing} from '../reducers/authReducer'
 import UserFollowerCard from '../components/UserFollowerCard'
 import UserFollowingCard from '../components/UserFollowingCard'
-import { useLocation, useParams } from 'react-router-dom'
+import { useLocation} from 'react-router-dom'
 export default function FriendRequests() {
   const user_id=useSelector((state)=>{
     return state.auth.user._id
   })  
   const{state}=useLocation()  
-  const {UserName}=useParams()
   const dispatch=useDispatch()
   const[followingData,setFollowing]=useState([])
   const[followerData,setFollower]=useState([]) 

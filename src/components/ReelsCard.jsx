@@ -7,11 +7,17 @@ import { following } from "../reducers/authReducer";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import WebShare from "../helper/WebShare";
-import { deleteReel, likeReel } from "../reducers/reelsReducer";
+import { deleteReel, disLikeReel, likeReel } from "../reducers/reelsReducer";
 import socket from "../socket";
 import videoPlayerHandler from '../helper/videoPlayerHandler';
 import { BsThreeDotsVertical } from "react-icons/bs";
-export default function ReelsCard({data,index,self}){  
+export default function ReelsCard({data,updateDeletReeltHandler,index,self}){ 
+  const dateOption={
+    day:"2-digit",
+    month:"short",
+  }  
+  let time=new Date(data.createdAt)
+  const dayAndMonth=time.toLocaleDateString(undefined,dateOption) 
   const user=useSelector((state)=>{return state.auth.user})
   const navigate=useNavigate()
   const[isFollowing,setIsFollowing]=useState(false)
@@ -36,7 +42,10 @@ export default function ReelsCard({data,index,self}){
    }   
    async function reelLikeHandler() {
    await dispatch(likeReel({post_id:data._id,author:user._id}))    
-  }   
+  }  
+  async function reelDisLikeHandler() {
+    await dispatch(disLikeReel({post_id:data._id,author:user._id}))    
+   }   
   function postDeleteOpenHandler(){
     document.getElementById("reelDelete"+index).style.width='46px'
   }
@@ -46,7 +55,10 @@ export default function ReelsCard({data,index,self}){
     }
   }   
   async function ReelDeleteHandler(){
-      const delet=await dispatch(deleteReel({reel_id:data._id,public_id:data.public_id}))
+    const response= await dispatch(deleteReel({reel_id:data._id,public_id:data.public_id}))
+     if(response.payload){
+      updateDeletReeltHandler(data._id)
+     } 
   }
    useEffect(()=>{
     if(data.author.Followers){
@@ -69,13 +81,17 @@ export default function ReelsCard({data,index,self}){
        setIsFollowing(true)
         }
      })
-     socket.on("reelLike",(data)=>{
-      if(data==user._id){
+     socket.on("reelLike",(likeData)=>{ 
+      if(likeData==data._id){
         setIsLiked(true)
       }
      })
+     socket.on("reelDisLike",(disLikeData)=>{
+      if(disLikeData==data._id){
+        setIsLiked(false)
+      }
+     })
    },[socket])  
-  //  ref={(el)=>{videoreference.current[index]=el}}
   return (
     <div  className="vid bg-white w-full h-[100vh] flex py-4 flex-col gap-3">
       <div className="w-full px-2 flex justify-between">
@@ -90,7 +106,7 @@ export default function ReelsCard({data,index,self}){
           <div className="flex flex-col">
             <div className=" flex gap-2">
               <h2 className="font-semibold text-sm text-black">{`${data.author.UserName.slice(0,10)}...`}</h2>
-            {!self? <div>
+            {data.author._id!=user._id? <div>
               {!isFollowing?
               <button onClick={followingHandler} className="font-semibold text-[#0846fe]">Follow</button>:
               <button disabled className="font-semibold text-[#0846fe]">Following</button>
@@ -100,7 +116,7 @@ export default function ReelsCard({data,index,self}){
            <h1 className="text-xs font-medium text-slate-600 italic">Original music</h1>
           </div>
         </div>
-        {self?
+        {data.author._id==user._id && self?
       <div className='relative w-14 flex justify-end'>
       <BsThreeDotsVertical onClick={postDeleteOpenHandler}/>
       <div id={"reelDelete"+index} className='w-0 absolute top-4'>
@@ -122,10 +138,10 @@ export default function ReelsCard({data,index,self}){
       <div className="flex flex-col px-3">
       <div className="space-y-2">
       <div className="flex gap-4 text-3xl px-3">
-         <div onClick={reelLikeHandler}>
+         <div className="cursor-pointer">
          {isLiked?
-          <FcLike/>:
-          <FaRegHeart/>
+          <FcLike onClick={reelDisLikeHandler}/>:
+          <FaRegHeart onClick={reelLikeHandler}/>
          }
       </div>
           <FaRegComment onClick={(event)=>{
@@ -139,8 +155,8 @@ export default function ReelsCard({data,index,self}){
       </div>
         <div className="inline text-sm">
         <h4>{data.tittle}</h4>
-        <h4>{`${data.likes.length} likes`}</h4>
-        <h4>{data.updatedAt.split('T')[0]}</h4>
+        <h4>{isLiked?`${data.likes.length+1} likes`:`${data.likes.length} likes`}</h4>
+        <h4>{dayAndMonth}</h4>
         </div>
       </div>
     </div>

@@ -13,7 +13,15 @@ try {
     toast.error(error.response.data.message)
 }
 })
-export const post_Comments=createAsyncThunk('CommentPost',async(post_id)=>{
+export const specificPost=createAsyncThunk('/specificPost',async(data)=>{
+    try {
+        const response=instance.get(`/auth/post/specPost/${data}`)
+        return(await response)
+    } catch (error) {
+        toast.error(error.response.data.message)
+    }
+    })
+export const post_Comments=createAsyncThunk('/CommentPost',async(post_id)=>{
     try {
         const response=instance.get(`/auth/post/postComments/${post_id}`)
         return (await response)
@@ -24,12 +32,6 @@ export const post_Comments=createAsyncThunk('CommentPost',async(post_id)=>{
 export const newSocialPost=createAsyncThunk('/createPost',async({user_id,formData})=>{
     try {
         const response=multiPartInstance.post(`/auth/post/newPost/${user_id}`,formData)
-        toast.promise(response,{
-            pending:"Uploading...",
-            success:"Successfull"
-        },{
-            autoClose:1500
-        })
         return(await response)
     } catch (error) {
         toast.error(error.response.data.message)
@@ -62,10 +64,6 @@ export const deleteStory=createAsyncThunk('deleteStory',async(data)=>{
 export const newStory=createAsyncThunk('/story',async(data)=>{
     try {
         const response=multiPartInstance.post(`/auth/post/story`,data)
-        toast.promise(response,{
-            pending:"Uploading...",
-            success:"Successfull"
-        })
         return(await response)
     } catch (error) {
         toast.error(error.response.data.message)
@@ -95,6 +93,14 @@ try {
     toast.error(error.response.data.message)
 }
 })
+export const removeLike=createAsyncThunk('/dis_like',async(data)=>{
+    try {
+        const response=await instance.put(`/auth/post/dis_Like/${data.post_id}/${data.author}`)
+        return (await response)
+    } catch (error) {
+        toast.error(error.response.data.message)
+    }
+    })
 const socialPostController=createSlice({
     name:"socialPost",
     initialState,

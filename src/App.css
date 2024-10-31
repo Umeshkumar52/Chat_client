@@ -40,7 +40,7 @@
     transform: rotate(360deg);
   }
 }
-.main_Container ::-webkit-scrollbar{
+.main_Container::-webkit-scrollbar{
  display: none;
 }
 .main_Container, .mainPanel,#userPanel,.userList,.stories,.reels,.hiddenScrollBar{
@@ -134,7 +134,25 @@ display: flex;
   #reelWraper{
     scroll-snap-type:none;
   }
-  /* .vid{
-    scroll-snap-align:start;
-  } */
+  .isRead{
+    width:full;
+    background-color:white;
+    height: auto;
+    display:flex;
+    align-items: center;
+    gap:10px;
+    padding:8px;
+  }
+.notRead{
+   width:full;
+   height: auto;
+   background-color:#9acaef27;
+   display:flex;
+   align-items: center;
+   gap:10px;
+   padding:8px;
+  }
+  
+  
+
   

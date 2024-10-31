@@ -3,15 +3,21 @@ import { CgProfile } from 'react-icons/cg'
 import {AiFillLike, AiOutlineComment} from 'react-icons/ai'
 import {MdVolumeUp,MdVolumeOff} from 'react-icons/md'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { following } from '../reducers/authReducer'
 import socket from '../socket'
-import { deletPost, likePost} from '../reducers/socialPostController'
+import { deletPost, likePost, removeLike} from '../reducers/socialPostController'
 import {BiSolidLike} from 'react-icons/bi'
 import WebShare from '../helper/WebShare'
 import videoPlayerHandler from '../helper/videoPlayerHandler'
 import {BsThreeDotsVertical} from 'react-icons/bs'
-export default function MediaCard({data,self,index}) {
+export default function MediaCard({data,updateDeletPostHandler,self,index}) {
+  const dateOption={
+    day:"2-digit",
+    month:"short"
+  }  
+  let time=new Date(data.createdAt)
+  const dayAndMonth=time.toLocaleDateString(undefined,dateOption)
   const user=useSelector((state)=>{return state.auth.user})
   const navigate=useNavigate()
   const[isLiked,setIsLiked]=useState(false)
@@ -37,9 +43,12 @@ export default function MediaCard({data,self,index}) {
      await dispatch(following({requester:user._id,reciever:data.author._id}))     
    }   
    async function postLiketHandler(event){
-    event.preventDefault()
+    // event.preventDefault()
      const response=await dispatch(likePost({post_id:data._id,author:user._id}))      
   }  
+  async function remove_like(event){
+    const response=await dispatch(removeLike({post_id:data._id,author:user._id}))
+  }
   function postDeleteOpenHandler(){
     document.getElementById("postDelete"+index).style.width='46px'
     setPostDeletCall(true)
@@ -50,11 +59,14 @@ export default function MediaCard({data,self,index}) {
     }
   }
   async function postDeleteHandler() {
-    const delet=await dispatch(deletPost({post_id:data._id,public_id:data.public_id}))
+    const response=await dispatch(deletPost({post_id:data._id,public_id:data.public_id}))
+    if(response.payload){
+    updateDeletPostHandler(data._id)
+    }
   }
-   useEffect(()=>{
+   useEffect(()=>{    
     if(data.author.Followers){
-   data.author.Followers.map((Element)=>{
+   data.author.Followers.map((Element)=>{  
      if(Element ==user._id){
       setIsFollowing(true)
      }
@@ -74,12 +86,16 @@ export default function MediaCard({data,self,index}) {
         }
      })
      socket.on("like",(data)=>{
-      console.log(data);
       if(data.liked==user._id){
         setIsLiked(true)
       }
      })
-   },[socket])      
+     socket.on("dislike",(data)=>{
+      if(data.liked==user._id){
+        setIsLiked(false)
+      }
+     })
+   },[socket])       
   return (
  <div className='relative flex flex-col gap-4'>
   <div className='flex flex-col gap-1 px-2'>
@@ -96,10 +112,13 @@ export default function MediaCard({data,self,index}) {
      <div className='flex gap-2'>
      <div className=''>
        <h2 className='font-semibold text-sm text-black'>{`${data.author.UserName.slice(0,10)}`}</h2>
-       <h1 className='text-sm'>{data.updatedAt.split('T')[0]}</h1>
+       {/* <h1 className='text-sm'>{data.updatedAt.split('T')[0]}</h1> */}
+       <h1 className='text-sm'>{dayAndMonth}</h1>
      </div>
-     {!self?
+     {/* test user is self or not */}
+     {data.author._id!=user._id?
      <div>
+      {/* check user is following or not */}
       {(isFollowing)?
      <h1  className='font-semibold  cursor-pointer text-[#0846fe]'>Following</h1>:
      <h1  onClick={followingHandler} className='font-semibold cursor-pointer text-[#0846fe]'>Follow</h1>
@@ -107,7 +126,7 @@ export default function MediaCard({data,self,index}) {
       </div>:
       ""}
       </div>
-       {self?
+       {data.author._id==user._id && self?
       <div className='relative w-14 flex justify-end'>
       <BsThreeDotsVertical onClick={postDeleteOpenHandler}/>
       <div id={"postDelete"+index} className='w-0 absolute top-4'>
@@ -143,7 +162,7 @@ export default function MediaCard({data,self,index}) {
           <div className='rounded-full bg-[#0846fe] p-[2px] '>
           <AiFillLike className='bg-[#0846fe] rounded-full text-white'/>
           </div>
-          <h4>{data.likes.length}</h4>
+          <h4>{isLiked?data.likes.length+1:data.likes.length}</h4>
         </div>
         <div className='flex gap-2'>
           <h4>{`${data.Comments.length} comments`}</h4>
@@ -154,8 +173,15 @@ export default function MediaCard({data,self,index}) {
        <div className='flex gap-2 cursor-pointer items-center'>
       {!isLiked?
        <div onClick={postLiketHandler}>
-       <BiSolidLike className='text-xl' onClick={()=>setIsLiked(true)}/></div> :
-       <BiSolidLike className='text-xl text-[#2d37ff]'/>
+       <BiSolidLike className='text-xl' onClick={()=>{
+         setIsLiked(true)
+        postLiketHandler()
+       
+      }}/></div>:
+       <BiSolidLike onClick={()=>{
+        setIsLiked(false)
+        remove_like()
+       }} className='text-xl text-[#2d37ff]'/>
        }
        <h2>like</h2>
        </div>

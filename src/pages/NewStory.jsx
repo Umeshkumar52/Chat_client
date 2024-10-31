@@ -25,24 +25,22 @@ export default function NewStory() {
       }
       function fileChangeHandler(event){
         event.preventDefault()
-        setFile(event.target.files[0])        
+        setFile(event.target.files[0])   
+        if(event.target.files[0]){     
         setBlobUrl({
           type:event.target.files[0].type,
           url:URL.createObjectURL(event.target.files[0])
-        })
+        })}
       }
     async function createPostHandler(event){
         event.preventDefault()
         const formData=new FormData()
         formData.append("story",file)
         formData.append("_id",user._id)
-        inputResetHandler()
-      const response= await dispatch(newStory(formData))
-     
-        if(response.payload){
+       await dispatch(newStory(formData))
+          inputResetHandler()
           setFile(null)
-          navigate('/') 
-        }     
+          navigate('/')   
      }
    const inputFile=useRef(null) 
    function fileTabHandler(){
@@ -66,7 +64,7 @@ export default function NewStory() {
       </div>
       </div>
      <div id='videoDiv' className='relative w-[0px] h-[90vh] '>
-        <input ref={inputFile} onChange={fileChangeHandler} type='file' className='hidden' id='file' name='file' />
+        <input ref={inputFile} accept='video/*' onChange={fileChangeHandler} type='file' className='hidden' id='file' name='file' />
        <video className='h-screen w-full' autoPlay src={blobUrl.url}/>
        <div className='absolute right-4 top-6 h-[20rem] w-[5rem]'>
 

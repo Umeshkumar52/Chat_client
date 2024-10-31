@@ -26,7 +26,14 @@ export const getAllConversation=createAsyncThunk('/Allchats',async(data)=>{
         toast.error(error.response.data.message)
     }
 })
-export 
+export const deleteChats=createAsyncThunk('/deleteMsg',async(data)=>{
+    try {
+        const response=await instance.delete(`/conversation/chat/delete/${data.conversation_id}`,{chat_ids:"662323232323"})
+        return (await response)
+    } catch (error) {
+        toast.error(error.response.data.message)
+    }
+})
 const conversationReducer=createSlice({
     name:"conversation",
     initialState,

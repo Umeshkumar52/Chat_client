@@ -36,14 +36,14 @@ export default function Comments() {
         }
         commit()
     },[state])  
-    useEffect(()=>{
-       socket.on("comment",(data)=>{
-        console.log("socket",data);
-       })
-       socket.on("reelComment",(data)=>{
-        console.log("socket",data);
-       })
-    },[socket])      
+    // useEffect(()=>{
+    //    socket.on("comment",(data)=>{
+    //     console.log("socket",data);
+    //    })
+    //    socket.on("reelComment",(data)=>{
+    //     console.log("socket",data);
+    //    })
+    // },[socket])      
    return (
     <div className='w-full relative'>
      <div className='flex gap-1 py-2 items-center'>

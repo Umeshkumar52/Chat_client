@@ -17,9 +17,9 @@ export default function ChatApp() {
     setSearchUser(data)
 }
  function SelectedUser(data){
-    navigate(`/direct/${state.UserName}/inbox/${data.UserName}`,{state:data})
     if(data){
-   socket.emit("rooms",data)
+    navigate(`/direct/${state.UserName}/inbox/${data.UserName}`,{state:data})
+   socket.emit("rooms",data.UserName)
     }
   }   
   window.onbeforeunload=()=>{
@@ -38,13 +38,13 @@ export default function ChatApp() {
     if(state.Contact.length>0){
       setOnlineUsers((users)=>[...users,...state.Contact])
     }
-    socket.emit("rooms",state.UserName);
+    // socket.emit("rooms",state.UserName);
     // socket.emit("online",state.UserName)
   },[])
   return (
         <div className="w-full mainPanel flex flex-col lg:flex-row overflow-y-scroll  bg-black text-black">
         <div className="w-full lg:w-[20%] flex pt-2 px-2 border-2 border-cyan-800 h-screen ">
-          <div className="w-full">
+          <div className="w-full space-y-3">
           <div className="flex flex-col gap-4">
            <SearchBar updateSearchTerm={searchUserHandler} />
            <div className="flex gap-2 text-white flex-col">
@@ -55,7 +55,10 @@ export default function ChatApp() {
           </div>
           {/* userList */}
          {(searchUser.length>0)?
-         <SearchUserList key={searchUser} data={searchUser}/>:
+         
+         <SearchUserList key={searchUser} type="toMessage" data={searchUser}/>
+         
+         :
          <div
             id="userPanel"
             className="overflow-y-scroll h-screen text-black"

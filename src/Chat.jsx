@@ -7,11 +7,14 @@ import axios from "axios";
 import 'react-toastify/dist/ReactToastify.css'
 import {FiSend} from 'react-icons/fi'
 import {BsSendSlashFill} from 'react-icons/bs'
-import { getAllConversation, textMessage } from "./reducers/conversationReducer";
+import { deleteChats, getAllConversation, textMessage } from "./reducers/conversationReducer";
 import {IoMdArrowRoundBack} from 'react-icons/io'
 import MediaComponent from "./components/MediaComponent";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import socket from "./socket";
+import ChatMessageMedia from "./components/ChatMessageMedia";
+import moment from 'moment-timezone'
+import ChatsCard from "./components/ChatsCard";
 export default function Chat(){
   const{sender,reciever}=useParams()  
   const navigate=useNavigate()
@@ -24,16 +27,31 @@ export default function Chat(){
   const [file,setFile]=useState()
   const[online,setOnline]=useState(false)
   const[uploading,setUploading]=useState(false)
-  const dispatch=useDispatch() 
+  const[fileBlobUrl,setFileBlobUrl]=useState()
+  const dispatch=useDispatch()
+  const[msg_id,setMsg_id]=useState({
+    conversation_id:"",
+    count:0,
+    textMsgData:[],
+    fileMsgData:[]
+  })
   window.addEventListener("online",()=>setOnline(true))
   async function sendChat(event) {
     event.preventDefault();
     try{
-    const time=timer()
+      const time=moment(new Date()).tz('/America/New_York').format('hh:mm:A')
     if(file){
+      setMessageList((list) => [...list, {
+        reciever_id:currentUser?currentUser.UserName:socket.id,
+        sender_id:sender,
+        msg_type:"file",
+        time,
+        url_type:(file.type==="image/jpeg" || file.type==="image/png" || file.type==="image/jpg")?"jpg":"mp4",
+        secure_url:fileBlobUrl,
+        type:"outgoing",
+    }]); 
       const formData=new FormData()
       formData.append("file",file)
-      formData.append('time',time)
      setUploading(true)  
 inputResetHandler()
 setFile("")
@@ -88,18 +106,11 @@ setMessage(event.target.value)
 }
 function fileChangeHandler(event){
    event.preventDefault()
-   const time=timer()
    let img=event.target.files[0] 
    setFile(img) 
-   setMessageList((list) => [...list, {
-    reciever_id:currentUser?currentUser.UserName:socket.id,
-    sender_id:sender,
-    msg_type:"file",
-    time,
-    url_type:(img.type==="image/jpeg" || img.type==="image/png" || img.type==="image/jpg")?"jpg":"mp4",
-    secure_url:URL.createObjectURL(img),
-    type:"outgoing",
-}]);       
+   if(img){
+   setFileBlobUrl(URL.createObjectURL(img))  
+   }   
 }
 function inputResetHandler(){
   if(inputReset.current){
@@ -110,7 +121,7 @@ function inputResetHandler(){
 }
   useEffect(() => {    
      Ref.current.scrollTop=Ref.current.scrollHeight
-  }, [message,list]);
+  }, [message,list])
   useEffect(() => { 
     socket.emit("room",currentUser.UserName) 
       socket.on("private_msg",(data) => {
@@ -122,15 +133,66 @@ function inputResetHandler(){
     // socket.on("online",(data)=>{
            
     // })
-  },[socket]); 
+  },[socket])
   async function call(){
-    const res=await dispatch(getAllConversation({reciever_id:reciever,sender_id:sender}))  
+    const res=await dispatch(getAllConversation({reciever_id:reciever,sender_id:sender}))
     if(res.payload && res.payload.data.message[0]){
-  setMessageList((list) => [...list,...res.payload.data.message[0].chats]);
-  }}
+      setMsg_id((prev)=>({
+        ...prev,
+        conversation_id:res.payload.data.message[0]._id
+      }))
+     setMessageList((list) => [...list,...res.payload.data.message[0].chats]);
+  }
+}
   useEffect(()=>{
    call()
   },[])
+  function postDeleteOpenHandler(data){  
+   if(data.msg_type==="text"){
+    setMsg_id((prev)=>({
+        ...prev,
+        count:prev.count+1,
+        textMsgData:[...prev.textMsgData,data._id]         
+    } ))
+  }
+  if(data.msg_type==="file"){
+    setMsg_id((prev)=>({
+        ...prev,
+        count:prev.count+1,
+        fileMsgData:[...prev.fileMsgData,{
+        chat_id:data._id,
+        msg_type:data.msg_type,
+        public_id:data.public_id
+      }]    
+  } ))
+    // setMsg_id({
+    //   count:msg_id.count+1,
+    //   fileMsgData:(prev)=>[...prev,data]
+    // })
+  }
+    document.getElementById("deleteSlide").style.width='300px'
+  }
+  function postDeletecloseHandler(){
+    if(document.getElementById("deleteSlide").clientHeight>0){
+      // setMsg_id({
+      //   count:0,
+      //   textMsgData:[],
+      //   fileMsgData:[]
+      // })
+    document.getElementById("deleteSlide").style.width='0px'
+    }
+  }
+  async function msgDeleteHandler() {
+    await dispatch(deleteChats(msg_id))
+    postDeletecloseHandler()
+    // setMsg_id({
+    // conversation_id:"",
+    // count:0,
+    // textMsgData:[],
+    // fileMsgData:[]
+    // })
+  //  postDeleteOpenHandler()
+  }    
   return (
     <div className="w-full h-[100vh] pt-[3.5rem] bg-[#000000]  text-white">
        <div className="fixed w-full max-h-16 py-2 bg-[#363333] top-0">
@@ -148,23 +210,37 @@ function inputResetHandler(){
           </div>
         </div>
       </div>
-       <div  ref={Ref}  className="msg_container space-y-3 py-2 pb-14 w-[100%] h-[100vh] overflow-scroll">
+       <div  ref={Ref} onClick={postDeletecloseHandler} className="msg_container space-y-3 py-2 pb-[9.5rem] w-[100%] h-[100vh] overflow-scroll">
         {(list.length>0)? list.map((data, index)=>{
+          // const timeFormate=moment(data.createdAt).tz('/America/New_York').format('hh:mm:A')
           return(
-            <div className={(data.sender_id===sender)?"outgoing":"incoming"} key={index}>                
-            <div className={(data.sender_id===sender)?"outgoingInner":"incomingInner"}>
-                {(data.msg_type==="text")?
-                <div className="pr-2 pb-3 min-w-24 pl-3">{data.message}</div>:
-                <MediaComponent key={data.secure_url} url_type={data.url_type} uploading={uploading} url={data.secure_url}/>
-                  }
-                <h6 className="absolute bottom-0 right-2 text-[#cdcaca] flex items-end text-xs">
-                  {data.time}
-                </h6>               
-            </div>
-          </div>
+            <ChatsCard data={data} sender={sender} postDeleteOpenHandler={postDeleteOpenHandler} index={index} key={index}/>
+          //   <div onAuxClick={()=>postDeleteOpenHandler(data.message)} className={(data.sender_id===sender)?"outgoing":"incoming"} key={index}>                
+          //   <div className={(data.sender_id===sender)?"outgoingInner":"incomingInner"}>
+          //       {(data.msg_type==="text")?
+          //       <div className="pr-2 pb-3 min-w-24 pl-3">{data.message}</div>:
+          //       <MediaComponent key={index} data={data}/>
+          //         }
+          //       <h6 className="absolute bottom-0 right-2 text-[#cdcaca] flex items-end text-xs">
+          //        {timeFormate}
+          //       </h6>               
+          //   </div>
+          // </div>
           );
         }):""}
       </div> 
+        {/* delet slide */}
+        <div id="deleteSlide" className="fixed w-0 top-1/4 flex justify-center items-center">
+               <div className="w-[16rem] flex bg-slate-800 rounded-3xl flex-col gap-6 p-[1rem]">
+                <h1 className="text-slate-300">Delete message?</h1>
+                <div className="pl-6 flex justify-between">
+                  <button onClick={postDeletecloseHandler} className="text-green-600 font-semibold">cancel</button>
+                  <button onClick={msgDeleteHandler} className="text-green-600 font-semibold">delete for me</button>
+                </div>
+            </div>
+
+       </div>
+       {/* chat send form */}
       <form
       // w-[81%]
         className="bg-black fixed w-full bottom-0 right-0"
@@ -202,7 +278,7 @@ function inputResetHandler(){
             <label htmlFor="file">
             <IoCameraOutline className="absolute right-20 w-7 h-7 text-black"/>
             </label>
-           <input id="file" type="file" ref={inputReset} name="file" onChange={fileChangeHandler}  className="file hidden text-black"/>
+           <input id="file" accept='image/*,video/*' type="file" ref={inputReset} name="file" onChange={fileChangeHandler}  className="file hidden text-black"/>
           <div className="h-10 w-10 flex justify-center items-center rounded-full bg-[#2eff35] text to-black">
           {(message.length>0 || file)?
           <button type="submit"><FiSend className="h-6 w-6 text-black font-semibold"/></button>
@@ -211,7 +287,14 @@ function inputResetHandler(){
           </div>
           </div>
         </div>
-      </form>    
+      </form>
+        {/*media popup */}
+      {file?
+        <ChatMessageMedia file={{
+          url:fileBlobUrl,
+          file_type:file.type
+        }} inputResetHandler={setFile} sendChat={sendChat}/>:""
+        }
     </div>
   );
 }
