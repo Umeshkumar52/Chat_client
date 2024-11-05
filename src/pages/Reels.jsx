@@ -63,7 +63,7 @@ const containerRef=useRef(null);
   //   }
   // }, [currentVideo]); 
   return (
-    <div id='reelWraper' ref={containerRef} className='hiddenScrollBar bg-slate-400 w-full h-[100vh] overflow-y-scroll'>
+    <div id='reelWraper' ref={containerRef} className='hiddenScrollBar w-full h-[100vh] overflow-y-scroll'>
       {/* <div className='fixed top-1 left-3 text-[#4d4d4d] flex gap-1 items-center'> 
         <IoIosArrowBack onClick={()=>navigate(-1)} className='text-2xl cursor-pointer'/>
           <h1 className='font-semibold text-xl'>Reels</h1>

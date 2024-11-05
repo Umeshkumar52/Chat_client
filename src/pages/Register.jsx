@@ -54,8 +54,6 @@ export default function Register() {
         passwordMessage.style.color='red'
         passwordMessage.textContent='All feilds are mandatory!'
         return
-      }else{
-        registerUserHandler()
       }
   })}
   async function registerUserHandler(event) {
@@ -106,7 +104,7 @@ export default function Register() {
     <div className='w-full h-screen items-center flex justify-center'>
          <div className='w-[250px] space-y-6'>
           <h1 className='text-2xl font-medium text-center text-[#0cff86]'>Registration</h1>
-         <form id='myForm' noValidate className='space-y-1'>
+         <form id='myForm' onSubmit={registerUserHandler} noValidate className='space-y-1'>
          <div className='flex flex-col items-center gap-4'>
               <label htmlFor='Profile'>
               {ProfileBlobUrl?
