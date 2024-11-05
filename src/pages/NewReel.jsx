@@ -36,10 +36,10 @@ export default function NewReel() {
         event.preventDefault()
         const formData=new FormData()
         formData.append("reel",file)
+        navigate('/') 
          await dispatch(newReel({user_id:user._id,formData}))
         inputResetHandler()
-          setFile(null)
-          navigate('/')  
+          setFile(null) 
      }
    const inputFile=useRef(null) 
    function fileTabHandler(){

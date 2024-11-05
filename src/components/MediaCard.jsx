@@ -43,10 +43,11 @@ export default function MediaCard({data,updateDeletPostHandler,self,index}) {
      await dispatch(following({requester:user._id,reciever:data.author._id}))     
    }   
    async function postLiketHandler(event){
-    // event.preventDefault()
+    setIsLiked(true)
      const response=await dispatch(likePost({post_id:data._id,author:user._id}))      
   }  
   async function remove_like(event){
+    setIsLiked(false)
     const response=await dispatch(removeLike({post_id:data._id,author:user._id}))
   }
   function postDeleteOpenHandler(){
@@ -84,16 +85,6 @@ export default function MediaCard({data,updateDeletPostHandler,self,index}) {
       if(data.author._id==following.reciever){
         setIsFollowing(true)
         }
-     })
-     socket.on("like",(data)=>{
-      if(data.liked==user._id){
-        setIsLiked(true)
-      }
-     })
-     socket.on("dislike",(data)=>{
-      if(data.liked==user._id){
-        setIsLiked(false)
-      }
      })
    },[socket])       
   return (
@@ -172,14 +163,11 @@ export default function MediaCard({data,updateDeletPostHandler,self,index}) {
       <div className='flex justify-between text-xl px-3'>
        <div className='flex gap-2 cursor-pointer items-center'>
       {!isLiked?
-       <div onClick={postLiketHandler}>
+       <div>
        <BiSolidLike className='text-xl' onClick={()=>{
-         setIsLiked(true)
-        postLiketHandler()
-       
+        postLiketHandler() 
       }}/></div>:
        <BiSolidLike onClick={()=>{
-        setIsLiked(false)
         remove_like()
        }} className='text-xl text-[#2d37ff]'/>
        }

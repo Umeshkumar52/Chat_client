@@ -41,9 +41,11 @@ export default function ReelsCard({data,updateDeletReeltHandler,index,self}){
      await dispatch(following({requester:user._id,reciever:data.author._id}))     
    }   
    async function reelLikeHandler() {
+    setIsLiked(true)
    await dispatch(likeReel({post_id:data._id,author:user._id}))    
   }  
   async function reelDisLikeHandler() {
+    setIsLiked(false)
     await dispatch(disLikeReel({post_id:data._id,author:user._id}))    
    }   
   function postDeleteOpenHandler(){
@@ -81,20 +83,10 @@ export default function ReelsCard({data,updateDeletReeltHandler,index,self}){
        setIsFollowing(true)
         }
      })
-     socket.on("reelLike",(likeData)=>{ 
-      if(likeData==data._id){
-        setIsLiked(true)
-      }
-     })
-     socket.on("reelDisLike",(disLikeData)=>{
-      if(disLikeData==data._id){
-        setIsLiked(false)
-      }
-     })
    },[socket])  
   return (
-    <div  className="vid bg-white w-full h-[100vh] flex py-4 flex-col gap-3">
-      <div className="w-full px-2 flex justify-between">
+    <div  className="vid bg-white w-full h-[100vh] flex flex-col py-2 gap-3">
+      <div className="w-full h-[10vh] px-2 flex justify-between">
         <div className="flex gap-3">
          <Link to={`/${data.author.UserName}`}>
           <div className="flex">
@@ -128,16 +120,16 @@ export default function ReelsCard({data,updateDeletReeltHandler,index,self}){
       }
       </div>
       {/* video show here */}
-      <div onClick={postDeletecloseHandler} className="relative w-full h-[70%]">
+      <div onClick={postDeletecloseHandler} className="relative w-full h-[70vh]">
         <video ref={videoRef} onClick={videoplay} id="video" src={data.secure_url} className="video w-full "></video>
         <div className='absolute p-2 bg-slate-700 rounded-full text-white right-4 bottom-6'>
           {true?<MdVolumeUp/>:<MdVolumeOff/>}
         </div>
       </div>
       {/* sharing thoghts section */}
-      <div className="flex flex-col px-3">
+      <div className="w-full h-[20vh] px-3 flex flex-col">
       <div className="space-y-2">
-      <div className="flex gap-4 text-3xl px-3">
+      <div className="flex gap-4 text-3xl">
          <div className="cursor-pointer">
          {isLiked?
           <FcLike onClick={reelDisLikeHandler}/>:

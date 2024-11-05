@@ -37,10 +37,10 @@ export default function NewStory() {
         const formData=new FormData()
         formData.append("story",file)
         formData.append("_id",user._id)
-       await dispatch(newStory(formData))
+        navigate('/') 
+      const response= await dispatch(newStory(formData))
           inputResetHandler()
-          setFile(null)
-          navigate('/')   
+          setFile(null)  
      }
    const inputFile=useRef(null) 
    function fileTabHandler(){

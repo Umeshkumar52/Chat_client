@@ -50,7 +50,8 @@ export default function Profile() {
   }
   async function userDetail() {
     const response=await dispatch(userAndPosts(userName))
-    if(response.payload && response.payload.data.message!=null){
+    console.log(response);
+    if(response.payload && response.payload.data.message!=null && response.payload.data.message[0]){
       setUser(...response.payload.data.message)
       setPost((prev)=>[...prev,...response.payload.data.message[0].myPosts])
       setReel((prev)=>[...prev,...response.payload.data.message[0].myReels])
@@ -79,7 +80,7 @@ export default function Profile() {
     const updateData=reel.filter(items=>items._id !==_id)
     setReel(updateData)
   }
-  return (
+  return(
     <div className='hiddenScrollBar py-2 w-full h-screen overflow-y-scroll'>
     {userData?
     <div className='w-full'>
@@ -95,14 +96,15 @@ export default function Profile() {
       {/* {profileBannerUrl || user.profileBanner? */}
        <img className='w-full h-full' alt='img' src={profileBannerUrl?profileBannerUrl:userData.profileBanner}/>:
       {/* } */}
-        <label  htmlFor="profileBanner">
+       {user._id===userData._id? <label  htmlFor="profileBanner">
         <IoCameraOutline className='absolute text-3xl right-4 bottom-0'/>
-        </label>
+        </label>:""}
         <input type='file' onChange={profileBannerHandler} className='hidden' id='profileBanner' name='profileBanner'/>
       </div>
       {/* profile */}
-      <div className='absolute flex justify-center px-2 items-center top-[4rem] left-[1rem]'>
-      <label htmlFor='profile'>
+     <div className='absolute flex justify-center px-2 items-center top-[4rem] left-[1rem]'>
+    {user._id===userData._id?
+    <label htmlFor='profile'>
       <FiEdit className='absolute text-xl top-1/3 right-0'/>
       <div className='flex justify-center items-center rounded-full'>
      {profileUrl || userData.avatar?
@@ -111,7 +113,12 @@ export default function Profile() {
      }
         <input onChange={profileHandler} type='file' id='profile' className='hidden' name='profile'/>
     </div>
-    </label>
+    </label>:<div>  {profileUrl || userData.avatar?
+      <img className='w-[8rem] h-[8rem] border-2 rounded-full' src={profileUrl?profileUrl:userData.avatar} alt="" />:
+      <img className='w-[8rem] h-[8rem]  border-2 rounded-full' src="#" alt="" />
+     }
+     </div>
+     }
     </div>
     {/* userData */}
       <div className='relative pt-[4rem] gap-3 flex flex-col px-3 pb-[1rem] border-b-2'>

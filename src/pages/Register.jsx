@@ -39,21 +39,25 @@ export default function Register() {
     `
   }
  })}
-//  if(myForm){
-//   myForm.addEventListener("submit",function(event){
-//     let allfieldsFilled=true
-//     const inputs=myForm.querySelectorAll('input'); 
-//     inputs.forEach((input)=>{
-//       if(input.value!=''){
-//         allfieldsFilled=false;
-//       }
-//     })
-//     if(!allfieldsFilled){
-//         event.preventDefault()
-//         passwordMessage.style.color='red'
-//         passwordMessage.textContent='All feilds are mandatory!'
-//       }
-//   })}
+ if(myForm){
+  myForm.addEventListener("submit",function(event){
+    event.preventDefault()
+    let allfieldsFilled=true
+    const inputs=myForm.querySelectorAll('input'); 
+    inputs.forEach((input)=>{
+      if(input.value==''){
+        allfieldsFilled=false;
+      }
+    })
+    if(!allfieldsFilled){
+        event.preventDefault()
+        passwordMessage.style.color='red'
+        passwordMessage.textContent='All feilds are mandatory!'
+        return
+      }else{
+        registerUserHandler()
+      }
+  })}
   async function registerUserHandler(event) {
     event.preventDefault()
     const formData=new FormData()
@@ -62,6 +66,21 @@ export default function Register() {
     formData.append("UserName",userData.UserName)
     formData.append("Name",userData.Name)
     formData.append("Password",userData.Password)
+    // if(myForm){
+    //   myForm.addEventListener("submit",function(event){
+    //     let allfieldsFilled=true
+    //     const inputs=myForm.querySelectorAll('input'); 
+    //     inputs.forEach((input)=>{
+    //       if(input.value!=''){
+    //         allfieldsFilled=false;
+    //       }
+    //     })
+    //     if(!allfieldsFilled){
+    //         event.preventDefault()
+    //         passwordMessage.style.color='red'
+    //         passwordMessage.textContent='All feilds are mandatory!'
+    //       }
+    //   })}
     const response=await dispatch(signUp(formData))
     if(response.payload){
       navigate('/')
@@ -87,7 +106,7 @@ export default function Register() {
     <div className='w-full h-screen items-center flex justify-center'>
          <div className='w-[250px] space-y-6'>
           <h1 className='text-2xl font-medium text-center text-[#0cff86]'>Registration</h1>
-         <form id='myForm' onSubmit={registerUserHandler} noValidate className='space-y-1'>
+         <form id='myForm' noValidate className='space-y-1'>
          <div className='flex flex-col items-center gap-4'>
               <label htmlFor='Profile'>
               {ProfileBlobUrl?

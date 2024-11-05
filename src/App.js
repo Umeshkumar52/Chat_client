@@ -20,8 +20,9 @@ import socket from './socket';
 import { useEffect } from 'react';
 import SpecificPost from './components/SpecificPost';
 import SpecificReel from './components/SpecificReel';
-function App() {
- const {user,isLogedIn}=useSelector((state)=>{return state.auth}) 
+import { localeData } from 'moment-timezone';
+function App() {   
+ const {user,isLogedIn}=useSelector((state)=>{return state.auth})  
 useEffect(()=>{
   if(user.UserName){
     socket.emit("rooms",user.UserName);

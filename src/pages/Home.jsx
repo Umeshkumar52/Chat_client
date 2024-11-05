@@ -51,13 +51,12 @@ export default function Home(){
 
   async function storyHandler(){
     const story=await dispatch(allStories())
-    const response=await dispatch(unReadNotificationRed(auth.user._id))
     if(story.payload){
     setStories((stories)=>[...stories,...story.payload.data.message])   
   }
-  if(response.payload){
-    setUnReadNotification(response.payload.data.message.unReadNotification)
-  }
+  // if(response.payload){
+  //   setUnReadNotification(response.payload.data.message.unReadNotification)
+  // }
     }
     async function postHandler(){
       setIsLoading(true)
