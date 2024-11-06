@@ -40,13 +40,12 @@ export default function UserStories() {
     setReply("")
   }
   return(
-    <div className='w-full h-full'>
-    {/* // <div className='w-full h-screen whitespace-nowrap overflow-auto'> */}
+    <div className='w-full h-screen whitespace-nowrap overflow-auto'>     
     {state.story.map((Element,index)=>{
       if(index==0){
       return  <div key={index} id={`story${index}`} onClick={formNum[index]} onEnded={formNum[index]} className='absolute flex justify-center items-start h-full w-full'>
           <div className='relative w-[300px]'>
-          <div onClick={()=>navigate(`/${state.user.UserName}`)} className='w-full fixed top-4 flex gap-4 items-center'>
+          <div onClick={()=>navigate(`/${state.user.UserName}`)} className='w-full cursor-pointer fixed top-4 flex gap-4 items-center'>
           <img className=' w-12 h-12 rounded-full border-2' src={state.user.avatar}/>
            <h2 className='font-semibold text-lg text-[#f8f1f1]'>{state.user.UserName}</h2>
           </div>
@@ -56,7 +55,7 @@ export default function UserStories() {
       }else{
         return <div key={index} id={`story${index}`} onClick={formNum[index]} onEnded={formNum[index]} className='absolute -right-[65rem] flex justify-center items-start w-full h-full'>
         <div className='relative w-[300px]'>
-        <div onClick={()=>navigate(`/${state.user.UserName}`)} className='w-full fixed top-4 flex gap-4 items-center'>
+        <div onClick={()=>navigate(`/${state.user.UserName}`)} className='w-full cursor-pointer fixed top-4 flex gap-4 items-center'>
      <img className=' w-12 h-12 rounded-full border-2' src={state.user.avatar}/>
      <h2 className='font-semibold text-lg text-[#f8f1f1]'>{state.user.UserName}</h2>
      </div>

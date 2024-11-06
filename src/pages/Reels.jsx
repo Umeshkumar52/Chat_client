@@ -21,7 +21,7 @@ const containerRef=useRef(null);
     const container=containerRef.current
     let lastScrollTop=0
     const handleScroll=()=> {
-      const scrollTop =container.scrollTop ;
+      const scrollTop =container.scrollTop;
       const videoHeight=container.clientHeight;
       if(!isScrolling){
         isScrolling=true

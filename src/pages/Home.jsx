@@ -109,7 +109,7 @@ useEffect(()=>{
 },[socket])
 PageLocRes("hiddenScrollBar")
   return (
-     <div onScroll={slideCloseHandler} className='hiddenScrollBar relative w-full h-screen overflow-y-scroll pt-2 space-y-6 text-black'>
+     <div onScroll={slideCloseHandler} className='hiddenScrollBar relative w-full h-screen md:justify-items-center overflow-y-scroll pt-2 space-y-6 text-black'>
         {/* Nabigation Bar */}
         <div className='relative'>
      <NabigationBar user={auth.user}/>
@@ -149,7 +149,7 @@ PageLocRes("hiddenScrollBar")
        </div>
    </div>
    {/* Posts */}
-     <div className='flex flex-col pb-12 gap-10'>
+     <div className='flex md:w-[312px] lg:w-[312px] flex-col pb-12 gap-10'>
   {post.length>0?
    post.map((Element,index)=>{
      return <MediaCard key={index} index={index} data={Element}/>

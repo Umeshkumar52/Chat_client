@@ -8,8 +8,8 @@ useEffect(()=>{
 },[])
   return (
     <div className='w-full fixed bottom-20 flex items-center justify-center'>
-      <div className=' w-fit px-4 py-2 font-semibold text-base text-white border-dotted border-2 border-[#ff3a3a]  rounded-full bg-[#5029ff]'>
-      Posted
+      <div className=' w-fit px-4 py-2 font-normal text-base text-white  rounded-full bg-[#3931cc]'>
+       You share a post
     </div>
     </div>
   )
