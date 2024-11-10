@@ -81,7 +81,7 @@ export default function Profile() {
     setReel(updateData)
   }
   return(
-    <div className='hiddenScrollBar py-2 w-full h-screen overflow-y-scroll'>
+    <div className='hiddenScrollBar md:justify-items-center py-2 w-full h-screen overflow-y-scroll'>
     {userData?
     <div className='w-full'>
       {/* back handler */}
@@ -153,7 +153,7 @@ export default function Profile() {
       <label htmlFor="reels" className='peer-checked/reels:text-sky-500 text-lg font-semibold'>Reels</label>
       <hr/>
      {/* post Card */}
-     <div className='hidden peer-checked/post:block space-y-10'>
+     <div className='hidden md:justify-items-center peer-checked/post:block space-y-10'>
     {(post.length)?
       post.map((Element,index)=>{
        return <MediaCard self={true} updateDeletPostHandler={updateDeletPostHandler} index={index} key={index} data={Element} />
@@ -161,7 +161,7 @@ export default function Profile() {
     }
      </div>
      {/* ReelsCard */}
-     <div className='hidden peer-checked/reels:block space-y-10'>
+     <div className='hidden md:justify-items-center peer-checked/reels:block space-y-10'>
     {(reel.length>0)?
       reel.map((Element,index)=>{
        return <ReelsCard key={index} updateDeletReeltHandler={updateDeletReeltHandler} self={true} index={index} data={Element} />

@@ -85,7 +85,7 @@ export default function ReelsCard({data,updateDeletReeltHandler,index,self}){
      })
    },[socket])  
   return (
-    <div  className="vid bg-white w-full h-[100vh] flex flex-col py-2 gap-3">
+    <div  className="vid bg-white md:w-[312px] w-full h-[100vh] flex flex-col py-2 gap-3">
       <div className="w-full h-[10vh] px-2 flex justify-between">
         <div className="flex gap-3">
          <Link to={`/${data.author.UserName}`}>

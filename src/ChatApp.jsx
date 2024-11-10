@@ -42,7 +42,7 @@ export default function ChatApp() {
     // socket.emit("online",state.UserName)
   },[])
   return (
-        <div className="w-full mainPanel flex flex-col lg:flex-row overflow-y-scroll  bg-black text-black">
+        <div className="w-full mainPanel flex flex-col md:flex-row overflow-y-scroll  bg-black text-black">
         <div className="w-full lg:w-[20%] flex pt-2 px-2 border-2 border-cyan-800 h-screen ">
           <div className="w-full space-y-3">
           <div className="flex flex-col gap-4">

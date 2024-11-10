@@ -88,7 +88,7 @@ export default function MediaCard({data,updateDeletPostHandler,self,index}) {
      })
    },[socket])       
   return (
- <div className='relative flex flex-col gap-4'>
+ <div className='relative md:w-[312px] flex flex-col gap-4'>
   <div className='flex flex-col gap-1 px-2'>
   <div className='w-full relative items-center flex gap-3'>
    <Link to={`/${data.author.UserName}`}>
