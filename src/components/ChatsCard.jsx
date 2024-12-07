@@ -7,8 +7,8 @@ export default function ChatsCard({data,sender,index,postDeleteOpenHandler}) {
     timeFormate=moment(data.createdAt).tz('/America/New_York').format('hh:mm:A') 
     }
     function postDelete(){
-        postDeleteOpenHandler(data)
-    }
+      postDeleteOpenHandler(data)
+    }    
   return (
     <div onAuxClick={postDelete} className={(data.sender_id===sender)?"outgoing":"incoming"} key={index}>                
     <div className={(data.sender_id===sender)?"outgoingInner":"incomingInner"}>

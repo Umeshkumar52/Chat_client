@@ -1,22 +1,23 @@
 import { React, useState, useEffect, useRef } from "react";
 import "./App.css";
 import {useDispatch} from 'react-redux'
-import {IoCameraOutline} from 'react-icons/io5'
+import {IoCallOutline, IoCameraOutline} from 'react-icons/io5'
 import timer from './helper/Timer'
 import axios from "axios";
 import 'react-toastify/dist/ReactToastify.css'
 import {FiSend} from 'react-icons/fi'
 import {BsSendSlashFill} from 'react-icons/bs'
 import { deleteChats, getAllConversation, textMessage } from "./reducers/conversationReducer";
-import {IoMdArrowRoundBack} from 'react-icons/io'
+import {IoIosCall, IoMdArrowRoundBack} from 'react-icons/io'
 import MediaComponent from "./components/MediaComponent";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import socket from "./socket";
 import ChatMessageMedia from "./components/ChatMessageMedia";
 import moment from 'moment-timezone'
 import ChatsCard from "./components/ChatsCard";
+import {FaVideo} from 'react-icons/fa'
 export default function Chat(){
-  const{sender,reciever}=useParams()  
+  const{sender,reciever}=useParams()    
   const navigate=useNavigate()
   const {state}=useLocation()
   const currentUser=state  
@@ -183,6 +184,8 @@ function inputResetHandler(){
     }
   }
   async function msgDeleteHandler() {
+    // console.log(msg_id);
+    
     await dispatch(deleteChats(msg_id))
     postDeletecloseHandler()
     // setMsg_id({
@@ -196,7 +199,8 @@ function inputResetHandler(){
   return (
     <div className="w-full h-[100vh] pt-[3.5rem] bg-[#000000]  text-white">
        <div className="fixed w-full max-h-16 py-2 bg-[#363333] top-0">
-        <div className="flex flex-row gap-2 px-2">
+        <div className="flex justify-between px-2">
+         <div className="flex items-center gap-2">
           <IoMdArrowRoundBack onClick={()=>navigate(-1)} className="text-xl"/>
           <div className="flex gap-3">
             <img src={currentUser.avatar} alt="img" className="w-10 h-10 border-2 cursor-pointer rounded-full border-solid" />
@@ -208,6 +212,19 @@ function inputResetHandler(){
               }
             </div>
           </div>
+          </div>
+          <div className="text-2xl flex gap-6 items-center">
+          <FaVideo onClick={()=>navigate("/video",{state:{
+            UserName:currentUser.UserName,
+            avatar:currentUser.avatar
+
+          }})}/>
+          <IoIosCall onClick={()=>navigate("/audio",{state:{
+            UserName:currentUser.UserName,
+            avatar:currentUser.avatar
+
+          }})}/>
+        </div>
         </div>
       </div>
        <div  ref={Ref} onClick={postDeletecloseHandler} className="msg_container space-y-3 py-2 pb-[9.5rem] w-[100%] h-[100vh] overflow-scroll">

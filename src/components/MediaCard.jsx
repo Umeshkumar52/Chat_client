@@ -38,8 +38,13 @@ export default function MediaCard({data,updateDeletPostHandler,self,index}) {
       videoRef.current.pause()
       setIsPlaying(true)
     }
-   }   
-   async function followingHandler() {
+   }  
+
+    
+   async function followingHandler(following_user) {
+    if(following_user==data.author._id){
+      setIsFollowing(true)
+      }
      await dispatch(following({requester:user._id,reciever:data.author._id}))     
    }   
    async function postLiketHandler(event){
@@ -82,9 +87,9 @@ export default function MediaCard({data,updateDeletPostHandler,self,index}) {
    },[])
    useEffect(()=>{
      socket.on("following",(following)=>{
-      if(data.author._id==following.reciever){
-        setIsFollowing(true)
-        }
+      // if(data.author._id==following.reciever){
+      //   setIsFollowing(true)
+      //   }
      })
    },[socket])       
   return (
@@ -112,7 +117,7 @@ export default function MediaCard({data,updateDeletPostHandler,self,index}) {
       {/* check user is following or not */}
       {(isFollowing)?
      <h1  className='font-semibold  cursor-pointer text-[#0846fe]'>Following</h1>:
-     <h1  onClick={followingHandler} className='font-semibold cursor-pointer text-[#0846fe]'>Follow</h1>
+     <h1  onClick={()=>followingHandler(data.author._id)} className='font-semibold cursor-pointer text-[#0846fe]'>Follow</h1>
       }
       </div>:
       ""}

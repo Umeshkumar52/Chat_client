@@ -59,7 +59,7 @@ export default function CreatePost() {
         const formData=new FormData()
         formData.append("file",file)
         formData.append("description",description)
-        navigate('/')  
+        navigate(-1)  
          await dispatch(newSocialPost({user_id,formData}))
         setDescription("") 
         inputResetHandler()

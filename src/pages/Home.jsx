@@ -104,12 +104,12 @@ useEffect(()=>{
     setPostAlert(true)
     setTimeout(()=>{
       setPostAlert(false)
-    },700)
+    },1500)
    })
 },[socket])
 PageLocRes("hiddenScrollBar")
   return (
-     <div onScroll={slideCloseHandler} className='hiddenScrollBar relative w-full h-screen md:justify-items-center overflow-y-scroll pt-2 space-y-6 text-black'>
+     <div onScroll={slideCloseHandler} className='hiddenScrollBar relative w-full h-screen lg:justify-items-center overflow-y-scroll pt-2 space-y-6 text-black'>
         {/* Nabigation Bar */}
         <div className='relative'>
      <NabigationBar user={auth.user}/>

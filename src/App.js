@@ -21,6 +21,8 @@ import { useEffect } from 'react';
 import SpecificPost from './components/SpecificPost';
 import SpecificReel from './components/SpecificReel';
 import { localeData } from 'moment-timezone';
+import AudioCall from './components/AudioCall'
+import VideoCall from './components/VideoCall'
 function App() {   
  const {user,isLogedIn}=useSelector((state)=>{return state.auth})  
 useEffect(()=>{
@@ -65,6 +67,8 @@ window.addEventListener('beforeunload',()=>{socket.emit('offline',socket.id)})
      <Route path='/search' element={<Search/>}/>
      <Route path='/post/:post_id' element={<SpecificPost/>}/>
      <Route path='/reel/:reel_id' element={<SpecificReel/>}/>
+     <Route path='audio' element={<AudioCall/>}/>
+     <Route path='video' element={<VideoCall/>}/>
      </Routes>
      </BrowserRouter>
     </div>

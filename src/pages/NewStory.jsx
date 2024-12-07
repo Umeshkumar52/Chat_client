@@ -37,7 +37,7 @@ export default function NewStory() {
         const formData=new FormData()
         formData.append("story",file)
         formData.append("_id",user._id)
-        navigate('/') 
+        navigate(-1) 
       const response= await dispatch(newStory(formData))
           inputResetHandler()
           setFile(null)  

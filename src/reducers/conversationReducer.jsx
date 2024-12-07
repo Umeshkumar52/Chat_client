@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import instance from "../helper/axios";
+import instance, { multiPartInstance } from "../helper/axios";
 import { toast } from "react-toastify";
 const initialState={}
 export const textMessage=createAsyncThunk('/textMessage',async(data)=>{
@@ -12,7 +12,7 @@ export const textMessage=createAsyncThunk('/textMessage',async(data)=>{
 })
 export const socialMessage=createAsyncThunk('/mediaMessage',async(message)=>{
     try {         
-        const response=instance.post(`/conversation/chat/socialCom/${message.communicator.reciever_id}/${message.communicator.sender_id}`,message.data)
+        const response=multiPartInstance.post(`/conversation/chat/socialCom/${message.communicator.reciever_id}/${message.communicator.sender_id}`,message.data)
         return (await response)
     } catch (error) {
         toast.error(error.response.data.message)
@@ -28,7 +28,8 @@ export const getAllConversation=createAsyncThunk('/Allchats',async(data)=>{
 })
 export const deleteChats=createAsyncThunk('/deleteMsg',async(data)=>{
     try {
-        const response=await instance.delete(`/conversation/chat/delete/${data.conversation_id}`,{chat_ids:"662323232323"})
+        console.log(data);
+        const response=await instance.delete(`/conversation/chat/delete/${data.conversation_id}`,data)
         return (await response)
     } catch (error) {
         toast.error(error.response.data.message)
