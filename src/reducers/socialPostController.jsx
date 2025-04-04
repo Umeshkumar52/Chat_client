@@ -7,7 +7,7 @@ const initialState={
 }
 export const allSocialPost=createAsyncThunk('/post',async(data)=>{
 try {
-    const response=instance.get(`/auth/post/AllPost/${data.offset}/${data.limit}`)
+    const response=instance.get(`/api/auth/post/AllPost/${data.offset}/${data.limit}`)
     return(await response)
 } catch (error) {
     toast.error(error.response.data.message)
@@ -15,7 +15,7 @@ try {
 })
 export const specificPost=createAsyncThunk('/specificPost',async(data)=>{
     try {
-        const response=instance.get(`/auth/post/specPost/${data}`)
+        const response=instance.get(`/api/auth/post/specPost/${data}`)
         return(await response)
     } catch (error) {
         toast.error(error.response.data.message)
@@ -23,7 +23,7 @@ export const specificPost=createAsyncThunk('/specificPost',async(data)=>{
     })
 export const post_Comments=createAsyncThunk('/CommentPost',async(post_id)=>{
     try {
-        const response=instance.get(`/auth/post/postComments/${post_id}`)
+        const response=instance.get(`/api/auth/post/postComments/${post_id}`)
         return (await response)
     } catch (error) {
        toast.error(error.response.data.message) 
@@ -31,15 +31,15 @@ export const post_Comments=createAsyncThunk('/CommentPost',async(post_id)=>{
 })
 export const newSocialPost=createAsyncThunk('/createPost',async({user_id,formData})=>{
     try {
-        const response=multiPartInstance.post(`/auth/post/newPost/${user_id}`,formData)
+        const response=multiPartInstance.post(`/api/auth/post/newPost/${user_id}`,formData)
         return(await response)
     } catch (error) {
         toast.error(error.response.data.message)
     }
 })
-export const deletPost=createAsyncThunk('deletePost',async(data)=>{
+export const deletPost=createAsyncThunk('/deletePost',async(data)=>{
     try {
-        const response=instance.delete(`/auth/post/deletePost/${data.post_id}/${data.public_id}`)
+        const response=instance.delete(`/api/auth/post/deletePost/${data.post_id}/${data.public_id}`)
         toast.promise(response,{
             pending:"Earasing Proccessing...",
             success:"Deleted Successfully"
@@ -49,9 +49,9 @@ export const deletPost=createAsyncThunk('deletePost',async(data)=>{
         toast.error(error.response.data.message)
     }
 })
-export const deleteStory=createAsyncThunk('deleteStory',async(data)=>{
+export const deleteStory=createAsyncThunk('/deleteStory',async(data)=>{
     try {
-        const response=instance.delete(`/auth/post/deletestory/${data.story_id}/${data.public_id}`)
+        const response=instance.delete(`/api/auth/post/deletestory/${data.story_id}/${data.public_id}`)
         toast.promise(response,{
             pending:"Earasing Proccessing...",
             success:"Deleted Successfully"
@@ -63,15 +63,15 @@ export const deleteStory=createAsyncThunk('deleteStory',async(data)=>{
 })
 export const newStory=createAsyncThunk('/story',async(data)=>{
     try {
-        const response=multiPartInstance.post(`/auth/post/story`,data)
+        const response=multiPartInstance.post(`/api/auth/post/story`,data)
         return(await response)
     } catch (error) {
         toast.error(error.response.data.message)
     }
 })
-export const allStories=createAsyncThunk('/',async()=>{
+export const allStories=createAsyncThunk('/userStories',async()=>{
     try {
-        const response=instance.get('/auth/post/stories')
+        const response=instance.get('/api/auth/post/stories')
         return (await response)
     } catch (error) {
         toast.error(error.response.data.message)
@@ -79,15 +79,15 @@ export const allStories=createAsyncThunk('/',async()=>{
 })
 export const updatePostInf=createAsyncThunk('/updatePost',async(data)=>{
     try {
-        const response=instance.put(`/auth/post/updateToPost/${data.post_id}`,data.inf)
+        const response=instance.put(`/api/auth/post/updateToPost/${data.post_id}`,data.inf)
         return(await response)
     } catch (error) {
        toast.error(error.response.data.message)
     }
 })
-export const likePost=createAsyncThunk('like',async(data)=>{
+export const likePost=createAsyncThunk('/like',async(data)=>{
 try {
-    const response=await instance.put(`/auth/post/likePost/${data.post_id}/${data.author}`)
+    const response=await instance.put(`/api/auth/post/likePost/${data.post_id}/${data.author}`)
     return (await response)
 } catch (error) {
     toast.error(error.response.data.message)
@@ -95,7 +95,7 @@ try {
 })
 export const removeLike=createAsyncThunk('/dis_like',async(data)=>{
     try {
-        const response=await instance.put(`/auth/post/dis_Like/${data.post_id}/${data.author}`)
+        const response=await instance.put(`/api/auth/post/dis_Like/${data.post_id}/${data.author}`)
         return (await response)
     } catch (error) {
         toast.error(error.response.data.message)
@@ -110,12 +110,12 @@ const socialPostController=createSlice({
     extraReducers:(builder)=>{
         builder
         .addCase(allSocialPost.fulfilled,(state,action)=>{ 
-            if(action.payload){
-               state.post.push(...action.payload.data.message)
+            if(action.payload?.data){
+               state.post.push(...(action.payload.data.message))
             }              
         })
         .addCase(allStories.fulfilled,(state,action)=>{ 
-            if(action.payload){
+            if(action.payload?.data?.message){
                state.story.push(...action.payload.data.message)
             }              
         })

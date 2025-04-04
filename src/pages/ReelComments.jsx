@@ -31,7 +31,7 @@ export default function ReelComments() {
         setComments((comments)=>[...comments,...response.payload.data.message])
         }
         commit()
-    },[state])  
+    },[])  
     // useEffect(()=>{
     //    socket.on("comment",(data)=>{
     //     console.log("socket",data);

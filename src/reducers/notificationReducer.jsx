@@ -6,7 +6,7 @@ import { toast } from 'react-toastify'
  }
  export const userNotification=createAsyncThunk('/notification',async(_id)=>{
     try {
-        const response=instance.get(`/notification/${_id}`)
+        const response=instance.get(`/api/notification/${_id}`)
         return (await response)
     } catch (error) {
         toast.error(error.response.data.message)
@@ -14,7 +14,7 @@ import { toast } from 'react-toastify'
  })
  export const saveNotification=createAsyncThunk('/createNotification',async(data)=>{
     try {
-        const response=instance.post(`/notification/create/${data.reciever_id}/${data.sender_id}`,data)
+        const response=instance.post(`/api/notification/create/${data.reciever_id}/${data.sender_id}`,data)
         return (await response)
     } catch (error) {
         toast.error(error.response.data.message)
@@ -22,7 +22,7 @@ import { toast } from 'react-toastify'
  })
  export const updateNotification=createAsyncThunk('/updateNotification',async(data)=>{
     try {
-        const response=instance.put(`/notification/update/${data}`)
+        const response=instance.put(`/api/notification/update/${data}`)
         return (await response)
     } catch (error) {
         toast.error(error.response.data.message)
@@ -30,7 +30,7 @@ import { toast } from 'react-toastify'
  })
  export const specificNotificationupdate=createAsyncThunk('/specificNotification',async(data)=>{
     try {
-        const response=instance.put(`/notification/specificNotifUpdate/${data.user_id}/${data._id}`)
+        const response=instance.put(`/api/notification/specificNotifUpdate/${data.user_id}/${data._id}`)
         return (await response)
     } catch (error) {
         toast.error(error.response.data.message)
@@ -38,7 +38,7 @@ import { toast } from 'react-toastify'
  })
  export const unReadNotificationRed=createAsyncThunk('/unReadNotification',async(data)=>{
     try {
-        const response=instance.get(`/notification/unReadNotification/${data}`)
+        const response=instance.get(`/api/notification/unReadNotification/${data}`)
         return (await response)
     } catch (error) {
         toast.error(error.response.data.message)

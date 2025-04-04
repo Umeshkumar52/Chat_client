@@ -1,25 +1,28 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect,useState } from 'react'
 import { specificReels } from '../reducers/reelsReducer'
-import ReelsCard from './ReelsCard'
-import { useParams } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
-
+import { useDispatch } from "react-redux";
+import {useParams } from "react-router-dom";
+import ReelsCard from '../components/ReelsCard'
 export default function SpecificReel() {
     const{reel_id}=useParams()
-    const[reel,setReel]=useState()
+    const[post,setPost]=useState()
     const dispatch=useDispatch()
     async function reelHandler(){
         const response=await dispatch(specificReels(reel_id))
+        console.log(response);
+        
         if(response.payload){
-            setReel(response.payload.data.message)
+            setPost(response.payload.data.message)
         }
     }
     useEffect(()=>{
         reelHandler()
     },[])
   return (
-    <div>
-      <ReelsCard data={reel}/>
-    </div>
+    <div className="vid relative flex flex-col gap-3">
+       {
+        post&&<ReelsCard data={post}/>
+       }
+       </div>  
   )
 }

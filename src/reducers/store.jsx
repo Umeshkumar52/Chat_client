@@ -8,7 +8,7 @@ const store=configureStore({
     auth:auth,
     conversation:conversationReducer,
     socialPost:socialPostController,
-    notification:notificationReducer
+    notification:notificationReducer,
 },
 middleware: (getDefaultMiddleware) =>
   getDefaultMiddleware({

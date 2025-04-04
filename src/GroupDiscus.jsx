@@ -20,9 +20,7 @@ export default function GroupDiscus({socket}) {
       }
       function closeGroupChat(value){
         setJoinGroup(value)
-
       }
-      console.log(list);
       function appendmsg(data,type){
         const list=document.createElement('div')  
         let className=type

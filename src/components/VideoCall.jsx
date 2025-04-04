@@ -9,8 +9,8 @@ export default function AudioCall() {
     const myUserName=useSelector(state=>{return state.auth.user.UserName})  
     const {state}=useLocation()
     const targetUser=state;   
-    const navigate=useNavigate()   
-    const [peerConnection,setPeerConnection]=useState()
+    const navigate=useNavigate(); 
+    const [peerConnection,setPeerConnection]=useState(null)
     const localVideoRef=useRef()
     const remoteVideoRef=useRef()
     const connectionRef=useRef()
@@ -34,6 +34,8 @@ export default function AudioCall() {
     pc.ontrack=(event)=>{
         remoteVideoRef.current.srcObject=event.streams[0]
        };
+    //    handle offer
+
        pc.onicecandidate=(event)=>{
         if(event.candidate){
             socket.emit("candidate",{
@@ -46,7 +48,9 @@ navigator.mediaDevices.getUserMedia({audio:true,video:true})
 localVideoRef.current.srcObject=stream
 stream.getTracks().forEach(track=> pc.addTrack(track,stream))
 pc.createOffer().then((offer)=>{
+    console.log("clientOffer",offer);    
     pc.setLocalDescription(offer)
+    socket.emit("offer",offer)
     socket.emit('callUser',{to:targetUser,signalData:offer,callerId:myUserName})
 })
 });
@@ -68,15 +72,15 @@ setPeerConnection(pc)
    
    }
    async function AcceptCall() {
-    setCallAccepted(true)
-    const peer=new RTCPeerConnection()
-    peer.ontrack((event)=>{
+     setCallAccepted(true)
+     const peer=new RTCPeerConnection()
+     peer.ontrack((event)=>{
      remoteVideoRef.current.srcObject=event.streams[0];
      peer.addStrem((localVideoRef.current.srcObject))
      peer.setRemoteDescription(new RTCSessionDescription(call.signalData))
      peer.createAnswer().then((answer)=>{
-      socket.emit('acceptCall',{to:call.callerId,signalData:answer})
-      connectionRef.current=peer
+     socket.emit('acceptCall',{to:call.callerId,signalData:answer})
+     connectionRef.current=peer
      })
     })
 
@@ -105,6 +109,7 @@ setPeerConnection(pc)
     socket.on('endCall',()=>{
         EndCall()
     })
+    // /this work here in place of offer
     socket.on('incomingCall',async({signalData,callerId})=>{
         setCall({
             isRecievingCall:true,
@@ -132,10 +137,10 @@ setPeerConnection(pc)
    },[])
    return(
     <div className='relative items-center justify-center w-full h-screen'>
-       
-        <video className={!mainCallingVideo?'mainCallingVideo':'partialCallingVideo'} ref={remoteVideoRef} autoPlay/>
-        <video ref={localVideoRef} autoPlay muted className={mainCallingVideo?'mainCallingVideo':'partialCallingVideo'}/>
-     
+      {AcceptCall?
+        <video className={!mainCallingVideo?'mainCallingVideo':'partialCallingVideo'} ref={remoteVideoRef} autoPlay/>:""
+        }
+      <video ref={localVideoRef} autoPlay muted className={mainCallingVideo?'mainCallingVideo':'partialCallingVideo'}/>
       <div className='fixed w-full bottom-4 text-2xl flex justify-evenly'>
        <div className='bg-slate-400 p-2 rounded-full'>
        <FaVideo/>

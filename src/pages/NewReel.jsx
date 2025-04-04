@@ -8,6 +8,7 @@ import { newReel } from '../reducers/reelsReducer';
 export default function NewReel() {
   const user=useSelector((state)=>{return state.auth.user})
   const videoRef=useRef(null)
+  const[isPlaying,setIsPlaying]=useState(true)
   const dispatch=useDispatch()
     const navigate=useNavigate()
     const[file,setFile]=useState(null)
@@ -54,27 +55,34 @@ export default function NewReel() {
     }
     document.getElementById("videoDiv").style.width="100%"
    }
+   function videoPlayer(){
+    if(isPlaying){
+      videoRef.current.pause()
+      setIsPlaying(!isPlaying)
+    }else{
+      videoRef.current.play()
+      setIsPlaying(!isPlaying)
+    }
+  }
   return (
-    <div>
-        <div className='flex justify-between px-2 border-b-2 py-2'>
-        <IoIosArrowBack onClick={()=>navigate(-1) } className='text-3xl'/>
-      <div className='flex w-full justify-center items-center'>
-      <h2 className='font-medium text-lg'>Create Reel</h2> 
-      </div>
-      </div>
+    <div className='flex flex-col h-[100vh] gap-6'>
+       <div className="flex items-center justify-between border-2 border-black px-4 py-2 ">
+              <div className="flex items-center gap-4">
+                <IoIosArrowBack onClick={() => navigate(-1)} className="text-3xl" />
+                <h2 className="font-medium text-lg">New Reel</h2>
+              </div>
+              <button
+                    onClick={createPostHandler}
+                    className="bg-indigo-600 hover:bg-indigo-700 hover:ring-2 px-6 md:px-10 py-1 md:py-2 text-white md:text-lg font-semibold"
+                  >
+                    Share
+                  </button>
+            </div>
       {/* {(blobUrl)? */}
-     <div id='videoDiv' className='relative w-[0px] h-[90vh] '>
+     <div id='videoDiv' className="hiddenScrollBar relative overflow-y-scroll flex justify-center ">
         <input ref={inputFile} accept='video/*' onChange={fileChangeHandler} type='file' className='hidden' id='file' name='file' />
-       <video autoPlay loop src={blobUrl.url}/>
-       <div className='absolute right-4 top-6 h-[20rem] w-[5rem]'>
-
-      </div>
-      <div className='absolute w-full flex justify-end bottom-4 px-3 '>
-       <button onClick={createPostHandler} className='bg-indigo-600  px-4 py-2 text-white text-lg font-semibold rounded-lg'>Next</button>
-    </div>
+       <video onClick={videoPlayer} ref={videoRef} autoPlay loop src={blobUrl.url}/>
      </div>
-     {/* :""
-    } */}
     <ToastContainer/>
     </div>
   )

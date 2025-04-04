@@ -1,78 +1,61 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { IoIosArrowBack} from 'react-icons/io'
-import { useNavigate} from 'react-router-dom'
-import { useDispatch} from 'react-redux'
-import { allReels} from '../reducers/reelsReducer'
-import ReelsCard from '../components/ReelsCard'
+import React, { useEffect, useRef, useState } from "react";
+import { IoIosArrowBack, IoMdArrowRoundBack } from "react-icons/io";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { allReels } from "../reducers/reelsReducer";
+import ReelsCard from "../components/ReelsCard";
+import ReelCardPulse from "../components/ReelCardPulse";
+import ReelsLayouts from "./ReelsLayouts";
+import ReelSkelenton from "../skeletons/ReelSkelenton";
 export default function Reels() {
-  const dispatch=useDispatch()
-  const[reels,setReels]=useState([])
- async function ReelsHandler(){
-  const response=await dispatch(allReels())
-  if(response.payload){
-   setReels((reels)=>[...reels,...response.payload.data.message])}
-  }
-  useEffect(()=>{
-    ReelsHandler()
-  },[]) 
-const containerRef=useRef(null);
-  useEffect(() => {
-    let isScrolling=false;
-    const container=containerRef.current
-    let lastScrollTop=0
-    const handleScroll=()=> {
-      const scrollTop =container.scrollTop;
-      const videoHeight=container.clientHeight;
-      if(!isScrolling){
-        isScrolling=true
-     const scrollDirection=scrollTop>lastScrollTop?'down':'up'
-     lastScrollTop=scrollTop
-     if(scrollDirection==='down'){
-      container.scrollTo({
-        top:Math.ceil(scrollTop/videoHeight)*videoHeight,
-        behavior:"smooth"
-      })
-     }else{
-       container.scrollTo({
-        top:Math.floor(scrollTop/videoHeight)*videoHeight,
-        behavior:"smooth"
-      })
-     }
-     setTimeout(()=>{
-      isScrolling=false
-     },500)
-    }}
-    if(container){
-    container.addEventListener("scroll",handleScroll)
+  const navigate=useNavigate()
+  const [reels, setReels] = useState([]);
+  const[page,setPage]=useState(0)
+  const[offset,setOffset]=useState(0)
+  const[isLoading,setIsLoading]=useState(false)
+  const dispatch = useDispatch();
+  async function ReelsHandler() {
+    const limit=10;
+    const response = await dispatch(allReels({offset:offset,limit:limit}));
+    if (response.payload) {
+      setOffset(prev=>prev+limit)
+      setReels((reels) => [...reels, ...response.payload.data.message]);
+      setIsLoading(false)
     }
-    return () => {
-      if(container){
-      container.removeEventListener("scroll", handleScroll);
-      }
-    };
-  },[])
-  // useEffect(() => {
-  //   const videoElement = videoreference.current[currentVideo];    
-  //   if (videoElement) {
-  //     console.log(videoElement.offsetTop);
-      
-  //       containerRef.current.scrollTo({
-  //       top:videoElement.offsetTop,
-  //       behavior:"auto",
-  //     });
-  //   }
-  // }, [currentVideo]); 
+  }
+  useEffect(() => {
+  ReelsHandler()
+  }, [page]);
+ const handleScroll=()=>{
+  const windowScroller=document.querySelector("#reelContainer")
+  const scrollTop = window.pageYOffset || windowScroller.scrollTop;
+  const scrollHeight = windowScroller.scrollHeight;
+  const clientHeight =windowScroller.innerHeight || document.documentElement.clientHeight;  
+  if (scrollTop + clientHeight + 1 >= scrollHeight) {
+  // if(!isLoading){
+  //   setPage(prev=>prev+1)
+  //   setIsLoading(true)
+  // }  
+ }
+ }
   return (
-    <div id='reelWraper' ref={containerRef} className='hiddenScrollBar md:justify-items-center w-full h-[100vh] overflow-y-scroll'>
-      {/* <div className='fixed top-1 left-3 text-[#4d4d4d] flex gap-1 items-center'> 
-        <IoIosArrowBack onClick={()=>navigate(-1)} className='text-2xl cursor-pointer'/>
-          <h1 className='font-semibold text-xl'>Reels</h1>
-          </div> */}
-          {reels?reels.map((Element,index)=>{
-           return <ReelsCard key={index} index={index} data={Element}/>
-          })
-            :""
-          }
+    <ReelsLayouts>
+    <div onScroll={handleScroll} id="reelContainer" className="hiddenScrollBar lg:w-[50%] md:w-[70%] w-full space-y-1 snap-y snap-mandatory flex flex-col justify-center items-center relative h-[100vh] overflow-y-auto ">
+      {reels.length>0?(
+        reels.map((Element, index) => {
+          return <ReelsCard key={index} index={index} data={Element} />;
+        })
+      ) : (
+        <ReelSkelenton/>
+      )}
+      {isLoading&&<div className="text-3xl font-semibold text-center animate-pulse">Loading...</div>}
+      <div className="block md:hidden fixed top-3 left-3">
+        <div className="flex items-center gap-4 text-white">
+        <IoMdArrowRoundBack onClick={()=>navigate(-1)} className="font-semibold text-center text-3xl inline cursor-pointer"/>
+        <Link className="inline text-2xl font-normal">Reels</Link>
+      </div>
+      </div>
     </div>
-  )
+    </ReelsLayouts>
+  );
 }

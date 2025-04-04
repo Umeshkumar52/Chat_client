@@ -1,18 +1,14 @@
 import React, { useRef, useState } from 'react'
 import {IoIosArrowBack} from 'react-icons/io'
 import { CgProfile } from "react-icons/cg";
-import { MdCancel, MdOutlineCancel, MdOutlineLibraryAdd } from 'react-icons/md';
-import { FaRegFileImage } from 'react-icons/fa6';
+import { MdOutlineCancel } from 'react-icons/md';
 import {FaFileImage} from 'react-icons/fa6'
-import MultiPostCard from '../components/MultiPostCard';
-import {useLocation, useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router-dom'
 import {useDispatch, useSelector} from 'react-redux'
 import { newSocialPost } from '../reducers/socialPostController';
 import 'react-toastify/dist/ReactToastify.css';
-import {ToastContainer } from 'react-toastify';
-export default function CreatePost() {
-  const {state}=useLocation()
-  const user_id=useSelector((state)=>{return state.auth.user._id})
+export default function CreatePost() {  
+  const {auth}=useSelector((state)=>{return state})
   const videoRef=useRef(null)
   const dispatch=useDispatch()
     const navigate=useNavigate()
@@ -60,7 +56,7 @@ export default function CreatePost() {
         formData.append("file",file)
         formData.append("description",description)
         navigate(-1)  
-         await dispatch(newSocialPost({user_id,formData}))
+         await dispatch(newSocialPost({user_id:auth.user._id,formData}))
         setDescription("") 
         inputResetHandler()
         setFile(null) 
@@ -81,30 +77,30 @@ export default function CreatePost() {
       }
      }
   return (
-    <div className='w-full h-[100%] flex flex-col gap-4'>
-        <div className='flex justify-between px-2 border-b-2 py-2'>
+    <div className=' h-[100vh] w-full flex flex-col gap-4'>
+        <div className='flex justify-between p-2 border-b-2'>
       <div className='flex gap-2'>
          <IoIosArrowBack onClick={()=>navigate(-1) } className='text-3xl'/>
          <h2 className='font-medium text-lg'>Create post</h2>
       </div>
-      <button onClick={createPostHandler} className='w-20 bg-[#0846fe] text-white font-semibold rounded-md py-1'>Post</button>
+      <button onClick={createPostHandler} className='w-[12rem] p-3 hover:ring-2 bg-indigo-800 hover:bg-indigo-900 px-10 py-2 text-white text-lg font-semibold'>Post</button>
       </div>
       <div className='hiddenScrollBar space-y-6 h-[90vh] py-2 overflow-y-scroll'>
       <div className='flex flex-col gap-2'>
       <div className='px-2 flex flex-col gap-3'>
         <div className='flex items-center gap-2'>
         <div className='w-10 h-10 cursor-pointer border-2 border-[#be03ed] rounded-full'>
-         {state.avatar?
-         <img src={state.avatar} className='w-full h-full'/>:
+         {auth.user?.avatar?
+         <img src={auth.user?.avatar} className='w-full h-full'/>:
           <CgProfile className='w-full h-full text-4xl'/>
           }
          </div>
-          <h2 className='font-semibold text-lg'>{state.UserName}</h2>
+          <h2 className='font-semibold text-lg'>{auth.user?.UserName}</h2>
         </div>
-        <textarea onInput={textArea} onChange={(event)=>{
+        <textarea className='text-lg outline-none p-2' onInput={textArea} onChange={(event)=>{
           event.preventDefault()
           setDescription(event.target.value)
-        }} cols='auto' name='description' id='textArea' autoFocus className='text-lg text-decoration-none' placeholder='Say something about this post...'/>
+        }} cols='auto' name='description' id='textArea' autoFocus  placeholder='Say something about this post...'/>
       </div>
       {/* Selecting img */}
         <div className='flex flex-col gap-3'>
@@ -113,8 +109,8 @@ export default function CreatePost() {
          {blobUrl.url?
           <div className='relative p-2'>
          {blobUrl.type.split("/")[0]=="video"?
-         <video ref={videoRef} onClick={videoPlayingHandler} id='videoPlayer' src={blobUrl.url} />:
-         <img src={blobUrl.url}/> 
+         <video className='w-full md:max-w-[60vw] max-h-[70vh]' ref={videoRef} autoPlay onClick={videoPlayingHandler} id='videoPlayer' src={blobUrl.url} />:
+         <img className='w-full md:max-w-[60vw] max-h-[70vh]' src={blobUrl.url}/> 
          }
           <MdOutlineCancel onClick={()=>setBlobUrl("")} className='absolute top-0 right-0 text-black hover:text-red-600 text-3xl'/>
           </div>:""}

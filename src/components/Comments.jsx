@@ -24,9 +24,9 @@ export default function Comments() {
         }
       }])
       setAddComment("")
-      if(state.type==="Reel"){
-        const response=await dispatch(commentReel({post_id:post_id,inf:{author:state.user._id,commit:addComment}}))  
-      }
+      // if(state.type==="Reel"){
+      //   const response=await dispatch(commentReel({post_id:post_id,inf:{author:state.user._id,commit:addComment}}))  
+      // }
        const response=await dispatch(updatePostInf({post_id:post_id,inf:{author:state.user._id,commit:addComment}}))      
     }
     useEffect(()=>{

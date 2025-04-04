@@ -2,9 +2,10 @@ import React, { useState } from 'react'
 import { CgProfile } from 'react-icons/cg'
 import { signUp } from '../reducers/authReducer'
 import {useDispatch} from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import 'react-toastify/dist/ReactToastify.css';
 import {ToastContainer } from 'react-toastify';
+import GoogleAuth from '../components/GoogleAuth'
 export default function Register() {
   const navigate=useNavigate()
   const dispatch=useDispatch()
@@ -64,21 +65,6 @@ export default function Register() {
     formData.append("UserName",userData.UserName)
     formData.append("Name",userData.Name)
     formData.append("Password",userData.Password)
-    // if(myForm){
-    //   myForm.addEventListener("submit",function(event){
-    //     let allfieldsFilled=true
-    //     const inputs=myForm.querySelectorAll('input'); 
-    //     inputs.forEach((input)=>{
-    //       if(input.value!=''){
-    //         allfieldsFilled=false;
-    //       }
-    //     })
-    //     if(!allfieldsFilled){
-    //         event.preventDefault()
-    //         passwordMessage.style.color='red'
-    //         passwordMessage.textContent='All feilds are mandatory!'
-    //       }
-    //   })}
     const response=await dispatch(signUp(formData))
     if(response.payload){
       navigate('/')
@@ -101,10 +87,10 @@ export default function Register() {
        }
   }   
   return (
-    <div className='w-full h-screen items-center flex justify-center'>
-         <div className='w-[250px] space-y-6'>
+    <div className=' flex flex-col py-6 px-2 items-center justify-center'>
+         <div className='w-full max-w-[25rem] flex flex-col'>
           <h1 className='text-2xl font-medium text-center text-[#0cff86]'>Registration</h1>
-         <form id='myForm' onSubmit={registerUserHandler} noValidate className='space-y-1'>
+         <form id='myForm' onSubmit={registerUserHandler} noValidate className='space-y-4'>
          <div className='flex flex-col items-center gap-4'>
               <label htmlFor='Profile'>
               {ProfileBlobUrl?
@@ -132,9 +118,11 @@ export default function Register() {
              </div>
              <span id='passwordMessage' className='text-red-700 whitespace-wrap'></span>
               <button type='submit' className='w-full bg-[#0cff86] text-white p-2 font-semibold flex justify-center text-lg'>Register</button>
-             </form>
+              <p className='text-lg '>Already have an account <Link to="/sign-in" className='text-indigo-800 hover:text-indigo-900 font-medium'>Login</Link></p>
+              <GoogleAuth/>
+          </form>
          </div>
-         <ToastContainer/>
+         {/* <ToastContainer/> */}
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, {useEffect, useRef, useState } from 'react'
 import { CgProfile } from 'react-icons/cg'
 import {AiFillLike, AiOutlineComment} from 'react-icons/ai'
 import {MdVolumeUp,MdVolumeOff} from 'react-icons/md'
@@ -11,7 +11,8 @@ import {BiSolidLike} from 'react-icons/bi'
 import WebShare from '../helper/WebShare'
 import videoPlayerHandler from '../helper/videoPlayerHandler'
 import {BsThreeDotsVertical} from 'react-icons/bs'
-export default function MediaCard({data,updateDeletPostHandler,self,index}) {
+import PlayPause from './PlayPause'
+export default function MediaCard({data,updateDeletPostHandler,self,index}) {  
   const dateOption={
     day:"2-digit",
     month:"short"
@@ -21,26 +22,31 @@ export default function MediaCard({data,updateDeletPostHandler,self,index}) {
   const user=useSelector((state)=>{return state.auth.user})
   const navigate=useNavigate()
   const[isLiked,setIsLiked]=useState(false)
+  const[deletButtonState,setDeleteButtonState]=useState(false)
   const[isFollowing,setIsFollowing]=useState(false)
-  const[postDeletCall,setPostDeletCall]=useState(false)
-  const[isPlaying,setIsPlaying]=useState(false)
+  const[playButtonShowing,setPlayButtonShowing]=useState(false)
+  const[isPlaying,setIsPlaying]=useState(true)
+  const[muted,setMuted]=useState(false)
   const dispatch=useDispatch()
-  const videoRef=useRef(null)
-  videoPlayerHandler("video")
-  function videoHandler(event){
-    event.preventDefault()
-    if(isPlaying){
-      videoRef.current.play().catch((Error)=>{
-        return
-      })
-      setIsPlaying(false)
-    }else{
-      videoRef.current.pause()
-      setIsPlaying(true)
+  const videoRef=useRef(null)  
+  videoPlayerHandler("video",isPlaying)
+  function videoplay(event) {
+    event.preventDefault();
+    if (isPlaying) {
+      videoRef.current.pause();
+      setPlayButtonShowing(true)
+      setIsPlaying(false);
+    } else {
+      videoRef.current.play().catch((Error) => {
+        return;
+      });
+      setPlayButtonShowing(true)
+      setIsPlaying(true);
     }
-   }  
-
-    
+    setTimeout(()=>{
+      setPlayButtonShowing(false)
+    },700)
+  }
    async function followingHandler(following_user) {
     if(following_user==data.author._id){
       setIsFollowing(true)
@@ -55,20 +61,18 @@ export default function MediaCard({data,updateDeletPostHandler,self,index}) {
     setIsLiked(false)
     const response=await dispatch(removeLike({post_id:data._id,author:user._id}))
   }
-  function postDeleteOpenHandler(){
-    document.getElementById("postDelete"+index).style.width='46px'
-    setPostDeletCall(true)
-  }
-  function postDeletecloseHandler(){
-    if(postDeletCall){
-    document.getElementById("postDelete"+index).style.width='0px'
-    }
-  }
   async function postDeleteHandler() {
-    const response=await dispatch(deletPost({post_id:data._id,public_id:data.public_id}))
-    if(response.payload){
+   const confirm= window.confirm("Are you sure you want to delete this post")
+    if(confirm){
+      const response=await dispatch(deletPost({post_id:data._id,public_id:data.public_id}))
+      setDeleteButtonState(false)
+    if(response?.payload){
     updateDeletPostHandler(data._id)
     }
+    }else{
+      setDeleteButtonState(false)
+    }
+    
   }
    useEffect(()=>{    
     if(data.author.Followers){
@@ -91,23 +95,24 @@ export default function MediaCard({data,updateDeletPostHandler,self,index}) {
       //   setIsFollowing(true)
       //   }
      })
-   },[socket])       
+   },[socket])  
+         
   return (
- <div className='relative md:w-[312px] flex flex-col gap-4'>
+ <div className='cover bg-white border-2 border-b-black relative py-4 flex flex-col gap-4'>
   <div className='flex flex-col gap-1 px-2'>
   <div className='w-full relative items-center flex gap-3'>
-   <Link to={`/${data.author.UserName}`}>
+   <Link to={`/${data?.author.UserName}`}>
    <div className='cursor-pointer flex'>
   {data.author.avatar?
-  <img className='w-10 h-10 rounded-full border-2' src={data.author.avatar}/>:
+  <img className='size-12 rounded-full border-2' src={data?.author?.avatar}/>:
    <CgProfile className='w-full h-full text-4xl'/>
    }
    </div>
    </Link>
-    <div className='w-[80%] flex justify-between'>
+    <div className='w-full px-2 flex justify-between'>
      <div className='flex gap-2'>
      <div className=''>
-       <h2 className='font-semibold text-sm text-black'>{`${data.author.UserName.slice(0,10)}`}</h2>
+       <h2 className='font-semibold text-lg text-black'>{`${data?.author?.UserName.slice(0,10)}`}</h2>
        {/* <h1 className='text-sm'>{data.updatedAt.split('T')[0]}</h1> */}
        <h1 className='text-sm'>{dayAndMonth}</h1>
      </div>
@@ -122,15 +127,15 @@ export default function MediaCard({data,updateDeletPostHandler,self,index}) {
       </div>:
       ""}
       </div>
-       {data.author._id==user._id && self?
-      <div className='relative w-14 flex justify-end'>
-      <BsThreeDotsVertical onClick={postDeleteOpenHandler}/>
-      <div id={"postDelete"+index} className='w-0 absolute top-4'>
-        <ul>
-          <li><button onClick={postDeleteHandler}>Delete</button></li>
-        </ul>
+       {data.author._id==user._id && self&&
+      <div className='relative w-14 text-2xl flex justify-end'>
+      <BsThreeDotsVertical onClick={()=>setDeleteButtonState(!deletButtonState)}/>
+     {deletButtonState?
+      <div id={"postDelete"+index} className='absolute top-4'>
+      <button onClick={postDeleteHandler}>Delete</button>      
+   </div>:""
+     }
       </div>
-      </div>:""
       }
     </div>
   </div>
@@ -141,16 +146,18 @@ export default function MediaCard({data,updateDeletPostHandler,self,index}) {
   </div>
   {/* video show here */}
   {data.url_type=="mp4"?
-   <div onClick={postDeletecloseHandler} className='relative w-full max-h-[400px] min-h-[300px] flex flex-col'>
-    <video id='video' src={data.url} ref={videoRef} play={isPlaying} onClick={videoHandler} className='w-full h-full'/>
-    <div className='absolute cursor-pointer p-2 bg-slate-700 rounded-full text-white right-4 bottom-6'>
-      {true?<MdVolumeUp/>:<MdVolumeOff/>}
+   <div className='relative w-full'>
+    <video className='w-full max-h-[80vh]' onDoubleClick={()=>navigate(`/post/${data._id}`)} onClick={videoplay} id='video' muted={muted} src={data.url} ref={videoRef} />
+    <div className='absolute text-2xl bg-slate-100 p-2 rounded-full bottom-4 right-6' onClick={()=>setMuted(!muted)}>
+    {muted?<MdVolumeOff/>:<MdVolumeUp/>}
     </div>
+    {/* play ANd pause  */}
+         {playButtonShowing&&<PlayPause isPlaying={isPlaying}/>}
    </div>:
-   <div onClick={postDeletecloseHandler} className='relative min-h-[300px] max-h-[400px] flex items-center flex-col'>
-    <img src={data.url}  className='w-full min-h-[300px]'/>
-   </div>
-   }
+  //  className='relative flex items-center flex-col'
+   <div >
+    <img  className='w-full max-h-[70vh]' onDoubleClick={()=>navigate(`/post/${data._id}`)} src={data.url} />
+   </div>}
    {/* sharing thoghts section */}
    <div className='flex flex-col gap-4'>
       <div className='flex justify-between px-2'>
@@ -186,7 +193,7 @@ export default function MediaCard({data,updateDeletPostHandler,self,index}) {
        <AiOutlineComment/>
        <h2>comment</h2>
        </div>
-       <WebShare data={data.url} type="post"/>       
+       <WebShare data={`http://localhost:3000/post/${data._id}`} type="post"/>       
       </div>
    </div>
 </div>
