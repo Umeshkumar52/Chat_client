@@ -119,7 +119,7 @@ export default function Register() {
              <span id='passwordMessage' className='text-red-700 whitespace-wrap'></span>
               <button type='submit' className='w-full bg-[#0cff86] text-white p-2 font-semibold flex justify-center text-lg'>Register</button>
               <p className='text-lg '>Already have an account <Link to="/sign-in" className='text-indigo-800 hover:text-indigo-900 font-medium'>Login</Link></p>
-              <GoogleAuth/>
+{/*               <GoogleAuth/> */}
           </form>
          </div>
          {/* <ToastContainer/> */}
