@@ -11,7 +11,7 @@ export default function SideNavBar() {
   const {UserName,avatar}=useSelector(state=>state?.auth?.user)
   const url= window.location.pathname.split('/')
   return (
-      <div className="min-w-[25%] h-screen text-3xl bg-white hidden md:block">
+      <div className="hiddenScrollBar min-w-[25%] h-[100vh] overflow-y-scroll text-3xl bg-white hidden md:block">
             <div className="flex flex-col gap-2 my-4"> 
               {/* back button */}
             <Link to="/" className={`flex gap-5 items-center py-2 px-6 ${url[url.length-1]=="reels"?"block":"hidden"}`}>

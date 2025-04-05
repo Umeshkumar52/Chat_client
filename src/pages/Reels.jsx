@@ -40,7 +40,7 @@ export default function Reels() {
  }
   return (
     <ReelsLayouts>
-    <div onScroll={handleScroll} id="reelContainer" className="hiddenScrollBar lg:w-[50%] md:w-[70%] w-full space-y-1 snap-y snap-mandatory flex flex-col justify-center items-center relative h-[100vh] overflow-y-auto ">
+    <div onScroll={handleScroll} id="reelContainer" className="hiddenScrollBar overflow-y-scroll h-[100vh] relative lg:w-[50%] md:w-[70%] w-full space-y-1 snap-y snap-mandatory">
       {reels.length>0?(
         reels.map((Element, index) => {
           return <ReelsCard key={index} index={index} data={Element} />;
@@ -56,6 +56,6 @@ export default function Reels() {
       </div>
       </div>
     </div>
-    </ReelsLayouts>
+  </ReelsLayouts> 
   );
 }
