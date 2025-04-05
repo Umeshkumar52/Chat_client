@@ -193,7 +193,7 @@ export default function MediaCard({data,updateDeletPostHandler,self,index}) {
        <AiOutlineComment/>
        <h2>comment</h2>
        </div>
-       <WebShare data={`http://localhost:3000/post/${data._id}`} type="post"/>       
+       <WebShare data={`https://chat-client-cgiv.onrender.com/post/${data._id}`} type="post"/>       
       </div>
    </div>
 </div>
