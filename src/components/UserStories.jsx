@@ -11,9 +11,7 @@ import { IoMdArrowBack } from 'react-icons/io';
  const{state}=useLocation()  
  const[videos,setVideos]=useState(state.story)
  const navigate=useNavigate()
- const[storyNumber,setStoryNum]=useState(0)
- console.log(videos);
- 
+ const[storyNumber,setStoryNum]=useState(0) 
  let formNum=[]
   for(let i=0;i<state.story.length;i++){
    formNum.push(
@@ -71,7 +69,7 @@ import { IoMdArrowBack } from 'react-icons/io';
       <div className='fixed top-2 pl-3'>
        <div onClick={()=>navigate(`/${state?.user?.UserName}`)} className='flex gap-3 items-center'>
        <img className='size-14 rounded-full border-2' alt='profile' src={state.user.avatar}/>
-       <h1 className='text-lg text-slate-200 font-semibold'>{state?.user?.UserName}</h1>
+       <h1 className='text-lg text-slate-200 font-semibold'>{state?.user?.UserName.slice(0,12)}</h1>
        </div>
        
       </div>
@@ -80,11 +78,11 @@ import { IoMdArrowBack } from 'react-icons/io';
      <input onChange={(event)=>{
       event.preventDefault()
       setReply(event.target.value)
-     }} value={Reply} placeholder='Reply...' type='text' className='p-4 w-full text-xl rounded-lg border-2 hover:border-indigo-400 font-mediumoutline-none'/>
+     }} value={Reply} placeholder='Reply...' type='text' className='p-2 w-full text-xl rounded-lg border-2 hover:border-indigo-400 font-mediumoutline-none'/>
      {Reply?
-     <button type='submit' className='text-white p-1 text-6xl flex justify-center items-center w-fit h-fit rounded-full'>  
+     <button type='submit' className='text-white p-1 text-3xl flex justify-center items-center w-fit h-fit rounded-full'>  
       <FiSend className='text-3xl'/>
-      </button>:<div className='text-white text-6xl'>
+      </button>:<div className='text-white text-3xl'>
       {isLiked?<FcLike onClick={()=>setIsLiked(false)}/>:
       <FaRegHeart onClick={()=>setIsLiked(true)}/>}
       </div>    

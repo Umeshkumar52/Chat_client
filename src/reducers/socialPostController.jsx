@@ -3,7 +3,9 @@ import instance, { multiPartInstance } from "../helper/axios";
 import { toast } from "react-toastify";
 const initialState={
     post:[],
-    story:[]
+    story:[],
+    hasFetched:false,
+    hasMore:false
 }
 export const allSocialPost=createAsyncThunk('/post',async(data)=>{
 try {
@@ -111,12 +113,16 @@ const socialPostController=createSlice({
         builder
         .addCase(allSocialPost.fulfilled,(state,action)=>{ 
             if(action.payload?.data){
-               state.post.push(...(action.payload.data.message))
+                state.hasFetched=true
+                state.hasMore=[...action.payload.data?.message].length<10?false:true
+                 state.post.push(...(action.payload.data.message))
             }              
         })
         .addCase(allStories.fulfilled,(state,action)=>{ 
             if(action.payload?.data?.message){
-               state.story.push(...action.payload.data.message)
+                sessionStorage.setItem("stories",JSON.stringify(action.payload.data.message))
+                sessionStorage.setItem("storiesExpire",Date.now())
+                state.story.push(...action.payload.data.message)
             }              
         })
     }

@@ -226,7 +226,7 @@ export default function Chat({recieverUser}) {
     <div className="relative w-full h-[100vh] bg-[#000000] overflow-hidden text-white">
       <div className="w-full h-18 bg-[#363333] p-2">
         <div className="flex justify-between items-center px-2">
-            <div className="flex gap-3">
+            <div className="flex items-stretch gap-3">
               <img
                 src={currentUser?.avatar}
                 alt="img"
@@ -234,16 +234,16 @@ export default function Chat({recieverUser}) {
               />
               <div className="flex flex-col">
                 <h1
-                  key={currentUser.UserName}
+                  key={currentUser?.UserName}
                   className="user text-lg  lg:text-2xl font-medium text-white"
                 >
-                  {currentUser.UserName}
+                  {`${currentUser.UserName.slice(0,10)}...`}
                 </h1>
              
                 {online ? (
                   <h1 className="text-xs">Online</h1>
                 ) : (
-                  <h1 className="text-xs">{isTyping ? "typing..." : ""}</h1>
+                  <h1 className="text-xs">{isTyping ? "typing..." : "offline"}</h1>
                 )}
               </div>
             </div>
@@ -350,7 +350,7 @@ export default function Chat({recieverUser}) {
               value={message}
               autoFocus
               placeholder=" Messages type here..."
-              className={`text-lg pr-16 p-4 text-black w-full `}/>
+              className={`text-lg pr-16 p-2 text-black w-full `}/>
             <div className="absolute right-12 top-3 ">
             <label htmlFor="file">
               <IoCameraOutline className="absolute w-7 h-7 text-black" />
@@ -367,7 +367,7 @@ export default function Chat({recieverUser}) {
           </div>
             </div>
             <div className="right-2 flex items-center justify-center">
-            <div className="h-14 w-14  flex justify-center items-center rounded-full bg-[#2eff35] text to-black">
+            <div className="size-12  flex justify-center items-center rounded-full bg-[#2eff35] text to-black">
               {message?.length > 0 || file ? (
                 <button type="submit">
                   <FiSend className="h-6 w-6 text-black font-semibold" />

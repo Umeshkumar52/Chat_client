@@ -3,7 +3,6 @@ import { IoIosArrowBack } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { newStory } from "../reducers/socialPostController";
-import { ToastContainer } from "react-toastify";
 export default function NewStory() {
   const user = useSelector((state) => {
     return state.auth.user;
@@ -93,7 +92,6 @@ export default function NewStory() {
           />
           <video className='w-full md:max-w-[80vw] max-h-[80vh]' ref={videoRef} onClick={videoPlayer} autoPlay src={blobUrl.url} />
         </div>
-      <ToastContainer />
     </div>
   );
 }

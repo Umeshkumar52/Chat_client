@@ -15,10 +15,10 @@ export default function ChatsCard({data,sender,index,postDeleteOpenHandler}) {
     <div onAuxClick={postDelete} className={(data.sender_id===sender)?"outgoing":"incoming"} key={index}>                
     <div className='md:max-w-[50vw]' id={`${(data.sender_id===sender)?"outgoingInner":"incomingInner"}`}>
         {(data.msg_type==="text")?
-        <div className="pr-2 pb-6 text-3xl min-w-24 pl-3">{data.message}</div>:
+        <div className="pr-2 pb-4 text-xl md:text-2xl min-w-24 pl-3">{data.message}</div>:
         <MediaComponent key={index} data={data}/>
           }
-        <h6 className="absolute bottom-0 right-2 text-[#cdcaca] flex items-end text-lg">
+        <h6 className="absolute bottom-0 right-2 text-[#cdcaca] flex items-end text-sm">
          {timeFormate?timeFormate:data.time}
         </h6>               
     </div>

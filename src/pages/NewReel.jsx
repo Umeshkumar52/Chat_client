@@ -3,7 +3,6 @@ import {IoIosArrowBack} from 'react-icons/io'
 import {useNavigate} from 'react-router-dom'
 import {useDispatch, useSelector} from 'react-redux'
 import 'react-toastify/dist/ReactToastify.css';
-import {ToastContainer } from 'react-toastify';
 import { newReel } from '../reducers/reelsReducer';
 export default function NewReel() {
   const user=useSelector((state)=>{return state.auth.user})
@@ -83,7 +82,6 @@ export default function NewReel() {
         <input ref={inputFile} accept='video/*' onChange={fileChangeHandler} type='file' className='hidden' id='file' name='file' />
        <video onClick={videoPlayer} ref={videoRef} autoPlay loop src={blobUrl.url}/>
      </div>
-    <ToastContainer/>
     </div>
   )
 }

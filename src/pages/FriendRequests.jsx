@@ -17,8 +17,8 @@ import FriendsSkelenton from '../skeletons/FriendsSkelenton'
     setIsloading(!isLoading)
     const response=await dispatch(userfollowing(user_id))
     if(response?.payload){
-      setFollower((friends)=>[...friends,...response.payload.data.message.Followers])
-      setFollowing((friends)=>[...friends,...response.payload.data.message.Following])
+      setFollower((friends)=>[...friends,...response.payload?.data?.message?.Followers])
+      setFollowing((friends)=>[...friends,...response.payload?.data?.message?.Following])
       setIsloading(false)
     }
   }
@@ -34,7 +34,7 @@ import FriendsSkelenton from '../skeletons/FriendsSkelenton'
       <input id='follow' className='peer/follow hidden' name='status' type="radio" />
       <label htmlFor="follow" className='peer-checked/follow:text-sky-500 text-lg  font-semibold'>Followers <span>{followerData.length}</span></label>
      <div className='hidden peer-checked/following:block space-y-4'>
-     {followingData.length>0?
+     {followingData?.length>0?
        followingData.map((Element,index)=>{
             return <UserFollowingCard key={index} data={Element}/>
        }):<div className='flex flex-col gap-2'>
@@ -51,7 +51,7 @@ import FriendsSkelenton from '../skeletons/FriendsSkelenton'
      }
      </div>
      <div className='hidden peer-checked/follow:block space-y-4'>
-     {followerData.length>0?
+     {followerData?.length>0?
        followerData.map((Element,index)=>{        
             return <UserFollowerCard key={index} data={Element}/>
        }):

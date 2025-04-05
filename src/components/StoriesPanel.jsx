@@ -2,11 +2,14 @@ import React, {useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { useState } from 'react';
 import { allStories } from '../reducers/socialPostController';
-import { useNavigate } from 'react-router-dom';
+import { json, useNavigate } from 'react-router-dom';
 import { IoMdAdd } from 'react-icons/io';
 import Stories from './Stories';
 const StoriesPanel =()=> {
-      const [stories, setStories] = useState([]);
+     const data=sessionStorage.getItem("stories") 
+     const storeisExpire=parseInt(sessionStorage.getItem("storiesExpire"))
+     let minetPassed=Math.floor((Date.now()-storeisExpire)/(1000*60)) 
+      const [stories, setStories] = useState(JSON.parse(data) || []);
       let storyGroup = {};
       const dispatch=useDispatch()
       const navigate=useNavigate()
@@ -30,7 +33,9 @@ const StoriesPanel =()=> {
         }
       }
       useEffect(() => {
+         if(minetPassed.toString()>=5 || minetPassed.toString()=="NaN"){
           storyHandler();
+         }       
       }, []);
      useMemo(()=>{
       filterUserStories(stories)

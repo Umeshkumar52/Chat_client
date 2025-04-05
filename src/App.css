@@ -69,15 +69,15 @@
   }
   #outgoingInner{
     position: relative;
-    background-color:rgb(39, 184, 39);
+    background-color:green;
     border-radius: 5px;
-    padding:8px;
+    padding:2px;
   }
   #incomingInner{
     position: relative;
     border-radius: 5px;
     background-color:rgba(27, 27, 27, 0.98);
-    padding:8px;
+    padding:2px;
   }
   h5{
 font-size: small;

@@ -40,7 +40,7 @@ export default function ChatApp() {
   return (
         <div className="mainPanel w-full h-screen flex overflow-hidden bg-black text-black">
        {/* User Panel */}
-        <div className="w-full h-screen md:w-[35%] lg:w-[25%] flex flex-col gap-4 p-2">
+        <div className="w-full h-screen md:w-[35%] lg:w-[25%] flex flex-col">
            <div className="flex gap-2 text-white flex-col">
             <div className="flex items-center gap-4">
             <img className="w-14 h-14 rounded-full" alt="img" src={state.avatar}/>
@@ -53,7 +53,6 @@ export default function ChatApp() {
        {/* Chat part */}
           <div className="w-full md:w-[65%] lg:w-[75%] hidden md:block ">
           {selectedUser?
-
           <Chat key={selectedUser._id} recieverUser={selectedUser}/>
           :
           <div className="lg:w-full flex flex-col px-10 h-screen gap-6 w-full justify-center items-center">

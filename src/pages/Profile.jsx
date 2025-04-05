@@ -11,6 +11,7 @@ import { FiEdit } from "react-icons/fi";
 import Layout from './Layout'
 import ReelsLayouts from "./ReelsLayouts";
 import ProfileSkelenton from "../skeletons/ProfileSkelenton";
+import { ToastContainer } from "react-toastify";
 export default function Profile({ UserName }) {
   const [post, setPost] = useState([]);
   const [reel, setReel] = useState([]);
@@ -204,7 +205,7 @@ export default function Profile({ UserName }) {
                     onClick={() => {
                       MessagerUserList(userData);
                       navigate(
-                        `/direct/${sender.UserName}/inbox/${userData.UserName}`,
+                        `/direct/${userData.UserName}`,
                         { state: userData }
                       );
                     }}
@@ -311,6 +312,7 @@ export default function Profile({ UserName }) {
               )}
             </div>
           </fieldset>
+        <ToastContainer/>
         </div>
       ):(<ProfileSkelenton/>)}
     </div>

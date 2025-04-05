@@ -83,13 +83,13 @@ export default function CreatePost() {
          <IoIosArrowBack onClick={()=>navigate(-1) } className='text-3xl'/>
          <h2 className='font-medium text-lg'>Create post</h2>
       </div>
-      <button onClick={createPostHandler} className='w-[12rem] p-3 hover:ring-2 bg-indigo-800 hover:bg-indigo-900 px-10 py-2 text-white text-lg font-semibold'>Post</button>
+      <button onClick={createPostHandler} className='px-6 py-2 hover:ring-2 bg-indigo-800 hover:bg-indigo-900 text-white text-lg font-semibold'>Post</button>
       </div>
       <div className='hiddenScrollBar space-y-6 h-[90vh] py-2 overflow-y-scroll'>
       <div className='flex flex-col gap-2'>
       <div className='px-2 flex flex-col gap-3'>
         <div className='flex items-center gap-2'>
-        <div className='w-10 h-10 cursor-pointer border-2 border-[#be03ed] rounded-full'>
+        <div className='w-10 h-10 cursor-pointer border-2 border-black rounded-full'>
          {auth.user?.avatar?
          <img src={auth.user?.avatar} className='w-full h-full'/>:
           <CgProfile className='w-full h-full text-4xl'/>
@@ -106,32 +106,15 @@ export default function CreatePost() {
         <div className='flex flex-col gap-3'>
         {/* {blobUrl? */}
         <div className='flex justify-center items-center'>
-         {blobUrl.url?
+         {blobUrl.url&&
           <div className='relative p-2'>
          {blobUrl.type.split("/")[0]=="video"?
          <video className='w-full md:max-w-[60vw] max-h-[70vh]' ref={videoRef} autoPlay onClick={videoPlayingHandler} id='videoPlayer' src={blobUrl.url} />:
          <img className='w-full md:max-w-[60vw] max-h-[70vh]' src={blobUrl.url}/> 
          }
           <MdOutlineCancel onClick={()=>setBlobUrl("")} className='absolute top-0 right-0 text-black hover:text-red-600 text-3xl'/>
-          </div>:""}
-         
-        {/* <div className='flex flex-wrap'>
-        {  multipleblobUrl.map((Element)=>{
-            return <MultiPostCard key={Element.url} url={Element}/>
-        })
-        }
-        </div> */}
-       
+          </div>}
         </div>  
-      {/* { multipleblobUrl.length>=1?      
-        <div className='flex flex-col items-center justify-center'>
-        <label htmlFor='addMore' className='p-2 bg-slate-200 rounded-full'>
-           <MdOutlineLibraryAdd  className='addMore text-2xl'/>
-        </label>
-        <h1>Add more</h1>
-        <input type='file' ref={inputReset} onChange={multFilesHandler} multiple id='addMore' name="addMore" className='addMore hidden' />
-        </div>:""
-        } */}
       </div>
       <div className='file cursor-pointer border-b-2 border-t-2'>
       <label htmlFor='file' className='w-full flex p-2 hover:bg-slate-300'>

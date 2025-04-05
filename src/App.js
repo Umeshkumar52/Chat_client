@@ -49,7 +49,7 @@ function App() {
     { path: "/sign-up", element: <Register />, protected: false },
     { path: "/sign-in", element: <Login />, protected: false },
     { path: "/reels", element: <Reels />, protected: true },
-    { path: ":userName", element: <Profile />, protected: true },
+    { path: "/:userName", element: <Profile />, protected: true },
     { path: "/stories", element: <UserStories />, protected: true },
     { path: "/friendRequest", element: <FriendRequests />, protected: true },
     {
