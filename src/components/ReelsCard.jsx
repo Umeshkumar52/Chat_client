@@ -178,7 +178,7 @@ export default function ReelsCard({
               />
               <h1>{`${data.Comments.length}`}</h1>
             </div>
-            <WebShare data={`http://localhost:3000/reel/${data?._id}`} />
+            <WebShare data={`https://chat-client-cgiv.onrender.com/reel/${data?._id}`} />
           </div>
         </div>
       </div>
