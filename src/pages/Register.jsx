@@ -100,7 +100,7 @@ export default function Register() {
               <button type='submit' className='w-full mt-6 bg-green-600 hover:bg-green-700 text-white p-2 font-semibold flex justify-center text-lg'>Register</button>             
               </div>
               <p className='text-lg '>Already have an account <Link to="/sign-in" className='text-indigo-800 hover:text-indigo-900 font-medium'>Login</Link></p>
-              <GoogleAuth/>
+{/*               <GoogleAuth/> */}
           </form>
          </div>
          <ToastContainer/>
