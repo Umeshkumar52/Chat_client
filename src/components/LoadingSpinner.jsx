@@ -1,9 +1,9 @@
 import React from 'react'
-export default function LoadingSpinner() {
+import {TbLoader2} from 'react-icons/tb'
+export default function LoadingSpinner(size) {
   return (
-    <div className='w-full h-screen flex justify-center items-center'>
-       <svg className='w-[5rem] h-[5rem] animate-spin border-4 border-b-white border-indigo-600 rounded-full'>
-        </svg> 
+    <div className='fixed top-0 left-0 w-[100vw] h-[100vh] bg-[#1111] flex justify-center items-center'>
+        <TbLoader2 className='animate-spin  size-16'/>
     </div>
   )
 }

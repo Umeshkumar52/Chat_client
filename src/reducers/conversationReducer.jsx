@@ -26,10 +26,18 @@ export const getAllConversation=createAsyncThunk('/Allchats',async(data)=>{
         toast.error(error.response.data.message)
     }
 })
-export const deleteChats=createAsyncThunk('/deleteMsg',async(data)=>{
+export const deleteChats=createAsyncThunk('/deleteChats',async(data)=>{
+    try {
+        const response=await instance.delete(`/api/conversation/chat/delete/${data.conversation_id}`,{data:data})
+        return (await response)
+    } catch (error) {
+        toast.error(error.response.data.message)
+    }
+})
+export const updateChate=createAsyncThunk('/update',async(data)=>{
     try {
         console.log(data);
-        const response=await instance.delete(`/api/conversation/chat/delete/${data.conversation_id}`,data)
+        const response=await instance.delete(`/api/conversation/chat/update/${data.conversation_id}`,data)
         return (await response)
     } catch (error) {
         toast.error(error.response.data.message)
@@ -38,7 +46,9 @@ export const deleteChats=createAsyncThunk('/deleteMsg',async(data)=>{
 const conversationReducer=createSlice({
     name:"conversation",
     initialState,
-    reducers:{}
+    reducers:{
+    },
+   
 })
 export const {}=conversationReducer.actions
 export default conversationReducer.reducer

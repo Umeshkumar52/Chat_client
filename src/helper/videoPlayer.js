@@ -4,7 +4,9 @@ export default function videoPlayer(isPlaying,setIsplaying,videoRef,setPlayButto
       videoRef.current.pause()
       setIsplaying(false)
     }else{
-      videoRef.current.play()
+      videoRef.current.play().catch((err)=>{
+        return
+      })
       setIsplaying(true)
     }
     setTimeout(() => {

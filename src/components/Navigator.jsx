@@ -1,5 +1,3 @@
-import Cookies from "js-cookie";
-import React, { useEffect, useMemo, useState } from "react";
 import { BiMoviePlay } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
 import { FaUserGroup } from "react-icons/fa6";
@@ -19,7 +17,7 @@ export default function Navigator() {
       <Link to="friendRequest">
         <FaUserGroup />
       </Link>
-      <Link to={`/${user.UserName}`} className="size-8 rounded-full">
+      <Link to={`/${user?.UserName}`} className="size-8 rounded-full">
         {user?.avatar ? (
           <img
           alt="Profile"

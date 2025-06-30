@@ -4,8 +4,9 @@ import { toast } from "react-toastify";
 const initialState={
     post:[],
     story:[],
-    hasFetched:false,
-    hasMore:false
+    fetchedPost:0,
+    hasMore:false,
+    postIsRemoving:false
 }
 export const allSocialPost=createAsyncThunk('/post',async(data)=>{
 try {
@@ -42,10 +43,6 @@ export const newSocialPost=createAsyncThunk('/createPost',async({user_id,formDat
 export const deletPost=createAsyncThunk('/deletePost',async(data)=>{
     try {
         const response=instance.delete(`/api/auth/post/deletePost/${data.post_id}/${data.public_id}`)
-        toast.promise(response,{
-            pending:"Earasing Proccessing...",
-            success:"Deleted Successfully"
-        })
         return (await response)
     } catch (error) {
         toast.error(error.response.data.message)
@@ -55,7 +52,7 @@ export const deleteStory=createAsyncThunk('/deleteStory',async(data)=>{
     try {
         const response=instance.delete(`/api/auth/post/deletestory/${data.story_id}/${data.public_id}`)
         toast.promise(response,{
-            pending:"Earasing Proccessing...",
+            pending:"Proccessing...",
             success:"Deleted Successfully"
         })
         return (await response)
@@ -107,15 +104,18 @@ const socialPostController=createSlice({
     name:"socialPost",
     initialState,
     reducers:{
-
+        prevPosts:(state,action)=>{
+        // if(action?.payload){
+        //   state.fetchedPage=action.payload.fetchedPost
+        //    state.post.push(...new Set(action.payload.postData)) 
+        // }
+    }
     },
     extraReducers:(builder)=>{
         builder
         .addCase(allSocialPost.fulfilled,(state,action)=>{ 
             if(action.payload?.data){
-                state.hasFetched=true
-                state.hasMore=[...action.payload.data?.message].length<10?false:true
-                 state.post.push(...(action.payload.data.message))
+                state.hasMore=[...action.payload.data?.message].length<10?false:true                
             }              
         })
         .addCase(allStories.fulfilled,(state,action)=>{ 
@@ -125,7 +125,13 @@ const socialPostController=createSlice({
                 state.story.push(...action.payload.data.message)
             }              
         })
+          .addCase(deletPost.pending,(state)=>{
+                    return{...state,postIsRemoving:true}
+            })
+            .addCase(deletPost.fulfilled,(state)=>{
+                        return{...state,postIsRemoving:false}
+                    })
     }
 })
-export const {}=socialPostController.actions
+export const {prevPosts}=socialPostController.actions
 export default socialPostController.reducer

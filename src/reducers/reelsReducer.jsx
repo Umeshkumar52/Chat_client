@@ -1,7 +1,6 @@
 import { createSlice,createAsyncThunk } from "@reduxjs/toolkit";
 import instance, { multiPartInstance } from "../helper/axios";
 import { toast } from "react-toastify";
-const intialState={}
 export const newReel=createAsyncThunk('/createReels',async({user_id,formData})=>{
     try {
         const response=multiPartInstance.post(`/api/auth/reels/newReel/${user_id}`,formData)
@@ -13,10 +12,6 @@ export const newReel=createAsyncThunk('/createReels',async({user_id,formData})=>
 export const deleteReel=createAsyncThunk('/deleteReel',async(data)=>{
     try {
         const response=instance.delete(`/api/auth/reels/deleteReel/${data.reel_id}/${data.public_id}`)
-        toast.promise(response,{
-            pending:"Earasing Proccessing...",
-            success:"Deleted Successfully"
-        })
         return (await response)
     } catch (error) {
         toast.error(error.response.data.message)
@@ -78,18 +73,21 @@ export const disLikeReel=createAsyncThunk("/disLikeReel",async(data)=>{
     } catch (error) {
         toast.error(error.response.data.message)
     }
-    })
-const reelSlice=createSlice({
-    name:"reels",
-    intialState,
+ 
+})
+const reelsReducer=createSlice({
+    name:"reelsReducer",
+    initialState:{reelIsRemoving:false},
     reducers:{},
     extraReducers:(builder)=>{
         builder
-        .addCase(allReels.fulfilled,(state,action)=>{
-            console.log(action);
-            
+        .addCase(deleteReel.pending,(state)=>{
+            return{...state,reelIsRemoving:true}
+        })
+        .addCase(deleteReel.fulfilled,(state)=>{
+            return{...state,reelIsRemoving:false}
         })
     }
 })
-export const {}=reelSlice.actions
-export default reelSlice.reducer
+export const {}=reelsReducer.actions
+export default reelsReducer.reducer

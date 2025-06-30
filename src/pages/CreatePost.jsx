@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import {IoIosArrowBack} from 'react-icons/io'
 import { CgProfile } from "react-icons/cg";
 import { MdOutlineCancel } from 'react-icons/md';
@@ -14,14 +14,11 @@ export default function CreatePost() {
     const navigate=useNavigate()
     const[file,setFile]=useState(null)
     const[isPlaying,setIsPlaying]=useState(false)
-    const[multiFiles,setMultiFiles]=useState([])
     const[blobUrl,setBlobUrl]=useState({
       type:"",
       url:""
     })
     const[description,setDescription]=useState("")
-    let textAre=document.querySelector("#textArea")
-    // const[multipleblobUrl,setMultipleBlobUrl]=useState([])
     const inputReset=useRef()
     function inputResetHandler(){
         if(inputReset.current){
@@ -38,18 +35,7 @@ export default function CreatePost() {
           type:event.target.files[0].type,
           url:URL.createObjectURL(event.target.files[0])
         })}
-      }
-    //    function multFilesHandler(event){
-    //   event.preventDefault()
-    //   for(let i=0;i<event.target.files.length;i++){
-    //     setMultiFiles((files)=>[...files,event.target.files[i]])
-    //      let len=event.target.files[i].name.split('.')
-    //     setMultipleBlobUrl((url)=>[...url,{
-    //       url:URL.createObjectURL(event.target.files[i]),
-    //       formate:len[len.length-1]
-    //     }])
-    //   }      
-    // }    
+      } 
     async function createPostHandler(event){
         event.preventDefault()
         const formData=new FormData()
@@ -61,12 +47,6 @@ export default function CreatePost() {
         inputResetHandler()
         setFile(null) 
      }
-      function textArea(event){
-        // textAre.style.height ='25px'
-        // console.log(textAre.scrollHeight);
-        // textAre.style.height=textAre.scrollHeight + "px"
-        
-      }
      function videoPlayingHandler(){
       if(isPlaying==false){
         setIsPlaying(true)
@@ -83,21 +63,21 @@ export default function CreatePost() {
          <IoIosArrowBack onClick={()=>navigate(-1) } className='text-3xl'/>
          <h2 className='font-medium text-lg'>Create post</h2>
       </div>
-      <button onClick={createPostHandler} className='px-6 py-2 hover:ring-2 bg-indigo-800 hover:bg-indigo-900 text-white text-lg font-semibold'>Post</button>
+      <button onClick={createPostHandler}  className="bg-indigo-600 rounded-lg hover:bg-indigo-700 hover:ring-2 px-6 md:px-10 py-1 md:py-2 text-white md:text-lg font-semibold">Post</button>
       </div>
       <div className='hiddenScrollBar space-y-6 h-[90vh] py-2 overflow-y-scroll'>
       <div className='flex flex-col gap-2'>
       <div className='px-2 flex flex-col gap-3'>
         <div className='flex items-center gap-2'>
         <div className='w-10 h-10 cursor-pointer border-2 border-black rounded-full'>
-         {auth.user?.avatar?
-         <img src={auth.user?.avatar} className='w-full h-full'/>:
+         {auth.user.avatar?
+         <img src={auth.user?.avatar} className='w-full rounded-full h-full'/>:
           <CgProfile className='w-full h-full text-4xl'/>
           }
          </div>
           <h2 className='font-semibold text-lg'>{auth.user?.UserName}</h2>
         </div>
-        <textarea className='text-lg outline-none p-2' onInput={textArea} onChange={(event)=>{
+        <textarea className='text-lg outline-none p-2' onChange={(event)=>{
           event.preventDefault()
           setDescription(event.target.value)
         }} cols='auto' name='description' id='textArea' autoFocus  placeholder='Say something about this post...'/>

@@ -1,156 +1,188 @@
-import React, { useEffect, useRef, useState } from 'react'
-import socket from '../socket'
-import { MdCallEnd } from 'react-icons/md'
-import { FaVideo } from 'react-icons/fa'
-import { useSelector } from 'react-redux'
-import { useLocation, useNavigate } from 'react-router-dom'
-import {BiSolidVolumeFull} from 'react-icons/bi'
-export default function AudioCall() {
-    const myUserName=useSelector(state=>{return state.auth.user.UserName})  
-    const {state}=useLocation()
-    const targetUser=state;   
-    const navigate=useNavigate()   
-    const [peerConnection,setPeerConnection]=useState()
-    const localStreamRef=useRef()
-    const remoteStreamRef=useRef()
-    const connectionRef=useRef()
-    const[call,setCall]=useState({
-        isRecievingCall:false,
-        callerId:null,
-        targetId:null,
-        signalData:null,
-    })
-    const[incomingCall,setIncomingCall]=useState(false)
-    const[callAccepted,setCallAccepted]=useState(false)
-    const[callRejected,setCallRejected]=useState(false)
-   const startCall=async()=>{
-    const pc=new RTCPeerConnection({
-        iceServers:[
-            {
-                urls:"stun:stun.l.google.com:19302"
-            }
-        ]
-    })
-    pc.ontrack=(event)=>{
-        remoteStreamRef.current.srcObject=event.streams[0]
-       };
-       pc.onicecandidate=(event)=>{
-        if(event.candidate){
-            socket.emit("candidate",{
-                candidate:event.candidate,sender:myUserName,target:targetUser.UserName
-            })
-        }
-    }
-navigator.mediaDevices.getUserMedia({audio:true})
-.then(stream=>{
-localStreamRef.current.srcObject=stream
-stream.getTracks().forEach(track=> pc.addTrack(track,stream))
-pc.createOffer().then((offer)=>{
-    pc.setLocalDescription(offer)
-    socket.emit('callUser',{to:targetUser,signalData:offer,callerId:myUserName})
-})
-});
-connectionRef.current=pc
-setPeerConnection(pc)
-   }
-   async function EndCall() {    
-    const localStream=localStreamRef.current.srcObject
-    if(localStream){
-        localStream.getTracks().forEach((track)=>track.stop())
-        localStreamRef.current.srcObject=null
-        remoteStreamRef.current.srcObject=null
-        if(peerConnection){
-            peerConnection.close()
-        }
-        socket.emit('endCall',{target:targetUser.UserName})
-        navigate(-1)
-    }
-   
-   }
-   async function AcceptCall() {
-    setCallAccepted(true)
-    const peer=new RTCPeerConnection()
-    peer.ontrack((event)=>{
-     remoteStreamRef.current.srcObject=event.streams[0];
-     peer.addStrem((localStreamRef.current.srcObject))
-     peer.setRemoteDescription(new RTCSessionDescription(call.signalData))
-     peer.createAnswer().then((answer)=>{
-      socket.emit('acceptCall',{to:call.callerId,signalData:answer})
-      connectionRef.current=peer
-     })
-    })
-
-   }
-   function rejectCall(){
-    setCallRejected(true)
-    socket.emit('rejectCall',{to:call.callerId,})
-    setCall({})
-   }
-   useEffect(()=>{
-    socket.on("offer",async(data)=>{
-        await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer))
-        const answer=await peerConnection.createAnswer()
-        await peerConnection.setLocalDesription(answer)
-        socket.emit("answer",{
-           answer,target:data.sender,sender:data.target
+import { memo, useCallback, useEffect, useRef, useState } from "react";
+import socket from "../socket";
+import { MdCallEnd } from "react-icons/md";
+import { FaVideo } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { IoIosMic, IoMdMicOff } from "react-icons/io";
+import {
+  setAnswer,
+  setCallEnd,
+  setIceCandidate,
+  setLocalStream,
+  setPeerConnection,
+  setIncomingCall,
+  setRemoteStream,
+  setOffer,
+  setAcceptCall,
+} from "../reducers/audioCallReducer";
+ function AudioCall({targetUser,callMessageHandaller}) {
+     const dispatch = useDispatch();
+  const {
+    localStream,
+    remoteStream,
+    peerConnection,
+    callAccept,
+    isCallActive,
+    type,
+    calleeUser,
+    offer,
+    callerUser,
+    callStatus,
+  } = useSelector((state) => state.globalyCall);
+  const { UserName, avatar } = useSelector((state) => {
+    return state.auth.user;
+  });
+  const localAudioRef = useRef(null);
+  const remoteAudiooRef = useRef(null);
+  const [streams, setStream] = useState(null);
+  const [micOn, setMicOn] = useState(true);
+  function initialLocalStream(pc) {
+    navigator.mediaDevices
+      .getUserMedia({
+        audio: true,
+      })
+      .then((stream) => {
+        setStream(stream);
+        stream.getTracks().forEach((track) => pc?.addTrack(track, stream));
+        dispatch(setLocalStream(stream));
+      });
+  }
+  function createPeerConnection() {
+    const pc = new RTCPeerConnection({
+      iceServers: [
+        {
+          urls: "stun:stun.l.google.com:19302",
+        },
+      ],
+    });
+    dispatch(setPeerConnection(pc));
+    initialLocalStream(pc);
+    pc.onicecandidate = (event) => {
+      console.log(event);
+      if (event.candidate) {
+        socket.emit("candidate", {
+          candidate: event.candidate,
+          callerId: UserName,
+          calleeId: targetUser.UserName,
         });
-    
-       })
-       socket.on('answer',async(answer)=>{
-        await peerConnection.setRemoteDescription(new RTCSessionDescription(answer))
-       })
-       socket.on("candidate",async(candidate)=>{
-        await peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
-       })
-    socket.on('endCall',()=>{
-        EndCall()
-    })
-    socket.on('incomingCall',async({signalData,callerId})=>{
-        setCall({
-            isRecievingCall:true,
-            callerId,
-            signalData
-        })
-        window.confirm(`${callerId} is calling...`)
-      
-    })
-    socket.on('acceptCall',(signal)=>{
-       connectionRef.current.setRemoteDescription(new RTCSessionDescription(signal))
-    })
-    socket.on('rejectCall',()=>{
-        setCall({
-           isRecievingCall:false,
-           signalData:null,
-           callerId:null,
-          targetId:null
-        })
-    })
-   },[socket])
-   useEffect(()=>{
-    setTimeout(()=>{
-        startCall()
-    },1000)
-   },[])
+        setIceCandidate(event.candidate);
+      }
+    };
+    pc.ontrack = (event) => {
+        const remoteAudio=new Audio()
+      remoteAudio.current.srcObject = event.streams[0];
+      remoteAudio.srcObject=event.streams[0]
+      remoteAudio.play()
+      dispatch(setRemoteStream(event.streams[0]));
+    };
+    return pc;
+  }
+  function callEnd() {
+    callMessageHandaller({
+      message: "Voice Call",
+      msg_type: "call",
+      callDuration: "No answer",
+    });
+    socket.emit("call-end", calleeUser.UserName);
+    dispatch(setCallEnd());
+  }
+  const startCall = useCallback(async () => {
+    const pc = createPeerConnection();
+    const offer = await pc.createOffer();
+    pc.setLocalDescription(offer);
+    socket.emit("offer", {
+      offer: offer,
+      calleeUser: targetUser,
+      callerUser: { UserName, avatar },
+      type,
+    });
+    dispatch(setOffer(offer));
+    setTimeout(() => {
+      if (callStatus == "outgoing" && !callAccept) {
+        callEnd();
+      }
+    }, 60000);
+  });
+  const acceptIncomingCall = useCallback(async () => {
+    const pc = createPeerConnection();
+    await pc.setRemoteDescription(new RTCSessionDescription(offer));
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+    dispatch(setAnswer(answer));
+    socket.emit("answer", {
+      answer: answer,
+      callerId: callerUser.UserName,
+    });
+    dispatch(setIncomingCall({ isCallActive: true }));
+    dispatch(setAcceptCall(true));
+  });
+
+  function callMuteHandler() {
+    if (streams) {
+      streams.getAudioTracks()[0].enabled = !micOn;
+      setMicOn((prev) => !prev);
+    }
+  }
+  useEffect(() => {
+    //  Offer and call-end is listening at app.js file to listen globaly
+    socket.on("answer", async (answer) => {
+      if (peerConnection) {
+        await peerConnection.setRemoteDescription(
+          new RTCSessionDescription(answer)
+        );
+        dispatch(setAnswer(answer));
+      }
+    });
+    socket.on("candidate", async (candidate) => {
+      if (peerConnection) {
+        await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+      }
+      dispatch(setIceCandidate(candidate));
+    });
+  }, [socket]);
+  useEffect(() => {
+    if (localAudioRef.current && localStream) {
+      localAudioRef.current.srcObject = localStream;
+    }
+    if (remoteAudiooRef.current && remoteStream) {
+      remoteAudiooRef.current.srcObject = remoteStream;
+    }
+  }, [localStream, remoteStream]);
+  useEffect(() => {
+    setTimeout(() => {
+      if (callStatus == "outgoing" && isCallActive) {
+        startCall();
+      } else if (callStatus == "incoming") {
+        acceptIncomingCall();
+      }
+    }, 600);
+  }, [isCallActive, callAccept]);
+  console.log(calleeUser,callerUser);
+  
    return(
-    <div className='bg-slate-500 w-full py-6 justify-between flex flex-col items-center h-screen'>
-     <h1 className='items-center font-semibold text-lg'>Calling...</h1>
-       <audio ref={localStreamRef} playsInline autoPlay muted/>
-       <audio ref={remoteStreamRef} playsInline autoPlay/>
-        <div>
-            <img className='size-24 rounded-full' src={targetUser.avatar}/>
+    <div className='fixed top-0 md:left-0 bg-white text-black w-full h-screen flex flex-col justify-between pt-[2rem] pb-[2rem] items-center'>
+      <div className="flex flex-col items-center gap-5">
+      <audio  ref={localAudioRef} autoPlay muted />
+      <audio ref={remoteAudiooRef} autoPlay/>
+      {!callAccept&&<div className=''>
+      <h2 className=' text-2xl font-semibold'>{calleeUser?.calleeId}</h2>
+      <h4 className='text-base font-medium flex justify-center'>Calling...</h4>
+      </div>} 
+     <img className='border-2 border-black size-24 rounded-full' src={calleeUser?.avatar}/>
+     </div>
+      <div className='w-[300px] px-2 space-x-[5rem] text-black bottom-4 text-2xl flex'>
+       <div className='bg-slate-200/80 p-2 rounded-full'>
+     <FaVideo/>
+       </div>
+       <div onClick={callMuteHandler} className='bg-slate-200/80 p-2 rounded-full '>
+       {micOn?<IoIosMic/>:<IoMdMicOff/>}
         </div>
-       <div className='w-full text-2xl flex justify-evenly'>
-       <div className='bg-slate-400 p-2 rounded-full'>
-       <FaVideo/>
-       </div>
-       <div className='bg-slate-400 p-2 rounded-full'>
-       <BiSolidVolumeFull/>
-       </div>
-        <div onClick={EndCall} className='bg-red-600 p-2 rounded-full text-white'>
+        <div onClick={callEnd} className='bg-red-600 p-2  rounded-full text-white'>
         <MdCallEnd/>
         </div>
-      </div>
-     
+        </div>
     </div>
   )
-}
+} 
+export default memo(AudioCall)
+  

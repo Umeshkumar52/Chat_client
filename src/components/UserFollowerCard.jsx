@@ -41,7 +41,7 @@ export default function UserFollowerCard({ data }) {
    <div  className="w-full flex  justify-between items-center h-fit cursor-pointer hover:bg-slate-100 py-2 px-[1rem]">
       <div onClick={() => navigate(`/${data.UserName}`)}  className="flex items-center gap-3">
         <img
-          className="h-10 w-10 rounded-full"
+          className="size-14 border-2 border-black rounded-full"
           src={data.avatar}
         />
         <div className="flex flex-col gap-0">
@@ -58,14 +58,14 @@ export default function UserFollowerCard({ data }) {
       {!isFollowing ? (
         <button
           onClick={followingHandler}
-          className="bg-[#2b29b6]  hover:ring-2 hover:bg-[#22217c] text-white py-2 px-6 text-sm font-semibold"
+          className="bg-[#2b29b6] rounded-lg hover:ring-2 hover:bg-[#22217c] text-white py-2 px-6 text-sm font-semibold"
         >
           Follow
         </button>
       ) : (
         <button
           onClick={unfollowingHandler}
-          className="px-4 py-2 hover:bg-[#cbc8c8] hover:ring-2 bg-[#f0f0f0]"
+          className="px-4 py-2 rounded-lg hover:bg-[#cbc8c8] hover:ring-2 bg-[#f0f0f0]"
         >
           Remove
         </button>

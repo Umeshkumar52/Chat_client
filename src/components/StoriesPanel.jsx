@@ -2,7 +2,7 @@ import React, {useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { useState } from 'react';
 import { allStories } from '../reducers/socialPostController';
-import { json, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { IoMdAdd } from 'react-icons/io';
 import Stories from './Stories';
 const StoriesPanel =()=> {
@@ -32,10 +32,12 @@ const StoriesPanel =()=> {
           setStories((stories) => [...stories, ...story.payload.data.message]);
         }
       }
+      // console.log(minetPassed.toString(), minetPassed.toString());
+      
       useEffect(() => {
-         if(minetPassed.toString()>=5 || minetPassed.toString()=="NaN"){
+        //  if(minetPassed.toString()>=5 || minetPassed.toString()=="NaN"){
           storyHandler();
-         }       
+        //  }       
       }, []);
      useMemo(()=>{
       filterUserStories(stories)

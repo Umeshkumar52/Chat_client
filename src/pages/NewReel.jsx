@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {IoIosArrowBack} from 'react-icons/io'
 import {useNavigate} from 'react-router-dom'
 import {useDispatch, useSelector} from 'react-redux'
@@ -72,7 +72,7 @@ export default function NewReel() {
               </div>
               <button
                     onClick={createPostHandler}
-                    className="bg-indigo-600 hover:bg-indigo-700 hover:ring-2 px-6 md:px-10 py-1 md:py-2 text-white md:text-lg font-semibold"
+                     className="bg-indigo-600 rounded-lg hover:bg-indigo-700 hover:ring-2 px-6 md:px-10 py-1 md:py-2 text-white md:text-lg font-semibold"
                   >
                     Share
                   </button>

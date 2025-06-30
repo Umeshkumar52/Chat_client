@@ -9,8 +9,6 @@ export default function SpecificReel() {
     const dispatch=useDispatch()
     async function reelHandler(){
         const response=await dispatch(specificReels(reel_id))
-        console.log(response);
-        
         if(response.payload){
             setPost(response.payload.data.message)
         }

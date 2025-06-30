@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { logout, updateUser, userAndPosts } from "../reducers/authReducer";
+import { logout, unfollowing, updateUser, userAndPosts } from "../reducers/authReducer";
+import { following } from "../reducers/authReducer";
 import { useNavigate, useParams } from "react-router-dom";
-import { IoIosArrowBack } from "react-icons/io";
+import { IoIosArrowBack} from "react-icons/io";
 import MediaCard from "../components/MediaCard";
 import ReelsCard from "../components/ReelsCard";
 import { IoCameraOutline } from "react-icons/io5";
 import MessagerUserList from "../helper/MessagerUserList";
 import { FiEdit } from "react-icons/fi";
-import Layout from './Layout'
-import ReelsLayouts from "./ReelsLayouts";
+import ReelsLayouts from "../layout/ReelsLayouts";
 import ProfileSkelenton from "../skeletons/ProfileSkelenton";
-import { ToastContainer } from "react-toastify";
+import socket from "../socket";
 export default function Profile({ UserName }) {
   const [post, setPost] = useState([]);
   const [reel, setReel] = useState([]);
@@ -22,13 +22,12 @@ export default function Profile({ UserName }) {
   const [profileBannerUrl, setProfileBannerUrl] = useState();
   const [profileUrl, setProfileUrl] = useState();
   const [userUpdated, setUserUpdated] = useState(false);
-  const [userData, setUser] = useState();
+  const [userData, setUser] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [friends, setFriends] = useState();
-  const sender = useSelector((state) => {
-    return state.auth.user;
-  });
+  const [friends, setFriends] = useState(null);
+  const[isFollowing,setIsFolowing]=useState(false)
+  const[friendPopUps,setFriendsPopUps]=useState(false)
   async function profileBannerHandler(event) {
     event.preventDefault();
     const formData = new FormData();
@@ -53,7 +52,7 @@ export default function Profile({ UserName }) {
     await dispatch(updateUser(formData));
     setUserUpdated(true);
   }
-  async function userDetail() {
+  const userDetail=useCallback(async() =>{
     const response = await dispatch(
       userAndPosts(userName ? userName : UserName)
     );
@@ -65,23 +64,19 @@ export default function Profile({ UserName }) {
       setUser(...response.payload.data.message);
       setPost((prev) => [...prev, ...response.payload.data.message[0].myPosts]);
       setReel((prev) => [...prev, ...response.payload.data.message[0].myReels]);
-      if (
-        response.payload.data.message[0].Following &&
-        response.payload.data.message[0].Followers
-      ) {
         setFriends(
-          response.payload.data.message[0].Following.length +
-            response.payload.data.message[0].Followers.length
+          response.payload.data?.message[0]?.Following.length +
+            response.payload.data?.message[0]?.Followers.length
         );
-      }
+        if(response.payload.data.message[0].Followers.includes(user._id)){
+          setIsFolowing(true)
+         }
     }
-  }
+  })
   async function logoutHandler(event) {
     const response = await dispatch(logout());
-    console.log(response);
-
     if (response?.payload?.data.success) {
-      navigate("/sign-up");
+      navigate("/sign-in");
     }
   }
   useEffect(() => {
@@ -95,6 +90,26 @@ export default function Profile({ UserName }) {
     const updateData = reel.filter((items) => items._id !== _id);
     setReel(updateData);
   }
+  async function unfollowHandler() {
+    socket.emit("unfollowing",{requester:user._id,reciever:userData._id})
+     await dispatch(unfollowing({requester:user._id,reciever:userData._id}))     
+   } 
+   async function followingHandler() {
+    socket.emit("following",{requester:user._id,reciever:userData._id})
+     await dispatch(following({requester:user._id,reciever:userData._id}))     
+   }  
+   useEffect(()=>{
+    socket.on('unfollowing',(data)=>{
+      if(user?._id===data.requester){
+        setIsFolowing(!following)
+      }
+    })
+    socket.on("following",(data)=>{
+      if(user?._id==data.requester){
+        setIsFolowing(true)
+        }
+     })
+   },[socket])    
   return (
     <ReelsLayouts>
     <div className="hiddenScrollBar bg-white md:w-[90%] lg:w-[60%] pb-10 py-2 w-full h-screen overflow-y-scroll">
@@ -189,14 +204,19 @@ export default function Profile({ UserName }) {
                 <h1 className="text-xl font-bold text-black">
                   {userData.UserName}
                 </h1>
-                <div
-                  onClick={() =>
-                    navigate("/friendRequest", { state: userData._id })
-                  }
-                  className="flex gap-4 text-lg font-semibold"
-                >
-                  <h2 className="text-indigo-700">Friends</h2>
+                <div className="relative flex gap-4 text-lg font-semibold">
+                  <h2 onClick={()=>{setFriendsPopUps(!friendPopUps)}} className="text-indigo-600 cursor-pointer">Friends</h2>
                   <p>{friends}</p>
+               {friendPopUps&&userData._id!==user._id&&
+                <div id="friendsPopUp" className="absolute p-3 top-8 bg-slate-200 rounded-lg">
+                <ul className="cursor-pointer">
+                <li>{isFollowing?<button onClick={unfollowHandler}>UnFollow</button>:<button onClick={followingHandler}>Follow</button>}</li>
+                <li onClick={() =>
+                    navigate("/friendRequest", { state: userData._id })
+                  }>Friends</li>
+               </ul>
+                </div>
+}
                 </div>
               </div>
               <div className="flex justify-evenly">
@@ -224,7 +244,7 @@ export default function Profile({ UserName }) {
                 {userData.UserName === user.UserName ? (
                   <button
                     onClick={logoutHandler}
-                    className="bg-[#9c2df1] rounded-lg text-white text-lg font-semibold px-4 py-1"
+                    className="bg-indigo-600 rounded-lg text-white text-lg font-semibold px-4 py-1"
                   >
                     Logout
                   </button>
@@ -233,7 +253,7 @@ export default function Profile({ UserName }) {
                     onClick={() =>
                       navigate("/friendRequest", { state: userData._id })
                     }
-                    className="bg-[#9c2df1] rounded-lg text-white text-lg font-semibold px-4 py-1"
+                    className="bg-indigo-600 rounded-lg text-white text-lg font-semibold px-4 py-1"
                   >
                     Friends
                   </button>
@@ -312,7 +332,6 @@ export default function Profile({ UserName }) {
               )}
             </div>
           </fieldset>
-        <ToastContainer/>
         </div>
       ):(<ProfileSkelenton/>)}
     </div>

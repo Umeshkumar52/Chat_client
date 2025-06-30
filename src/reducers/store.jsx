@@ -1,18 +1,22 @@
 import { configureStore} from "@reduxjs/toolkit";
 import auth from './authReducer'
-import conversationReducer from "./conversationReducer";
 import socialPostController from "./socialPostController";
 import notificationReducer from "./notificationReducer";
+import conversation from './conversationReducer'
+import audioCallReducer from './audioCallReducer'
+import reelsReducer from './reelsReducer'
 const store=configureStore({
   reducer:{
     auth:auth,
-    conversation:conversationReducer,
+    conversation:conversation,
     socialPost:socialPostController,
+    reels:reelsReducer,
     notification:notificationReducer,
+    globalyCall:audioCallReducer
 },
 middleware: (getDefaultMiddleware) =>
   getDefaultMiddleware({
-    serializableCheck: false,
+    serializableCheck: false
   }),
 // devTools:true
 })

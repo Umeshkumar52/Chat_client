@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {userfollowing} from '../reducers/authReducer'
 import UserFollowerCard from '../components/UserFollowerCard'
@@ -24,7 +24,7 @@ import FriendsSkelenton from '../skeletons/FriendsSkelenton'
   }
   useEffect(()=>{
     user_following()
-  },[])
+  },[])  
   return (
     <div className={`${url[url.length-1]=="friendRequest"&&"lg:pr-[14rem]"}`}>
     <div className='hiddenScrollBar bg-white w-full h-screen space-y-2 overflow-y-scroll'>
@@ -33,7 +33,7 @@ import FriendsSkelenton from '../skeletons/FriendsSkelenton'
       <label htmlFor="following" className='peer-checked/following:text-sky-500 text-lg px-6 font-semibold '>Following <span>{followingData.length}</span></label>
       <input id='follow' className='peer/follow hidden' name='status' type="radio" />
       <label htmlFor="follow" className='peer-checked/follow:text-sky-500 text-lg  font-semibold'>Followers <span>{followerData.length}</span></label>
-     <div className='hidden peer-checked/following:block space-y-4'>
+     <div className='hidden peer-checked/following:block'>
      {followingData?.length>0?
        followingData.map((Element,index)=>{
             return <UserFollowingCard key={index} data={Element}/>
@@ -50,7 +50,7 @@ import FriendsSkelenton from '../skeletons/FriendsSkelenton'
        </div>
      }
      </div>
-     <div className='hidden peer-checked/follow:block space-y-4'>
+     <div className='hidden peer-checked/follow:block'>
      {followerData?.length>0?
        followerData.map((Element,index)=>{        
             return <UserFollowerCard key={index} data={Element}/>

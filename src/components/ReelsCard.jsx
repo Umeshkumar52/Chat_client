@@ -11,6 +11,7 @@ import socket from "../socket";
 import videoPlayerHandler from "../helper/videoPlayerHandler";
 import PlayPause from "./PlayPause";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import handleDownload from "../hooks/useDownload";
 export default function ReelsCard({
   data,
   updateDeletReeltHandler,
@@ -47,10 +48,10 @@ export default function ReelsCard({
       });
       setPlayButtonShowing(true);
       setIsPlaying(true);
+      setTimeout(() => {
+        setPlayButtonShowing(false);
+      }, 700);
     }
-    setTimeout(() => {
-      setPlayButtonShowing(false);
-    }, 700);
   }
   videoPlayerHandler("video", isPlaying);
   async function followingHandler() {
@@ -116,30 +117,33 @@ export default function ReelsCard({
       onClick={postDeletecloseHandler}
       className="vid relative snap-start bg-black w-full h-[100vh] flex flex-col gap-3"
     >
-      <div className="relative">
+      <div className="relative w-fit">
       <video
         className="video w-full h-[100vh]"
         ref={videoRef}
         onClick={videoplay}
-       loop
+        loop
         id="video"
         src={data.secure_url}
       >
       </video>
-      {data.author._id == user._id && self && (
-          <div className="absolute text-white text-2xl top-4 right-4 w-14  flex justify-end">
+          <div className="absolute text-white text-xl top-4 right-4 w-14  flex justify-end">
             <BsThreeDotsVertical onClick={()=>setDeleteButtonVisibility(!deleteButtonVisibility)} />
             {deleteButtonVisibility&&
-            <div id={"reelDelete" + index} className="absolute w-auto right-4 top-4">
+            <div id={"reelDelete" + index} className="absolute p-2 bg-slate-100 text-black text-base rounded-lg w-auto right-4 top-4">
               <ul>
                 <li>
-                  <button onClick={ReelDeleteHandler}>Delete</button>
+                  <button onClick={()=>handleDownload(data.secure_url)}>download</button>
                 </li>
+                {data.author._id == user._id && self &&
+                <li>
+                  <button onClick={ReelDeleteHandler}>Delete</button>
+                </li>}
               </ul>
             </div>
             }
           </div>
-        )}
+    
         {/* playpause */}
       {playButtonShowing&&<PlayPause isPlaying={isPlaying}/>}
       </div>
@@ -178,6 +182,7 @@ export default function ReelsCard({
               />
               <h1>{`${data.Comments.length}`}</h1>
             </div>
+            {/* https://chat-client-cgiv.onrender.com/reel/ */}
             <WebShare data={`https://chat-client-cgiv.onrender.com/reel/${data?._id}`} />
           </div>
         </div>
@@ -187,7 +192,7 @@ export default function ReelsCard({
         <div className="flex gap-3">
           <Link to={`/${data.author.UserName}`}>
             <div className="flex">
-              {data.author.avatar ? (
+              {data?.author.avatar ? (
                 <img
                   src={data.author.avatar}
                   className="w-10 h-10 rounded-full border-2"
@@ -199,7 +204,7 @@ export default function ReelsCard({
           </Link>
           <div className="flex flex-col">
             <div className=" flex font-semibold gap-2">
-              <h2 className="font-semibold text-white text-lg">{`${data.author.UserName.slice(
+              <h2 className="font-semibold text-white text-lg">{`${data?.author.UserName.slice(
                 0,
                 10
               )}...`}</h2>
@@ -218,20 +223,6 @@ export default function ReelsCard({
             <h1 className="text-sm  italic">Original music</h1>
           </div>
         </div>
-        {/* {data.author._id == user._id && self ? (
-          <div className="relative w-14  flex justify-end">
-            <BsThreeDotsVertical onClick={postDeleteOpenHandler} />
-            <div id={"reelDelete" + index} className="w-0 absolute top-4">
-              <ul>
-                <li>
-                  <button onClick={ReelDeleteHandler}>Delete</button>
-                </li>
-              </ul>
-            </div>
-          </div>
-        ) : (
-          ""
-        )} */}
       </div>
     </div>
   );
