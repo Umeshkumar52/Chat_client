@@ -77,7 +77,6 @@ useEffect(()=>{
     { path: "/sign-up", element: <Register />, protected: false },
     { path: "/forget-password", element:<ForgetPassword/>, protected: false },
     { path: "/reset/:token", element:<ResetPassword/>, protected: false },
-    { path: "*", element: <NotFound />, protected: false },
     { path: "/reels", element: <Reels />, protected: true },
     { path: "/:userName", element: <Profile />, protected: true },
     { path: "/stories", element: <UserStories />, protected: true },
@@ -97,6 +96,7 @@ useEffect(()=>{
     { path: "/reel/:reel_id", element: <SpecificReel />, protected: true },
     { path: "/video", element: <VideoCall />, protected: true },
     { path: "/audio", element: <AudioCall />, protected: true },
+     { path: "*", element: <NotFound />, protected: false }
   ];
   return (
     <div>
