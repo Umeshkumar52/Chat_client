@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
+import { useSearchParams } from 'react-router-dom';
 import { useNavigate, useParams } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import { resetPassword } from '../reducers/authReducer'
@@ -9,7 +10,8 @@ export default function ResetPassword() {
    const dispatch=useDispatch()
    const navigate=useNavigate()
    const[passSaveInProgress,setPassSaveInProgress]=useState(false)
-   const {token}=useParams()
+   const [searchParams] = useSearchParams();
+  const token = searchParams.get('token');
    const[passwordData,setPasswordData]=useState({
       NewPassword:"",
       ConfirmPassword:""
