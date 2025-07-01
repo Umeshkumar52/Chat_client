@@ -76,7 +76,7 @@ useEffect(()=>{
     { path: "/sign-in", element: <Login />, protected: false },
     { path: "/sign-up", element: <Register />, protected: false },
     { path: "/forget-password", element:<ForgetPassword/>, protected: false },
-    { path: "/reset/:token", element:<ResetPassword/>, protected: false },
+    { path: "/reset?token=value", element:<ResetPassword/>, protected: false },
     { path: "/reels", element: <Reels />, protected: true },
     { path: "/:userName", element: <Profile />, protected: true },
     { path: "/stories", element: <UserStories />, protected: true },
