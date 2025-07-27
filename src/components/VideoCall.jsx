@@ -171,6 +171,7 @@ function VideoCall({ targetUser, callMessageHandaller }){
         onClick={() => setMainCallingVideo(!mainCallingVideo)}
         ref={localVideoRef}
         autoPlay
+        muted
         className={`${
           mainCallingVideo && callAccept
             ? "partialCallingVideo"
